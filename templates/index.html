@@ -1,0 +1,415 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-left {
+        opacity: 0;
+        transform: translateX(-50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-left.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .slide-in-right {
+        opacity: 0;
+        transform: translateX(50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-right.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .scale-in {
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .scale-in.visible {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .rotate-in {
+        opacity: 0;
+        transform: rotate(-10deg) translateY(20px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .rotate-in.visible {
+        opacity: 1;
+        transform: rotate(0deg) translateY(0);
+    }
+
+    .content-overlay {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+
+    .service-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .service-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
+    }
+
+    .floating-animation {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, #3b82f6, #1e40af);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .parallax-bg {
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+</style>
+
+    <!-- Video Background -->
+    <div class="video-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;">
+        <video
+            id="bgVideo"
+            autoplay
+            muted
+            loop
+            playsinline
+            webkit-playsinline
+            class="video-background"
+            style="width: 100%; height: 100%; object-fit: cover;"
+        >
+            <source src="{{ url_for('static', filename='videos/bgD.mp4') }}" type="video/mp4">
+        </video>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4);"></div>
+    </div>
+
+    <!-- Sección Hero -->
+    <div class="container mx-auto px-4 py-20 text-center fade-in">
+        <img src="{{ url_for('static', filename='images/logo2.png') }}"
+             alt="PROEDENT"
+             class="mx-auto mb-6 h-24 w-auto floating-animation">
+        <p class="text-3xl mb-8 font-serif text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            Distribuidora de equipos y biomateriales dentales
+        </p>
+        <p class="text-xl text-gray-200 mb-8" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+            Innovación y calidad al servicio de la odontología moderna
+        </p>
+    </div>
+
+    <!-- Sección de Características -->
+    <div class="container mx-auto px-4 py-16 bg-white shadow-2xl rounded-lg content-overlay mb-10 scale-in">
+        <h2 class="text-4xl font-bold text-center mb-12 gradient-text">Nuestros Productos Estrella</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="text-center service-card p-6 rounded-xl slide-in-left">
+                <div class="mb-6">
+                    <img src="{{ url_for('static', filename='images/Picture2.png') }}"
+                         alt="Tomógrafo"
+                         class="mx-auto h-40 w-40 object-contain rounded-lg shadow-lg hover:scale-110 transition-transform duration-300">
+                </div>
+                <h3 class="text-2xl font-semibold mb-4 text-blue-600">Tomografía Dental 3D</h3>
+                <p class="text-gray-600 mb-4">Tecnología avanzada de imagen 3D para diagnósticos precisos y planificación de tratamientos odontológicos</p>
+                <div class="bg-blue-100 p-3 rounded-lg">
+                    <p class="text-sm text-blue-800 font-semibold">Resolución: 150 micras | Escaneo: 8.9 seg</p>
+                </div>
+            </div>
+            <div class="text-center service-card p-6 rounded-xl fade-in">
+                <div class="mb-6">
+                    <img src="{{ url_for('static', filename='images/Picture4.png') }}"
+                         alt="Sillón Odontológico"
+                         class="mx-auto h-40 w-40 object-contain rounded-lg shadow-lg hover:scale-110 transition-transform duration-300">
+                </div>
+                <h3 class="text-2xl font-semibold mb-4 text-red-600">Equipos Dentales Premium</h3>
+                <p class="text-gray-600 mb-4">Equipamiento de última generación para máximo confort del paciente y eficiencia del profesional</p>
+                <div class="bg-red-100 p-3 rounded-lg">
+                    <p class="text-sm text-red-800 font-semibold">Motor eléctrico | LED integrado | Sistema completo</p>
+                </div>
+            </div>
+            <div class="text-center service-card p-6 rounded-xl slide-in-right">
+                <div class="mb-6">
+                    <img src="{{ url_for('static', filename='images/Picture3.png') }}"
+                         alt="Sensor X-Line"
+                         class="mx-auto h-40 w-40 object-contain rounded-lg shadow-lg hover:scale-110 transition-transform duration-300">
+                </div>
+                <h3 class="text-2xl font-semibold mb-4 text-green-600">Sensores Digitales</h3>
+                <p class="text-gray-600 mb-4">Radiografía digital instantánea con sensores X-Line de alta resolución y mínima radiación</p>
+                <div class="bg-green-100 p-3 rounded-lg">
+                    <p class="text-sm text-green-800 font-semibold">20 lp/mm | USB | Compatible universal</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mt-12">
+            <a href="{{ url_for('catalogo') }}" class="w-64 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center" style="background: radial-gradient(circle, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%);">
+                <i class="fas fa-clipboard-list mr-2"></i>
+                Ver Catálogo Completo
+            </a>
+            <a href="{{ url_for('cursos') }}" class="w-64 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center" style="background: radial-gradient(circle, #ef4444 0%, #dc2626 50%, #991b1b 100%);">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                Cursos y Capacitaciones
+            </a>
+            <a href="#contacto" class="w-64 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center" style="background: radial-gradient(circle, #000 0%, #0a0a0a 50%, #111 100%);">
+                <i class="fas fa-phone mr-2"></i>
+                Solicitar Cotización
+            </a>
+        </div>
+    </div>
+
+    <!-- Sección Servicios -->
+    <div id="servicios" class="container mx-auto px-4 py-16 text-center parallax-bg rotate-in">
+        <h1 class="text-5xl font-bold text-white mb-8" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Nuestros Servicios Especializados</h1>
+        <p class="text-xl text-gray-200 mb-12" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Soluciones integrales para el consultorio odontológico moderno</p>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white bg-opacity-90 p-8 rounded-xl shadow-xl slide-in-left">
+                <div class="flex items-center justify-center mb-4">
+                    <i class="fas fa-cogs text-blue-600 text-4xl mr-3"></i>
+                    <h3 class="text-2xl font-bold text-blue-600">Equipamiento Integral</h3>
+                </div>
+                <ul class="text-left text-gray-700 space-y-2">
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Tomógrafos dentales de última generación</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Sillones odontológicos ergonómicos</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Sistemas de radiología digital</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Instrumental quirúrgico especializado</li>
+                </ul>
+            </div>
+
+            <div class="bg-white bg-opacity-90 p-8 rounded-xl shadow-xl slide-in-right">
+                <div class="flex items-center justify-center mb-4">
+                    <i class="fas fa-microscope text-red-600 text-4xl mr-3"></i>
+                    <h3 class="text-2xl font-bold text-red-600">Biomateriales Avanzados</h3>
+                </div>
+                <ul class="text-left text-gray-700 space-y-2">
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Composites de última generación</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Materiales de impresión digitales</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Cementos y adhesivos especializados</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Implantes y componentes protésicos</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white bg-opacity-90 p-8 rounded-xl shadow-xl fade-in">
+                <div class="flex items-center justify-center mb-4">
+                    <i class="fas fa-graduation-cap text-purple-600 text-4xl mr-3"></i>
+                    <h3 class="text-2xl font-bold text-purple-600">Capacitación Profesional</h3>
+                </div>
+                <ul class="text-left text-gray-700 space-y-2">
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Cursos especializados en equipos</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Entrenamiento en nuevas tecnologías</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Certificaciones oficiales</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Soporte técnico continuo</li>
+                </ul>
+            </div>
+
+            <div class="bg-white bg-opacity-90 p-8 rounded-xl shadow-xl scale-in">
+                <div class="flex items-center justify-center mb-4">
+                    <i class="fas fa-tools text-orange-600 text-4xl mr-3"></i>
+                    <h3 class="text-2xl font-bold text-orange-600">Servicio Técnico</h3>
+                </div>
+                <ul class="text-left text-gray-700 space-y-2">
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Instalación y puesta en marcha</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Mantenimiento preventivo programado</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Reparaciones especializadas</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Garantía extendida disponible</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Misión y Visión -->
+    <div id="mision" class="container mx-auto px-4 py-16">
+        <div class="grid md:grid-cols-2 gap-12">
+            <div class="bg-white bg-opacity-95 p-8 rounded-xl shadow-xl slide-in-left">
+                <div class="text-center mb-6">
+                    <i class="fas fa-bullseye text-blue-600 text-5xl mb-4"></i>
+                    <h2 class="text-4xl font-bold gradient-text">Nuestra Misión</h2>
+                </div>
+                <p class="text-lg text-gray-700 leading-relaxed text-justify">
+                    Proveer equipos odontológicos de alta calidad y biomateriales avanzados que permitan a los profesionales dentales
+                    ofrecer tratamientos de excelencia. Nos comprometemos a ser el socio estratégico que impulse la innovación en cada
+                    consultorio, brindando soluciones tecnológicas que mejoren la experiencia tanto del profesional como del paciente,
+                    siempre con el respaldo de un servicio técnico especializado y capacitación continua.
+                </p>
+            </div>
+
+            <div class="bg-white bg-opacity-95 p-8 rounded-xl shadow-xl slide-in-right">
+                <div class="text-center mb-6">
+                    <i class="fas fa-eye text-red-600 text-5xl mb-4"></i>
+                    <h2 class="text-4xl font-bold gradient-text">Nuestra Visión</h2>
+                </div>
+                <p class="text-lg text-gray-700 leading-relaxed text-justify">
+                    Ser la empresa líder en distribución de equipos dentales en Ecuador y expandirnos a nivel regional,
+                    reconocida por nuestra excelencia en el servicio, innovación tecnológica y compromiso con la formación profesional.
+                    Aspiramos a transformar la práctica odontológica mediante la introducción de tecnologías de vanguardia,
+                    contribuyendo al desarrollo de una odontología más eficiente, precisa y accesible para toda la población.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Agendar Demostración -->
+    <div id="contacto" class="flex justify-center items-center min-h-screen px-4 py-16" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 33%, #dc2626 66%, #000000 100%);">
+        <div class="p-8 rounded-2xl shadow-2xl max-w-lg w-full border-2 fade-in" style="background: linear-gradient(145deg, #1f2937 0%, #111827 100%); border-color: #3b82f6;">
+            <div class="text-center mb-6">
+                <i class="fas fa-calendar-alt text-blue-400 text-4xl mb-4"></i>
+                <h2 class="text-3xl font-bold text-white mb-2">Solicitar Demostración</h2>
+                <p class="text-lg text-gray-300">¿Listo para conocer nuestros equipos dentales?</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('agendar_demo') }}" class="space-y-4">
+                <div class="relative">
+                    <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" name="nombre" placeholder="Su Nombre" required
+                        class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
+                        style="border-color: #374151;"
+                        onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'"
+                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
+                </div>
+
+                <div class="relative">
+                    <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="email" name="correo" placeholder="Su Correo Electrónico" required
+                        class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
+                        style="border-color: #374151;"
+                        onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'"
+                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
+                </div>
+
+                <div class="relative">
+                    <i class="fas fa-calendar absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="date" name="fecha" required
+                        class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white transition duration-300"
+                        style="border-color: #374151;"
+                        onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'"
+                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
+                </div>
+
+                <div class="relative">
+                    <i class="fas fa-user-tie absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <select name="representante" required
+                        class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white transition duration-300"
+                        style="border-color: #374151;"
+                        onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'"
+                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
+                        <option value="" disabled selected>Seleccione un representante/área</option>
+                        <option value="Ing. Carlos Mendoza - Tomógrafos">Ing. Carlos Mendoza - Tomógrafos</option>
+                        <option value="Lic. Ana García - Equipos Dentales">Lic. Ana García - Equipos Dentales</option>
+                        <option value="Tec. Roberto Silva - Sensores Digitales">Tec. Roberto Silva - Sensores Digitales</option>
+                        <option value="Lic. Patricia López - Biomateriales">Lic. Patricia López - Biomateriales</option>
+                    </select>
+                </div>
+
+                <button type="submit"
+                    class="w-full text-white font-bold py-3 rounded-lg transform hover:scale-105 transition duration-300"
+                    style="background: radial-gradient(circle, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%);"
+                    onmouseover="this.style.background='radial-gradient(circle, #2563eb 0%, #1d4ed8 50%, #1e3a8a 100%)'"
+                    onmouseout="this.style.background='radial-gradient(circle, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%)'">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Solicitar Demostración
+                </button>
+            </form>
+        </div>
+    </div>
+
+<script>
+// Función para observar elementos y aplicar animaciones
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            } else {
+                // Opcional: remover la clase para repetir la animación
+                entry.target.classList.remove('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    // Observar todos los elementos con clases de animación
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-left, .slide-in-right, .scale-in, .rotate-in'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Inicializar el observer cuando la página carga
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+
+    // Efecto parallax suave para el fondo
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const parallax = document.querySelector('.parallax-bg');
+        if (parallax) {
+            const speed = scrolled * 0.5;
+            parallax.style.backgroundPosition = `center ${speed}px`;
+        }
+    });
+
+    // Animación adicional para las cards de servicios
+    const serviceCards = document.querySelectorAll('.service-card');
+    serviceCards.forEach((card, index) => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+});
+
+// Smooth scroll para enlaces internos
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+</script>
+
+{% endblock %}

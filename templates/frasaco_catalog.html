@@ -1,0 +1,1244 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-up {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .slide-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .frasaco-product-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .frasaco-product-card:hover {
+        border-color: #2563eb;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
+    }
+
+    .frasaco-product-card.featured {
+        border: 3px solid #16a34a;
+        box-shadow: 0 0 20px rgba(22, 163, 74, 0.2);
+    }
+
+    .frasaco-product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #2563eb, #16a34a, #dc2626);
+        transition: left 0.4s ease;
+    }
+
+    .frasaco-product-card:hover::before {
+        left: 0;
+    }
+
+    .frasaco-product-card.featured::before {
+        background: linear-gradient(90deg, #16a34a, #15803d, #166534);
+        left: 0;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
+        border-radius: 10px;
+        transition: transform 0.4s ease;
+        background: #f8fafc;
+        padding: 15px;
+    }
+
+    .frasaco-product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .hero-frasaco {
+        background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+                    url('{{ url_for('static', filename='images/fra-hero-bg.png') }}');
+        min-height: 70vh;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-frasaco::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="frasaco" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="30" cy="30" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23frasaco)"/></svg>');
+        opacity: 0.4;
+    }
+
+    .product-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2563eb;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-style: italic;
+        margin-bottom: 1rem;
+    }
+
+    .quote-btn-frasaco {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .quote-btn-frasaco:hover {
+        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .frasaco-logo {
+        font-size: 3rem;
+        font-weight: 900;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 0.1em;
+    }
+
+    .specs-list {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #2563eb;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .category-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #2563eb, #16a34a);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-frasaco {
+            min-height: 60vh;
+        }
+
+        .frasaco-logo {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-frasaco text-white py-5 mb-5 position-relative">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <a href="{{ url_for('catalogo') }}" class="back-btn mb-4">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Catálogo
+                </a>
+                <div class="frasaco-logo mb-4">FRASACO</div>
+                <h1 class="display-5 fw-bold mb-4">Catálogo Completo de Productos</h1>
+                <p class="lead mb-4">Descubre la línea completa de modelos educativos y fantomas dentales FRASACO, calidad alemana para la formación odontológica de excelencia</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-graduation-cap text-warning me-2"></i>
+                        <span>Educación Dental</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-microscope text-info me-2"></i>
+                        <span>Fantomas</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-award text-success me-2"></i>
+                        <span>Calidad Alemana</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center fade-in">
+                <i class="fas fa-tooth" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modelos Dentales Section -->
+<div class="container mb-5">
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-tooth"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Modelos Dentales</h2>
+            <p class="lead text-muted">Amplia gama de modelos dentales para la enseñanza de técnicas odontológicas, desde procedimientos básicos hasta especialidades avanzadas.</p>
+        </div>
+
+        <div class="row g-4">
+            
+            <!-- Serie ANA-4 (DESTACADO) -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card featured rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-success">DESTACADO</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-ana4.png') }}"
+                         alt="Serie de modelos estándar ANA-4" class="product-image mb-3">
+                    <h4 class="product-title" style="color: #16a34a;">Serie ANA-4</h4>
+                    <p class="product-subtitle flex-grow-1">Serie de modelos estándar para enseñanza dental básica y avanzada</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Dentición completa anatómicamente correcta</li>
+                            <li>Material resistente y duradero</li>
+                            <li>Ideal para prácticas de preparación</li>
+                            <li>Compatible con instrumentos reales</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">Consultar precio</div>
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showProductDetails('Serie ANA-4', 'Serie de modelos estándar para enseñanza dental básica y avanzada', 'Dentición completa anatómicamente correcta con material resistente, ideal para prácticas de preparación')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Serie ANA-4')" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">
+                        <i class="fas fa-star me-2"></i>Producto Destacado
+                    </button>
+                </div>
+            </div>
+
+            <!-- Serie AG-3 -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-info">Modelo Dental</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-ag3.png') }}"
+                         alt="Serie de modelos estándar AG-3" class="product-image mb-3">
+                    <h4 class="product-title">Serie AG-3</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos estándar AG-3 para técnicas de odontología general</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Anatomía dental precisa</li>
+                            <li>Superficie de trabajo realista</li>
+                            <li>Fácil fijación en phantom heads</li>
+                            <li>Excelente para prácticas estudiantiles</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Serie AG-3', 'Modelos estándar AG-3 para técnicas de odontología general', 'Anatomía dental precisa con superficie de trabajo realista, ideal para prácticas estudiantiles')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Serie AG-3')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Serie AG-3 KH -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-info">Modelo Dental</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-ag3KH.png') }}"
+                         alt="Serie de modelos estándar AG-3 KH" class="product-image mb-3">
+                    <h4 class="product-title">Serie AG-3 KH</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos AG-3 KH con caries y patologías para entrenamiento avanzado</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Incluye simulación de caries</li>
+                            <li>Patologías dentales realistas</li>
+                            <li>Ideal para diagnóstico</li>
+                            <li>Material educativo avanzado</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Serie AG-3 KH', 'Modelos AG-3 KH con caries y patologías para entrenamiento avanzado', 'Incluye simulación de caries y patologías dentales realistas, ideal para diagnóstico')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Serie AG-3 KH')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sistemas Auxiliares -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-secondary">Sistemas</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-sistemasaux.png') }}"
+                         alt="Sistemas auxiliares para la preparación" class="product-image mb-3">
+                    <h4 class="product-title">Sistemas Auxiliares</h4>
+                    <p class="product-subtitle flex-grow-1">Sistemas auxiliares para la preparación y práctica dental</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Complementos para modelos</li>
+                            <li>Facilita preparaciones</li>
+                            <li>Accesorios específicos</li>
+                            <li>Compatible con series estándar</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Sistemas Auxiliares', 'Sistemas auxiliares para la preparación y práctica dental', 'Complementos para modelos que facilitan preparaciones con accesorios específicos')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Sistemas Auxiliares')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Endodoncia -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-danger">Especialidad</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-endodoncia.png') }}"
+                         alt="Endodoncia" class="product-image mb-3">
+                    <h4 class="product-title">Endodoncia</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos especializados para entrenamiento en endodoncia</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Canales radiculares realistas</li>
+                            <li>Dientes con pulpa visible</li>
+                            <li>Práctica de instrumentación</li>
+                            <li>Material especializado</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Endodoncia', 'Modelos especializados para entrenamiento en endodoncia', 'Canales radiculares realistas con pulpa visible para práctica de instrumentación')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Endodoncia')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Implantología -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-danger">Especialidad</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-implantologia.png') }}"
+                         alt="Implantología" class="product-image mb-3">
+                    <h4 class="product-title">Implantología</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos para práctica de técnicas de implantología oral</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Hueso artificial realista</li>
+                            <li>Sitios de implante marcados</li>
+                            <li>Compatible con implantes reales</li>
+                            <li>Entrenamiento quirúrgico seguro</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Implantología', 'Modelos para práctica de técnicas de implantología oral', 'Hueso artificial realista con sitios de implante marcados para entrenamiento quirúrgico')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Implantología')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modelos Edéntulos -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-warning">Prótesis</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-modelosedentulos.png') }}"
+                         alt="Modelos edéntulos y técnica de prótesis dental" class="product-image mb-3">
+                    <h4 class="product-title">Modelos Edéntulos</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos edéntulos para técnicas de prótesis dental</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Maxilares sin dientes</li>
+                            <li>Rebordes alveolares realistas</li>
+                            <li>Ideal para prótesis completas</li>
+                            <li>Diferentes grados de reabsorción</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Modelos Edéntulos', 'Modelos edéntulos para técnicas de prótesis dental', 'Maxilares sin dientes con rebordes alveolares realistas, ideal para prótesis completas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Modelos Edéntulos')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Higiene Dental -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-success">Higiene</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-higiene.png') }}"
+                         alt="Higiene dental y periodoncia" class="product-image mb-3">
+                    <h4 class="product-title">Higiene Dental</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos para higiene dental y periodoncia</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Simulación de cálculo dental</li>
+                            <li>Encías removibles</li>
+                            <li>Práctica de profilaxis</li>
+                            <li>Diferentes grados de gingivitis</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Higiene Dental', 'Modelos para higiene dental y periodoncia', 'Simulación de cálculo dental con encías removibles para práctica de profilaxis')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Higiene Dental')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Radiografía y Anestesia -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-info">Radiografía</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-radiog.png') }}"
+                         alt="Radiografía, anestesia local y extracción" class="product-image mb-3">
+                    <h4 class="product-title">Radiografía y Anestesia</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos para radiografía, anestesia local y extracción</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Material radiopaco</li>
+                            <li>Puntos de referencia anatómicos</li>
+                            <li>Práctica de técnicas anestésicas</li>
+                            <li>Simulación de extracciones</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Radiografía y Anestesia', 'Modelos para radiografía, anestesia local y extracción', 'Material radiopaco con puntos de referencia anatómicos para práctica de técnicas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Radiografía y Anestesia')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cirugía Oral -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-danger">Cirugía</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-cirugiaoral.png') }}"
+                         alt="Cirugía oral" class="product-image mb-3">
+                    <h4 class="product-title">Cirugía Oral</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos especializados para práctica de cirugía oral</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Tejido blando simulado</li>
+                            <li>Hueso cortical y esponjoso</li>
+                            <li>Práctica de suturas</li>
+                            <li>Técnicas quirúrgicas avanzadas</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Cirugía Oral', 'Modelos especializados para práctica de cirugía oral', 'Tejido blando simulado con hueso cortical y esponjoso para práctica de suturas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Cirugía Oral')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Odontología Infantil -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-warning">Infantil</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-infantil.png') }}"
+                         alt="Odontología infantil" class="product-image mb-3">
+                    <h4 class="product-title">Odontología Infantil</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos para odontología pediátrica y dentición decidua</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Dentición decidua completa</li>
+                            <li>Diferentes edades</li>
+                            <li>Caries típicas infantiles</li>
+                            <li>Técnicas de odontopediatría</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Odontología Infantil', 'Modelos para odontología pediátrica y dentición decidua', 'Dentición decidua completa con caries típicas infantiles para técnicas de odontopediatría')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Odontología Infantil')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ortodoncia -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-info">Ortodoncia</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-ortodoncia.png') }}"
+                         alt="Ortodoncia" class="product-image mb-3">
+                    <h4 class="product-title">Ortodoncia</h4>
+                    <p class="product-subtitle flex-grow-1">Modelos especializados para técnicas ortodóncicas</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Maloclusiones típicas</li>
+                            <li>Práctica de cementado</li>
+                            <li>Diferentes tipos de brackets</li>
+                            <li>Movimientos ortodóncicos</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Ortodoncia', 'Modelos especializados para técnicas ortodóncicas', 'Maloclusiones típicas para práctica de cementado y movimientos ortodóncicos')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Ortodoncia')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modelos de Cabeza Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-head-side-virus"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Modelos de Cabeza</h2>
+            <p class="lead text-muted">Phantom heads y sistemas completos de simulación para una experiencia de aprendizaje realista en condiciones clínicas.</p>
+        </div>
+
+        <div class="row g-4">
+            
+            <!-- Modelos P-6/3 -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-dark">Phantom Head</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-cabezaP63.png') }}"
+                         alt="Modelos de cabeza frasaco P-6/3" class="product-image mb-3">
+                    <h4 class="product-title">Modelos P-6/3</h4>
+                    <p class="product-subtitle flex-grow-1">Phantom heads P-6/3 para simulación dental completa</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Anatomía facial realista</li>
+                            <li>Apertura bucal natural</li>
+                            <li>Compatible con unidades dentales</li>
+                            <li>Intercambio fácil de modelos</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Modelos P-6/3', 'Phantom heads P-6/3 para simulación dental completa', 'Anatomía facial realista con apertura bucal natural, compatible con unidades dentales')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Modelos P-6/3')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modelos PK-1 -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-dark">Phantom Head</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-PK1.png') }}"
+                         alt="Modelos de cabeza frasaco PK-1" class="product-image mb-3">
+                    <h4 class="product-title">Modelos PK-1</h4>
+                    <p class="product-subtitle flex-grow-1">Phantom heads PK-1 con características avanzadas</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Sistema de fijación mejorado</li>
+                            <li>Materiales de alta calidad</li>
+                            <li>Ergonomía optimizada</li>
+                            <li>Durabilidad excepcional</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Modelos PK-1', 'Phantom heads PK-1 con características avanzadas', 'Sistema de fijación mejorado con materiales de alta calidad y ergonomía optimizada')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Modelos PK-1')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Accesorios para Cabeza -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-secondary">Accesorios</span>he
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-accesorioscabeza.png') }}"
+                         alt="Accesorios para modelos de cabeza" class="product-image mb-3">
+                    <h4 class="product-title">Accesorios para Cabeza</h4>
+                    <p class="product-subtitle flex-grow-1">Accesorios y complementos para phantom heads</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Piezas de repuesto</li>
+                            <li>Sistemas de fijación</li>
+                            <li>Mejoras funcionales</li>
+                            <li>Compatible con toda la línea</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Accesorios para Cabeza', 'Accesorios y complementos para phantom heads', 'Piezas de repuesto y sistemas de fijación, compatible con toda la línea')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Accesorios para Cabeza')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Unidades Completas -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-success">Unidad Completa</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-unidadescompletas.png') }}"
+                         alt="Unidades de simulación completas" class="product-image mb-3">
+                    <h4 class="product-title">Unidades Completas</h4>
+                    <p class="product-subtitle flex-grow-1">Unidades de simulación dental completas</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Sistema completo listo para usar</li>
+                            <li>Incluye phantom head</li>
+                            <li>Base estable y ajustable</li>
+                            <li>Configuración profesional</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Unidades Completas', 'Unidades de simulación dental completas', 'Sistema completo listo para usar con phantom head y base estable ajustable')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Unidades Completas')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sistemas de Fijación -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-secondary">Sistemas</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-sistemasfijacion.png') }}"
+                         alt="Sistemas de fijación" class="product-image mb-3">
+                    <h4 class="product-title">Sistemas de Fijación</h4>
+                    <p class="product-subtitle flex-grow-1">Sistemas especializados de fijación y soporte</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Fijación segura y estable</li>
+                            <li>Ajustes precisos</li>
+                            <li>Instalación sencilla</li>
+                            <li>Material resistente</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Sistemas de Fijación', 'Sistemas especializados de fijación y soporte', 'Fijación segura y estable con ajustes precisos e instalación sencilla')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Sistemas de Fijación')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sistemas de Simulación -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-info">Simulación</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-sistemassimulacion.png') }}"
+                         alt="Sistemas de simulación dental" class="product-image mb-3">
+                    <h4 class="product-title">Sistemas de Simulación</h4>
+                    <p class="product-subtitle flex-grow-1">Sistemas avanzados de simulación dental</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Tecnología de simulación</li>
+                            <li>Experiencia realista</li>
+                            <li>Múltiples configuraciones</li>
+                            <li>Entrenamiento avanzado</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Sistemas de Simulación', 'Sistemas avanzados de simulación dental', 'Tecnología de simulación con experiencia realista y múltiples configuraciones')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Sistemas de Simulación')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Materiales de Consumo Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-flask"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Materiales de Consumo</h2>
+            <p class="lead text-muted">Consumibles especializados y accesorios para complementar la experiencia de aprendizaje con modelos FRASACO.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            
+            <!-- Coronas Temporales -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-warning">Consumible</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-coronastemporales.png') }}"
+                         alt="Coronas temporales" class="product-image mb-3">
+                    <h4 class="product-title">Coronas Temporales</h4>
+                    <p class="product-subtitle flex-grow-1">Coronas temporales para práctica y entrenamiento</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Material realista</li>
+                            <li>Diferentes tamaños</li>
+                            <li>Fácil colocación</li>
+                            <li>Reutilizables</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Coronas Temporales', 'Coronas temporales para práctica y entrenamiento', 'Material realista en diferentes tamaños, fácil colocación y reutilizables')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Coronas Temporales')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coronas Temporales Infantiles -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-warning">Consumible</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-coronastemporalesinfantiles.png') }}"
+                         alt="Coronas temporales para dientes infantiles" class="product-image mb-3">
+                    <h4 class="product-title">Coronas Temporales Infantiles</h4>
+                    <p class="product-subtitle flex-grow-1">Coronas temporales especializadas para dentición decidua</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Tamaño pediátrico</li>
+                            <li>Anatomía decidua</li>
+                            <li>Material seguro</li>
+                            <li>Colores realistas</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Coronas Temporales Infantiles', 'Coronas temporales especializadas para dentición decidua', 'Tamaño pediátrico con anatomía decidua, material seguro y colores realistas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Coronas Temporales Infantiles')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bandas Universales -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="frasaco-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <span class="badge bg-warning">Consumible</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-bandasuniversales.png') }}"
+                         alt="Bandas universales y dispensadores" class="product-image mb-3">
+                    <h4 class="product-title">Bandas Universales</h4>
+                    <p class="product-subtitle flex-grow-1">Bandas universales y dispensadores para ortodoncia</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Diferentes medidas</li>
+                            <li>Material ortodóncico</li>
+                            <li>Dispensador incluido</li>
+                            <li>Práctica de cementado</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Bandas Universales', 'Bandas universales y dispensadores para ortodoncia', 'Diferentes medidas en material ortodóncico con dispensador incluido para práctica')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-frasaco" onclick="requestQuote('Bandas Universales')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Contact CTA -->
+<div class="container mb-5">
+    <div class="bg-primary rounded-4 p-5 text-white text-center fade-in">
+        <h3 class="fw-bold mb-3">¿Interesado en algún producto FRASACO?</h3>
+        <p class="lead mb-4">Nuestros especialistas en educación dental están listos para asesorarte</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="tel:+593987553634" class="btn btn-light btn-lg rounded-pill px-4">
+                <i class="fas fa-phone me-2"></i>+593 98 755 3634
+            </a>
+            <a href="https://wa.me/593987553634" target="_blank" class="btn btn-success btn-lg rounded-pill px-4">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Catálogo
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="modal-overlay" id="productModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalProductName" class="text-primary mb-3"></h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Descripción:</h6>
+                <p id="modalProductDescription" class="text-muted"></p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Características:</h6>
+                <p id="modalProductSpecs" class="text-muted small"></p>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-outline-secondary" onclick="closeModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="requestQuoteFromModal()">
+                <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProduct = '';
+
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-up'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Show product details modal
+function showProductDetails(name, description, specs) {
+    currentProduct = name;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductDescription').textContent = description;
+    document.getElementById('modalProductSpecs').textContent = specs;
+    document.getElementById('productModal').style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('productModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Request quote function
+function requestQuote(productName) {
+    const message = `Hola, me interesa solicitar una cotización para el producto FRASACO: ${productName}. ¿Podrían enviarme más información sobre especificaciones técnicas, precios y disponibilidad?`;
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Request quote from modal
+function requestQuoteFromModal() {
+    if (currentProduct) {
+        requestQuote(currentProduct);
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+});
+</script>
+
+{% endblock %}

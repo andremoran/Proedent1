@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h2>Registro y Gestión de Consultas</h2>
+
+  <!-- Formulario para registrar, actualizar o eliminar una consulta -->
+  <form method="POST" class="row g-3">
+    <div class="col-md-3">
+      <label for="consultation_id" class="form-label">ID Consulta (para actualizar/eliminar)</label>
+      <input type="number" name="consultation_id" id="consultation_id" class="form-control" min="1" placeholder="Opcional">
+    </div>
+    <div class="col-md-3">
+      <label for="patient_id" class="form-label">ID Paciente</label>
+      <input type="number" name="patient_id" id="patient_id" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+      <label for="date" class="form-label">Fecha (YYYY-MM-DD)</label>
+      <input type="text" name="date" id="date" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+      <label for="doctor" class="form-label">Médico</label>
+      <input type="text" name="doctor" id="doctor" class="form-control" required>
+    </div>
+    <div class="col-md-6">
+      <label for="reason" class="form-label">Motivo de Consulta</label>
+      <input type="text" name="reason" id="reason" class="form-control" required>
+    </div>
+    <div class="col-md-6">
+      <label for="results" class="form-label">Resultados (opcional)</label>
+      <textarea name="results" id="results" class="form-control"></textarea>
+    </div>
+    <div class="col-md-12">
+      <button class="btn btn-primary" type="submit" name="action" value="register">Registrar Consulta</button>
+      <button class="btn btn-warning" type="submit" name="action" value="update">Actualizar Consulta</button>
+      <button class="btn btn-danger" type="submit" name="action" value="delete">Eliminar Consulta</button>
+    </div>
+  </form>
+
+  <hr>
+
+  <h3>Lista de Consultas</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>ID Paciente</th>
+        <th>Fecha</th>
+        <th>Médico</th>
+        <th>Motivo</th>
+        <th>Resultados</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for consultation in consultations %}
+      <tr>
+        <td>{{ consultation.id }}</td>
+        <td>{{ consultation.patient_id }}</td>
+        <td>{{ consultation.date }}</td>
+        <td>{{ consultation.doctor }}</td>
+        <td>{{ consultation.reason }}</td>
+        <td>{{ consultation.results }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

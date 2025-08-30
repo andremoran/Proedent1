@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h2>Teleconsulta</h2>
+  {% if authorized %}
+    <p>Bienvenido, {{ patient.name }}. Tu información: Edad: {{ patient.age }}, Género: {{ patient.gender }}</p>
+    <a href="https://us05web.zoom.us/j/9133894091?pwd=dlU5Z1Z5NlNjVlRuZmQvT0ptWjVMZz09" class="btn btn-primary">Iniciar Teleconsulta</a>
+  {% else %}
+    <form method="POST" action="{{ url_for('teleconsulta') }}">
+      <div class="mb-3">
+        <label for="pin" class="form-label">Ingresa el PIN</label>
+        <input type="password" class="form-control" id="pin" name="pin" required>
+      </div>
+      <div class="mb-3">
+        <label for="patient_id" class="form-label">Ingresa tu ID de paciente</label>
+        <input type="text" class="form-control" id="patient_id" name="patient_id" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Acceder</button>
+    </form>
+  {% endif %}
+{% endblock %}

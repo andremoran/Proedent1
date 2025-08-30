@@ -1,0 +1,978 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-up {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .slide-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .nufona-product-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .nufona-product-card:hover {
+        border-color: #f59e0b;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(245, 158, 11, 0.15);
+    }
+
+    .nufona-product-card.featured {
+        border: 3px solid #10b981;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .nufona-product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #f59e0b, #eab308, #10b981);
+        transition: left 0.4s ease;
+    }
+
+    .nufona-product-card:hover::before {
+        left: 0;
+    }
+
+    .nufona-product-card.featured::before {
+        background: linear-gradient(90deg, #10b981, #059669, #047857);
+        left: 0;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
+        border-radius: 10px;
+        transition: transform 0.4s ease;
+        background: #f8fafc;
+        padding: 15px;
+    }
+
+    .nufona-product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .hero-nufona {
+        background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+                    url('{{ url_for('static', filename='images/nufona-hero-bg.jpg') }}');
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-nufona::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="nufona" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23nufona)"/></svg>');
+        opacity: 0.4;
+    }
+
+    .product-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #f59e0b;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-style: italic;
+        margin-bottom: 1rem;
+    }
+
+    .quote-btn-nufona {
+        background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .quote-btn-nufona:hover {
+        background: linear-gradient(135deg, #eab308 0%, #d97706 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .nufona-logo {
+        font-size: 3rem;
+        font-weight: 900;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 0.1em;
+    }
+
+    .specs-list {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #f59e0b;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .category-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #f59e0b, #eab308);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-nufona {
+            min-height: 60vh;
+        }
+
+        .nufona-logo {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-nufona text-white py-5 mb-5 position-relative">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <a href="{{ url_for('catalogo') }}" class="back-btn mb-4">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Catálogo
+                </a>
+                <div class="nufona-logo mb-4">NUFONA</div>
+                <h1 class="display-5 fw-bold mb-4">Catálogo Completo de Productos</h1>
+                <p class="lead mb-4">Descubre la línea completa de equipos dentales NUFONA, tecnología avanzada para consultas modernas</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-award text-warning me-2"></i>
+                        <span>Tecnología Avanzada</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-tools text-info me-2"></i>
+                        <span>Fácil Mantenimiento</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-handshake text-success me-2"></i>
+                        <span>Soporte Técnico</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center fade-in">
+                <i class="fas fa-tooth" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Categories Section -->
+<div class="container mb-5">
+
+    <!-- Unidades Dentales Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-chair"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Unidades Dentales</h2>
+            <p class="lead text-muted">Serie X1 - Equipos dentales completos con tecnología de vanguardia y diseño ergonómico para consultas modernas.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- X1 Preferred (DESTACADO) -->
+            <div class="col-lg-6 slide-in-up" data-brand="nufona" data-category="unidades-dentales">
+                <div class="nufona-product-card featured rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-success">DESTACADO</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x1preferred.png') }}"
+                         alt="X1 Preferred" class="product-image mb-3">
+                    <h4 class="product-title" style="color: #10b981;">X1 Preferred</h4>
+                    <p class="product-subtitle flex-grow-1">Unidad dental premium con características avanzadas y ergonomía superior. Diseñada para profesionales que buscan la máxima calidad y confort en sus tratamientos.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Control táctil avanzado</li>
+                            <li>Sillón ergonómico premium</li>
+                            <li>Sistema de aspiración dual</li>
+                            <li>Iluminación LED integrada</li>
+                            <li>Bandeja instrumentos flotante</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">Consultar precio</div>
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showProductDetails('X1 Preferred', 'Unidad dental premium con características avanzadas y ergonomía superior', 'Control táctil avanzado, sillón ergonómico premium, sistema de aspiración dual')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('X1 Preferred')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <i class="fas fa-star me-2"></i>Producto Destacado
+                    </button>
+                </div>
+            </div>
+
+            <!-- X1 Smart -->
+            <div class="col-lg-6 slide-in-up" data-brand="nufona" data-category="unidades-dentales">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-primary">Unidades Dentales</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x1smart.png') }}"
+                         alt="X1 Smart" class="product-image mb-3">
+                    <h4 class="product-title">X1 Smart</h4>
+                    <p class="product-subtitle flex-grow-1">Unidad dental inteligente con tecnología de control automatizado y funciones avanzadas de diagnóstico integrado.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Sistema de control inteligente</li>
+                            <li>Memoria de posiciones</li>
+                            <li>Conectividad avanzada</li>
+                            <li>Panel de control intuitivo</li>
+                            <li>Programas pre-configurados</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X1 Smart', 'Unidad dental inteligente con tecnología de control automatizado', 'Sistema de control inteligente, memoria de posiciones, conectividad avanzada')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('X1 Smart')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- X1 Expert -->
+            <div class="col-lg-6 slide-in-up" data-brand="nufona" data-category="unidades-dentales">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-primary">Unidades Dentales</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x1expert.png') }}"
+                         alt="X1 Expert" class="product-image mb-3">
+                    <h4 class="product-title">X1 Expert</h4>
+                    <p class="product-subtitle flex-grow-1">Unidad dental profesional diseñada para especialistas, con características avanzadas para tratamientos complejos.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Configuración especializada</li>
+                            <li>Instrumentos de alta precisión</li>
+                            <li>Sistema de irrigación avanzado</li>
+                            <li>Ergonomía optimizada</li>
+                            <li>Accesorios especializados</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X1 Expert', 'Unidad dental profesional diseñada para especialistas', 'Configuración especializada, instrumentos de alta precisión, sistema de irrigación avanzado')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('X1 Expert')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- X1 Master -->
+            <div class="col-lg-6 slide-in-up" data-brand="nufona" data-category="unidades-dentales">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-primary">Unidades Dentales</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x1master.png') }}"
+                         alt="X1 Master" class="product-image mb-3">
+                    <h4 class="product-title">X1 Master</h4>
+                    <p class="product-subtitle flex-grow-1">La unidad dental más completa de la serie X1, con todas las características avanzadas para consultas de alta gama.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Configuración máxima completa</li>
+                            <li>Tecnología de última generación</li>
+                            <li>Sistema multimedia integrado</li>
+                            <li>Control remoto avanzado</li>
+                            <li>Garantía extendida incluida</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X1 Master', 'La unidad dental más completa de la serie X1', 'Configuración máxima completa, tecnología de última generación, sistema multimedia integrado')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('X1 Master')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Turbinas de Alta Velocidad Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Turbinas de Alta Velocidad</h2>
+            <p class="lead text-muted">Serie completa de turbinas con y sin fibra óptica, diseñadas para máxima eficiencia y durabilidad.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- M200 Surgical 45 -->
+            <div class="col-lg-4 slide-in-up" data-brand="nufona" data-category="turbinas">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-info">Sin Fibra Óptica</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-m200surgical45.png') }}"
+                         alt="M200 Surgical 45" class="product-image mb-3">
+                    <h4 class="product-title">Maxso M200 Surgical 45</h4>
+                    <p class="product-subtitle flex-grow-1">Turbina quirúrgica de alta precisión sin fibra óptica, ideal para procedimientos que requieren máximo control.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Cabeza quirúrgica compacta</li>
+                            <li>Rotación de 45°</li>
+                            <li>Sistema de refrigeración eficiente</li>
+                            <li>Bajo nivel de ruido</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Maxso M200 Surgical 45', 'Turbina quirúrgica de alta precisión sin fibra óptica', 'Cabeza quirúrgica compacta, rotación de 45°, sistema de refrigeración eficiente')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('Maxso M200 Surgical 45')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- M200E Smart -->
+            <div class="col-lg-4 slide-in-up" data-brand="nufona" data-category="turbinas">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-info">Sin Fibra Óptica</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-m200esmart.png') }}"
+                         alt="M200E Smart" class="product-image mb-3">
+                    <h4 class="product-title">Maxso M200E Smart</h4>
+                    <p class="product-subtitle flex-grow-1">Turbina inteligente con sistema de control automático y características avanzadas de rendimiento.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Sistema smart integrado</li>
+                            <li>Control de velocidad automático</li>
+                            <li>Ergonomía optimizada</li>
+                            <li>Mantenimiento simplificado</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Maxso M200E Smart', 'Turbina inteligente con sistema de control automático', 'Sistema smart integrado, control de velocidad automático, ergonomía optimizada')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('Maxso M200E Smart')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- F1000 -->
+            <div class="col-lg-4 slide-in-up" data-brand="nufona" data-category="turbinas">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-info">Sin Fibra Óptica</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-f1000.png') }}"
+                         alt="F1000" class="product-image mb-3">
+                    <h4 class="product-title">F1000</h4>
+                    <p class="product-subtitle flex-grow-1">Turbina estándar confiable y eficiente, ideal para uso diario en consulta general.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Diseño clásico confiable</li>
+                            <li>Mantenimiento sencillo</li>
+                            <li>Excelente relación calidad-precio</li>
+                            <li>Compatible con múltiples sistemas</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('F1000', 'Turbina estándar confiable y eficiente', 'Diseño clásico confiable, mantenimiento sencillo, excelente relación calidad-precio')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('F1000')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- X200 Surgical 45 -->
+            <div class="col-lg-4 slide-in-up" data-brand="nufona" data-category="turbinas">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-success">Con Fibra Óptica</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x200surgical45.png') }}"
+                         alt="X200 Surgical 45" class="product-image mb-3">
+                    <h4 class="product-title">Maxso X200 Surgical 45</h4>
+                    <p class="product-subtitle flex-grow-1">Turbina quirúrgica con fibra óptica integrada para máxima visibilidad en procedimientos complejos.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Fibra óptica integrada</li>
+                            <li>Iluminación LED superior</li>
+                            <li>Cabeza quirúrgica 45°</li>
+                            <li>Visibilidad excepcional</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Maxso X200 Surgical 45', 'Turbina quirúrgica con fibra óptica integrada', 'Fibra óptica integrada, iluminación LED superior, visibilidad excepcional')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('Maxso X200 Surgical 45')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- X200 X -->
+            <div class="col-lg-4 slide-in-up" data-brand="nufona" data-category="turbinas">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-success">Con Fibra Óptica</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x200x.png') }}"
+                         alt="X200 X" class="product-image mb-3">
+                    <h4 class="product-title">Maxso X200 X</h4>
+                    <p class="product-subtitle flex-grow-1">Turbina avanzada con tecnología de fibra óptica y características premium para profesionales exigentes.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Tecnología de fibra óptica avanzada</li>
+                            <li>Potencia superior</li>
+                            <li>Durabilidad excepcional</li>
+                            <li>Ergonomía profesional</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Maxso X200 X', 'Turbina avanzada con tecnología de fibra óptica', 'Tecnología de fibra óptica avanzada, potencia superior, durabilidad excepcional')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('Maxso X200 X')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- F2000 -->
+            <div class="col-lg-4 slide-in-up" data-brand="nufona" data-category="turbinas">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-success">Con Fibra Óptica</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-f2000.png') }}"
+                         alt="F2000" class="product-image mb-3">
+                    <h4 class="product-title">F2000</h4>
+                    <p class="product-subtitle flex-grow-1">Turbina con fibra óptica de excelente relación calidad-precio, perfecta para consultas que buscan iluminación superior.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Fibra óptica estándar</li>
+                            <li>Iluminación LED eficiente</li>
+                            <li>Fácil mantenimiento</li>
+                            <li>Versatilidad de uso</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('F2000', 'Turbina con fibra óptica de excelente relación calidad-precio', 'Fibra óptica estándar, iluminación LED eficiente, fácil mantenimiento')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('F2000')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Piezas de Mano y Accesorios Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-wrench"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Piezas de Mano y Accesorios</h2>
+            <p class="lead text-muted">Complementos esenciales para sistemas dentales, incluyendo piezas de mano de baja velocidad y acoplamientos.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Air Motor -->
+            <div class="col-lg-3 slide-in-up" data-brand="nufona" data-category="accesorios">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-secondary">Motor Neumático</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-airmotor.png') }}"
+                         alt="Air Motor" class="product-image mb-3">
+                    <h4 class="product-title">Air Motor</h4>
+                    <p class="product-subtitle flex-grow-1">Motor neumático de baja velocidad para procedimientos de pulido y acabado.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Velocidad variable</li>
+                            <li>Torque constante</li>
+                            <li>Acoplamiento universal</li>
+                            <li>Operación silenciosa</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Air Motor', 'Motor neumático de baja velocidad', 'Velocidad variable, torque constante, acoplamiento universal')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('Air Motor')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contra Angle -->
+            <div class="col-lg-3 slide-in-up" data-brand="nufona" data-category="accesorios">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-secondary">Contraángulo</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-contraangle.png') }}"
+                         alt="Contra Angle" class="product-image mb-3">
+                    <h4 class="product-title">Contra Angle</h4>
+                    <p class="product-subtitle flex-grow-1">Contraángulo ergonómico para acceso óptimo en todas las zonas de la boca.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Cabeza angulada optimizada</li>
+                            <li>Sistema de refrigeración</li>
+                            <li>Fácil cambio de fresas</li>
+                            <li>Diseño ergonómico</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Contra Angle', 'Contraángulo ergonómico para acceso óptimo', 'Cabeza angulada optimizada, sistema de refrigeración, diseño ergonómico')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('Contra Angle')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Straight Nose Cone -->
+            <div class="col-lg-3 slide-in-up" data-brand="nufona" data-category="accesorios">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-secondary">Pieza Recta</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-straightnosecone.png') }}"
+                         alt="Straight Nose Cone" class="product-image mb-3">
+                    <h4 class="product-title">Straight Nose Cone</h4>
+                    <p class="product-subtitle flex-grow-1">Pieza de mano recta para trabajos de precisión y pulido directo.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Acceso directo lineal</li>
+                            <li>Control preciso</li>
+                            <li>Compatible con múltiples fresas</li>
+                            <li>Construcción robusta</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Straight Nose Cone', 'Pieza de mano recta para trabajos de precisión', 'Acceso directo lineal, control preciso, construcción robusta')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('Straight Nose Cone')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coupler -->
+            <div class="col-lg-3 slide-in-up" data-brand="nufona" data-category="accesorios">
+                <div class="nufona-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <span class="badge bg-secondary">Acoplamiento</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-coupler.png') }}"
+                         alt="Coupler" class="product-image mb-3">
+                    <h4 class="product-title">Coupler</h4>
+                    <p class="product-subtitle flex-grow-1">Acoplamiento universal para conexión de instrumentos con diferentes sistemas.</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Conexión universal</li>
+                            <li>Sellado hermético</li>
+                            <li>Fácil instalación</li>
+                            <li>Compatibilidad amplia</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Coupler', 'Acoplamiento universal para conexión de instrumentos', 'Conexión universal, sellado hermético, fácil instalación')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-nufona" onclick="requestQuote('Coupler')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Contact CTA -->
+<div class="container mb-5">
+    <div class="bg-primary rounded-4 p-5 text-white text-center fade-in">
+        <h3 class="fw-bold mb-3">¿Interesado en algún equipo NUFONA?</h3>
+        <p class="lead mb-4">Nuestros especialistas en equipos dentales están listos para asesorarte</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="tel:+593987553634" class="btn btn-light btn-lg rounded-pill px-4">
+                <i class="fas fa-phone me-2"></i>+593 98 755 3634
+            </a>
+            <a href="https://wa.me/593987553634" target="_blank" class="btn btn-success btn-lg rounded-pill px-4">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Catálogo
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="modal-overlay" id="productModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalProductName" class="text-primary mb-3"></h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Descripción:</h6>
+                <p id="modalProductDescription" class="text-muted"></p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Especificaciones:</h6>
+                <p id="modalProductSpecs" class="text-muted small"></p>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-outline-secondary" onclick="closeModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="requestQuoteFromModal()">
+                <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProduct = '';
+
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-up'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Show product details modal
+function showProductDetails(name, description, specs) {
+    currentProduct = name;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductDescription').textContent = description;
+    document.getElementById('modalProductSpecs').textContent = specs;
+    document.getElementById('productModal').style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('productModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Request quote function
+function requestQuote(productName) {
+    const message = `Hola, me interesa solicitar una cotización para el equipo NUFONA: ${productName}. ¿Podrían enviarme más información sobre especificaciones técnicas, precios y disponibilidad?`;
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Request quote from modal
+function requestQuoteFromModal() {
+    if (currentProduct) {
+        requestQuote(currentProduct);
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+});
+</script>
+
+{% endblock %}

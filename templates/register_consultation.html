@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Registro de Consultas</h2>
+<form method="post">
+  <div class="form-group">
+    <label for="patient_id">ID del Paciente</label>
+    <input type="number" class="form-control" id="patient_id" name="patient_id" min="1" required>
+  </div>
+  <div class="form-group">
+    <label for="date">Fecha (YYYY-MM-DD)</label>
+    <input type="text" class="form-control" id="date" name="date" placeholder="2025-02-10" required>
+  </div>
+  <div class="form-group">
+    <label for="doctor">Médico</label>
+    <input type="text" class="form-control" id="doctor" name="doctor" required>
+  </div>
+  <div class="form-group">
+    <label for="reason">Motivo de Consulta</label>
+    <input type="text" class="form-control" id="reason" name="reason" required>
+  </div>
+  <div class="form-group">
+    <label for="results">Resultados (opcional)</label>
+    <textarea class="form-control" id="results" name="results" rows="3"></textarea>
+  </div>
+  <button type="submit" class="btn btn-custom">Registrar Consulta</button>
+</form>
+{% endblock %}

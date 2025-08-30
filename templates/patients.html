@@ -1,0 +1,1122 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-left {
+        opacity: 0;
+        transform: translateX(-50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-left.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .slide-in-right {
+        opacity: 0;
+        transform: translateX(50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-right.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .scale-in {
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .scale-in.visible {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .hero-clients {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 30%, #ef4444 70%, #000000 100%);
+        position: relative;
+        overflow: hidden;
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-clients::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="clients" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="12.5" cy="12.5" r="1" fill="rgba(255,255,255,0.1)"/><rect x="10" y="10" width="5" height="5" fill="rgba(255,255,255,0.05)" rx="1"/></pattern></defs><rect width="100" height="100" fill="url(%23clients)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .access-type-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.4s ease;
+        height: 100%;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .access-type-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+    }
+
+    .access-type-card.client-card {
+        border-color: #3b82f6;
+    }
+
+    .access-type-card.client-card:hover {
+        border-color: #2563eb;
+        box-shadow: 0 25px 50px rgba(59, 130, 246, 0.25);
+    }
+
+    .access-type-card.client-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #1e40af);
+    }
+
+    .access-type-card.professional-card {
+        border-color: #ef4444;
+    }
+
+    .access-type-card.professional-card:hover {
+        border-color: #dc2626;
+        box-shadow: 0 25px 50px rgba(239, 68, 68, 0.25);
+    }
+
+    .access-type-card.professional-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+    }
+
+    .login-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .login-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 20px;
+        padding: 2.5rem;
+        max-width: 450px;
+        width: 100%;
+        position: relative;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-card.client-theme::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #1e40af);
+        border-radius: 20px 20px 0 0;
+    }
+
+    .login-card.professional-theme::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+        border-radius: 20px 20px 0 0;
+    }
+
+    .login-input {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .login-input:focus {
+        outline: none;
+        background: white;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+    }
+
+    .login-input.professional-focus:focus {
+        box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+    }
+
+    .client-login-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .client-login-btn:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .professional-login-btn {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .professional-login-btn:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6b7280;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .close-modal:hover {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .dashboard-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .dashboard-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(59, 130, 246, 0.1);
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3);
+    }
+
+    .stat-card.red {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .stat-card.red:hover {
+        box-shadow: 0 15px 30px rgba(239, 68, 68, 0.3);
+    }
+
+    .stat-card.black {
+        background: linear-gradient(135deg, #374151 0%, #111827 100%);
+    }
+
+    .stat-card.black:hover {
+        box-shadow: 0 15px 30px rgba(17, 24, 39, 0.3);
+    }
+
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #1e40af);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .professional-avatar {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .order-status {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .status-processing {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .status-completed {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .status-cancelled {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .action-btn {
+        background: transparent;
+        border: 2px solid #e2e8f0;
+        color: #6b7280;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .action-btn:hover {
+        border-color: #3b82f6;
+        color: #3b82f6;
+        transform: translateY(-1px);
+    }
+
+    .action-btn.danger:hover {
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+
+    .floating-animation {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .welcome-banner {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-left: 5px solid #3b82f6;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .professional-banner {
+        border-left-color: #ef4444;
+    }
+
+    .table-responsive {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+    }
+
+    .professional-table thead th {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+</style>
+
+<!-- Content based on authentication state -->
+{% if not authenticated %}
+    <!-- General View - No Authentication -->
+    <div class="hero-clients text-white mb-5 position-relative">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-8 fade-in">
+                    <h1 class="display-4 fw-bold mb-4">Portal de Clientes y Profesionales</h1>
+                    <p class="lead mb-4">Accede a tu cuenta para gestionar pedidos, consultar servicios y obtener soporte especializado</p>
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                            <i class="fas fa-user-circle text-info me-2"></i>
+                            <span>Portal Cliente</span>
+                        </div>
+                        <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                            <i class="fas fa-user-tie text-warning me-2"></i>
+                            <span>Panel Profesional</span>
+                        </div>
+                        <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                            <i class="fas fa-shield-alt text-success me-2"></i>
+                            <span>Acceso Seguro</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center fade-in">
+                    <i class="fas fa-users floating-animation" style="font-size: 8rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Access Type Selection -->
+    <div class="container mb-5">
+        <div class="text-center mb-5 slide-in-left">
+            <h2 class="display-5 fw-bold text-primary mb-4">Seleccione su Tipo de Acceso</h2>
+            <p class="lead text-muted">Elija la opción que corresponda a su perfil</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <!-- Client Access -->
+            <div class="col-lg-5 col-md-6 slide-in-left">
+                <div class="access-type-card client-card" onclick="openClientLogin()">
+                    <div class="mb-4">
+                        <i class="fas fa-user-circle text-primary" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-3">Portal del Cliente</h3>
+                    <p class="text-muted mb-4">Acceda para consultar sus pedidos, descargar catálogos, solicitar cotizaciones y gestionar su perfil</p>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-primary mb-2">Servicios Disponibles:</h6>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i>Historial de pedidos</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Estado de entregas</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Catálogos personalizados</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Soporte técnico</li>
+                        </ul>
+                    </div>
+
+                    <button class="client-login-btn">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Acceso Cliente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Professional Access -->
+            <div class="col-lg-5 col-md-6 slide-in-right">
+                <div class="access-type-card professional-card" onclick="openProfessionalLogin()">
+                    <div class="mb-4">
+                        <i class="fas fa-user-tie text-danger" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3 class="fw-bold text-danger mb-3">Panel Profesional</h3>
+                    <p class="text-muted mb-4">Portal exclusivo para profesionales de Proedent con herramientas de gestión avanzadas</p>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-danger mb-2">Herramientas Profesionales:</h6>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i>Gestión de clientes</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Panel de ventas</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Reportes y estadísticas</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Administración de inventario</li>
+                        </ul>
+                    </div>
+
+                    <button class="professional-login-btn">
+                        <i class="fas fa-cogs me-2"></i>
+                        Panel Profesional
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% elif user_type == 'client' %}
+    <!-- Client Dashboard -->
+    <div class="container mt-4">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner fade-in">
+            <div class="d-flex align-items-center">
+                <div class="user-avatar me-3">
+                    {{ user_name[0].upper() }}
+                </div>
+                <div>
+                    <h4 class="mb-1 text-primary">Bienvenido, {{ user_name }}</h4>
+                    <p class="mb-0 text-muted">Cliente desde: {{ join_date or "2024" }} | Último acceso: {{ last_access or "Hoy" }}</p>
+                </div>
+                <div class="ms-auto">
+                    <button class="action-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Statistics -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6 scale-in">
+                <div class="stat-card">
+                    <i class="fas fa-shopping-cart mb-3" style="font-size: 2rem;"></i>
+                    <h3 class="fw-bold">{{ orders_count or 12 }}</h3>
+                    <p class="mb-0">Pedidos Realizados</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 scale-in">
+                <div class="stat-card red">
+                    <i class="fas fa-clock mb-3" style="font-size: 2rem;"></i>
+                    <h3 class="fw-bold">{{ pending_orders or 2 }}</h3>
+                    <p class="mb-0">Pedidos Pendientes</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 scale-in">
+                <div class="stat-card black">
+                    <i class="fas fa-dollar-sign mb-3" style="font-size: 2rem;"></i>
+                    <h3 class="fw-bold">${{ total_spent or "15,430" }}</h3>
+                    <p class="mb-0">Total Invertido</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 scale-in">
+                <div class="stat-card">
+                    <i class="fas fa-star mb-3" style="font-size: 2rem;"></i>
+                    <h3 class="fw-bold">{{ loyalty_points or 850 }}</h3>
+                    <p class="mb-0">Puntos Lealtad</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="row g-4">
+            <div class="col-lg-8 slide-in-left">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold text-primary mb-0">
+                            <i class="fas fa-list me-2"></i>Pedidos Recientes
+                        </h5>
+                        <button class="action-btn">
+                            <i class="fas fa-plus me-1"></i>Nuevo Pedido
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID Pedido</th>
+                                    <th>Productos</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>#PR-2024-001</strong></td>
+                                    <td>Tomógrafo Dental 3D</td>
+                                    <td>15/01/2024</td>
+                                    <td><span class="order-status status-processing">En Proceso</span></td>
+                                    <td><strong>$12,500</strong></td>
+                                    <td>
+                                        <button class="action-btn me-1" onclick="viewOrder('PR-2024-001')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#PR-2024-002</strong></td>
+                                    <td>Sensor Digital X-Line</td>
+                                    <td>08/01/2024</td>
+                                    <td><span class="order-status status-completed">Completado</span></td>
+                                    <td><strong>$3,200</strong></td>
+                                    <td>
+                                        <button class="action-btn me-1" onclick="viewOrder('PR-2024-002')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#PR-2023-045</strong></td>
+                                    <td>Sillón Premium + Accesorios</td>
+                                    <td>28/12/2023</td>
+                                    <td><span class="order-status status-completed">Completado</span></td>
+                                    <td><strong>$18,900</strong></td>
+                                    <td>
+                                        <button class="action-btn me-1" onclick="viewOrder('PR-2023-045')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="col-lg-4 slide-in-right">
+                <div class="dashboard-card">
+                    <h5 class="fw-bold text-primary mb-4">
+                        <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                    </h5>
+
+                    <div class="d-grid gap-3">
+                        <button class="action-btn text-start" onclick="requestQuote()">
+                            <i class="fas fa-calculator me-3 text-primary"></i>
+                            <div>
+                                <strong>Solicitar Cotización</strong>
+                                <small class="d-block text-muted">Nueva cotización personalizada</small>
+                            </div>
+                        </button>
+
+                        <button class="action-btn text-start" onclick="downloadCatalog()">
+                            <i class="fas fa-download me-3 text-success"></i>
+                            <div>
+                                <strong>Descargar Catálogo</strong>
+                                <small class="d-block text-muted">Catálogo actualizado 2024</small>
+                            </div>
+                        </button>
+
+                        <button class="action-btn text-start" onclick="contactSupport()">
+                            <i class="fas fa-headset me-3 text-warning"></i>
+                            <div>
+                                <strong>Soporte Técnico</strong>
+                                <small class="d-block text-muted">Chat con especialistas</small>
+                            </div>
+                        </button>
+
+                        <button class="action-btn text-start" onclick="scheduleDemo()">
+                            <i class="fas fa-calendar me-3 text-info"></i>
+                            <div>
+                                <strong>Agendar Demostración</strong>
+                                <small class="d-block text-muted">Reunión personalizada</small>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Profile Summary -->
+                <div class="dashboard-card mt-4">
+                    <h6 class="fw-bold text-primary mb-3">
+                        <i class="fas fa-user me-2"></i>Mi Perfil
+                    </h6>
+                    <div class="small">
+                        <p class="mb-2"><strong>Email:</strong> {{ user_email or "cliente@example.com" }}</p>
+                        <p class="mb-2"><strong>Teléfono:</strong> {{ user_phone or "+593 99 123 4567" }}</p>
+                        <p class="mb-2"><strong>Clínica:</strong> {{ clinic_name or "Clínica Dental Sonrisas" }}</p>
+                        <p class="mb-3"><strong>Ciudad:</strong> {{ city or "Quito" }}</p>
+                        <button class="action-btn w-100">
+                            <i class="fas fa-edit me-2"></i>Editar Perfil
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% elif user_type == 'professional' %}
+    <!-- Professional Dashboard -->
+    <div class="container mt-4">
+        <!-- Professional Welcome Banner -->
+        <div class="welcome-banner professional-banner fade-in">
+            <div class="d-flex align-items-center">
+                <div class="user-avatar professional-avatar me-3">
+                    {{ user_name[0].upper() }}
+                </div>
+                <div>
+                    <h4 class="mb-1 text-danger">Panel Profesional - {{ user_name }}</h4>
+                    <p class="mb-0 text-muted">{{ position or "Especialista en Ventas" }} | Región: {{ region or "Quito - Norte" }}</p>
+                </div>
+                <div class="ms-auto">
+                    <button class="action-btn danger" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Statistics -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6 scale-in">
+                <div class="stat-card red">
+                    <i class="fas fa-users mb-3" style="font-size: 2rem;"></i>
+                    <h3 class="fw-bold">{{ clients_count or 47 }}</h3>
+                    <p class="mb-0">Clientes Activos</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 scale-in">
+                <div class="stat-card">
+                    <i class="fas fa-chart-line mb-3" style="font-size: 2rem;"></i>
+                    <h3 class="fw-bold">${{ monthly_sales or "85,200" }}</h3>
+                    <p class="mb-0">Ventas del Mes</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 scale-in">
+                <div class="stat-card black">
+                    <i class="fas fa-clipboard-list mb-3" style="font-size: 2rem;"></i>
+                    <h3 class="fw-bold">{{ pending_quotes or 8 }}</h3>
+                    <p class="mb-0">Cotizaciones Pendientes</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 scale-in">
+                <div class="stat-card red">
+                    <i class="fas fa-trophy mb-3" style="font-size: 2rem;"></i>
+                    <h3 class="fw-bold">{{ performance or 94 }}%</h3>
+                    <p class="mb-0">Meta Mensual</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Content -->
+        <div class="row g-4">
+            <!-- Client Management -->
+            <div class="col-lg-8 slide-in-left">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold text-danger mb-0">
+                            <i class="fas fa-users me-2"></i>Gestión de Clientes
+                        </h5>
+                        <button class="action-btn">
+                            <i class="fas fa-plus me-1"></i>Nuevo Cliente
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table professional-table">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Clínica</th>
+                                    <th>Último Pedido</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar me-2" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                                                JM
+                                            </div>
+                                            <div>
+                                                <strong>Dr. Juan Morales</strong>
+                                                <small class="d-block text-muted">juan.morales@clinic.com</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Clínica Dental Norte</td>
+                                    <td>15/01/2024</td>
+                                    <td><strong>$12,500</strong></td>
+                                    <td><span class="order-status status-processing">Activo</span></td>
+                                    <td>
+                                        <button class="action-btn me-1" onclick="viewClient('juan-morales')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="action-btn" onclick="contactClient('juan-morales')">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar me-2" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                                                MR
+                                            </div>
+                                            <div>
+                                                <strong>Dra. María Rodríguez</strong>
+                                                <small class="d-block text-muted">maria.r@dentalcare.com</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>DentalCare Quito</td>
+                                    <td>10/01/2024</td>
+                                    <td><strong>$8,900</strong></td>
+                                    <td><span class="order-status status-completed">Activo</span></td>
+                                    <td>
+                                        <button class="action-btn me-1" onclick="viewClient('maria-rodriguez')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="action-btn" onclick="contactClient('maria-rodriguez')">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar me-2" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                                                CL
+                                            </div>
+                                            <div>
+                                                <strong>Dr. Carlos López</strong>
+                                                <small class="d-block text-muted">carlos.lopez@smile.ec</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Smile Center</td>
+                                    <td>05/01/2024</td>
+                                    <td><strong>$15,200</strong></td>
+                                    <td><span class="order-status status-pending">Pendiente</span></td>
+                                    <td>
+                                        <button class="action-btn me-1" onclick="viewClient('carlos-lopez')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="action-btn" onclick="contactClient('carlos-lopez')">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Tools -->
+            <div class="col-lg-4 slide-in-right">
+                <div class="dashboard-card">
+                    <h5 class="fw-bold text-danger mb-4">
+                        <i class="fas fa-tools me-2"></i>Herramientas Profesionales
+                    </h5>
+
+                    <div class="d-grid gap-3">
+                        <button class="action-btn text-start" onclick="generateReport()">
+                            <i class="fas fa-chart-bar me-3 text-primary"></i>
+                            <div>
+                                <strong>Reportes de Ventas</strong>
+                                <small class="d-block text-muted">Generar reportes mensuales</small>
+                            </div>
+                        </button>
+
+                        <button class="action-btn text-start" onclick="manageInventory()">
+                            <i class="fas fa-boxes me-3 text-success"></i>
+                            <div>
+                                <strong>Gestión Inventario</strong>
+                                <small class="d-block text-muted">Consultar disponibilidad</small>
+                            </div>
+                        </button>
+
+                        <button class="action-btn text-start" onclick="scheduleMeeting()">
+                            <i class="fas fa-calendar-alt me-3 text-warning"></i>
+                            <div>
+                                <strong>Agendar Reuniones</strong>
+                                <small class="d-block text-muted">Calendario de clientes</small>
+                            </div>
+                        </button>
+
+                        <button class="action-btn text-start" onclick="accessTraining()">
+                            <i class="fas fa-graduation-cap me-3 text-info"></i>
+                            <div>
+                                <strong>Material de Entrenamiento</strong>
+                                <small class="d-block text-muted">Recursos para ventas</small>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="dashboard-card mt-4">
+                    <h6 class="fw-bold text-danger mb-3">
+                        <i class="fas fa-tachometer-alt me-2"></i>Estadísticas Rápidas
+                    </h6>
+                    <div class="small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Llamadas hoy:</span>
+                            <strong class="text-primary">12</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Reuniones programadas:</span>
+                            <strong class="text-success">5</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Cotizaciones enviadas:</span>
+                            <strong class="text-warning">8</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Tasa de conversión:</span>
+                            <strong class="text-danger">75%</strong>
+                        </div>
+                        <div class="progress mb-2" style="height: 8px;">
+                            <div class="progress-bar bg-danger" style="width: 75%"></div>
+                        </div>
+                        <small class="text-muted">Meta mensual: 75% completado</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Login Modals -->
+<!-- Client Login Modal -->
+<div class="login-modal" id="clientLoginModal">
+    <div class="login-card client-theme">
+        <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+        <div class="text-center mb-4">
+            <i class="fas fa-user-circle text-primary" style="font-size: 3rem;"></i>
+            <h3 class="text-primary mt-3 mb-2">Acceso Cliente</h3>
+            <p class="text-muted">Ingrese sus credenciales de acceso</p>
+        </div>
+
+        <form onsubmit="loginClient(event)">
+            <div class="mb-3">
+                <label class="form-label fw-bold text-primary">
+                    <i class="fas fa-envelope me-2"></i>Email
+                </label>
+                <input type="email" class="login-input" placeholder="su.email@ejemplo.com" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-primary">
+                    <i class="fas fa-lock me-2"></i>Contraseña
+                </label>
+                <input type="password" class="login-input" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="client-login-btn">
+                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+            </button>
+
+            <div class="text-center mt-3">
+                <a href="#" class="small text-primary">¿Olvidó su contraseña?</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Professional Login Modal -->
+<div class="login-modal" id="professionalLoginModal">
+    <div class="login-card professional-theme">
+        <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+        <div class="text-center mb-4">
+            <i class="fas fa-user-tie text-danger" style="font-size: 3rem;"></i>
+            <h3 class="text-danger mt-3 mb-2">Panel Profesional</h3>
+            <p class="text-muted">Acceso restringido para personal autorizado</p>
+        </div>
+
+        <form onsubmit="loginProfessional(event)">
+            <div class="mb-3">
+                <label class="form-label fw-bold text-danger">
+                    <i class="fas fa-id-badge me-2"></i>ID Empleado
+                </label>
+                <input type="text" class="login-input professional-focus" placeholder="EMP-0001" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-danger">
+                    <i class="fas fa-key me-2"></i>Contraseña
+                </label>
+                <input type="password" class="login-input professional-focus" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="professional-login-btn">
+                <i class="fas fa-cogs me-2"></i>Acceder al Panel
+            </button>
+
+            <div class="text-center mt-3">
+                <small class="text-muted">Contacte a IT para soporte técnico</small>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-left, .slide-in-right, .scale-in'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Modal Functions
+function openClientLogin() {
+    document.getElementById('clientLoginModal').style.display = 'flex';
+}
+
+function openProfessionalLogin() {
+    document.getElementById('professionalLoginModal').style.display = 'flex';
+}
+
+function closeLoginModal() {
+    document.getElementById('clientLoginModal').style.display = 'none';
+    document.getElementById('professionalLoginModal').style.display = 'none';
+}
+
+// Login Functions
+function loginClient(event) {
+    event.preventDefault();
+    // Simulate client login - replace with actual authentication
+    closeLoginModal();
+    // Redirect or reload with client session
+    window.location.href = '{{ url_for("patients") }}?login=client&user=cliente-ejemplo';
+}
+
+function loginProfessional(event) {
+    event.preventDefault();
+    // Simulate professional login - replace with actual authentication
+    closeLoginModal();
+    // Redirect or reload with professional session
+    window.location.href = '{{ url_for("patients") }}?login=professional&user=profesional-ejemplo';
+}
+
+// Client Dashboard Functions
+function requestQuote() {
+    const message = `Hola, me gustaría solicitar una cotización personalizada. Por favor contáctenme para revisar mis necesidades específicas.`;
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function downloadCatalog() {
+    window.location.href = '{{ url_for("catalogo") }}';
+}
+
+function contactSupport() {
+    const message = `Hola, necesito soporte técnico. ¿Podrían ayudarme?`;
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function scheduleDemo() {
+    window.location.href = '{{ url_for("index") }}#contacto';
+}
+
+function viewOrder(orderId) {
+    alert(`Ver detalles del pedido ${orderId}`);
+    // Implement order details view
+}
+
+// Professional Dashboard Functions
+function viewClient(clientId) {
+    alert(`Ver perfil del cliente ${clientId}`);
+    // Implement client profile view
+}
+
+function contactClient(clientId) {
+    alert(`Contactar cliente ${clientId}`);
+    // Implement client contact functionality
+}
+
+function generateReport() {
+    alert('Generando reporte de ventas...');
+    // Implement report generation
+}
+
+function manageInventory() {
+    alert('Abriendo gestión de inventario...');
+    // Implement inventory management
+}
+
+function scheduleMeeting() {
+    alert('Abriendo calendario de reuniones...');
+    // Implement meeting scheduler
+}
+
+function accessTraining() {
+    window.location.href = '{{ url_for("cursos") }}';
+}
+
+function logout() {
+    if (confirm('¿Está seguro de que desea cerrar sesión?')) {
+        // Clear session and redirect
+        window.location.href = '{{ url_for("patients") }}';
+    }
+}
+
+// Close modals when clicking outside
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('login-modal')) {
+        closeLoginModal();
+    }
+});
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+
+    // Add stagger effect to cards
+    const cards = document.querySelectorAll('.access-type-card, .dashboard-card, .stat-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,871 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-up {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .slide-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .vatech-product-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .vatech-product-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+    }
+
+    .vatech-product-card.featured {
+        border: 3px solid #ef4444;
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+    }
+
+    .vatech-product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
+        transition: left 0.4s ease;
+    }
+
+    .vatech-product-card:hover::before {
+        left: 0;
+    }
+
+    .vatech-product-card.featured::before {
+        background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c);
+        left: 0;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
+        border-radius: 10px;
+        transition: transform 0.4s ease;
+        background: #f8fafc;
+        padding: 15px;
+    }
+
+    .vatech-product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .hero-vatech {
+        background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+                    url('{{ url_for('static', filename='images/vatech-hero-bg.png') }}');
+        min-height: 70vh;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Fallback si no existe la imagen */
+    .hero-vatech.fallback {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 30%, #10b981 70%, #059669 100%);
+    }
+
+    .hero-vatech::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="vatech" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="30" cy="30" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23vatech)"/></svg>');
+        opacity: 0.4;
+    }
+
+    .product-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e40af;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-style: italic;
+        margin-bottom: 1rem;
+    }
+
+    .quote-btn-vatech {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .quote-btn-vatech:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .vatech-logo {
+        font-size: 3rem;
+        font-weight: 900;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 0.1em;
+    }
+
+    .specs-list {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #3b82f6;
+    }
+
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%) !important;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        border-bottom: none;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-vatech {
+            min-height: 60vh;
+        }
+
+        .vatech-logo {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<!-- Hero Section with Background Image -->
+<div class="hero-vatech text-white py-5 mb-5 position-relative">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <a href="{{ url_for('catalogo') }}" class="back-btn mb-4">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Catálogo
+                </a>
+                <div class="vatech-logo mb-4">VATECH</div>
+                <h1 class="display-5 fw-bold mb-4">Catálogo Completo de Productos</h1>
+                <p class="lead mb-4">Descubre la línea completa de equipos de imagen dental Vatech, líder mundial en innovación radiológica</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-award text-warning me-2"></i>
+                        <span>Tecnología Coreana</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-globe text-info me-2"></i>
+                        <span>Líder Mundial</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-cog text-success me-2"></i>
+                        <span>Calidad Premium</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center fade-in">
+                <i class="fas fa-x-ray" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Products Grid -->
+<div class="container mb-5">
+    <div class="row g-4">
+
+        <!-- Vatech A9 -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="tomografia-3d">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-success">Tomografía 3D</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v1.png') }}"
+                     alt="Vatech A9" class="product-image mb-3">
+                <h4 class="product-title">Vatech A9</h4>
+                <p class="product-subtitle flex-grow-1">A New Dimension Beyond Your Expectations</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('Vatech A9', 'A New Dimension Beyond Your Expectations', 'Tomógrafo CBCT de última generación con tecnología avanzada de imagen 3D')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('Vatech A9')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Green X -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="tomografia-3d">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-success">Tomografía 3D</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v2.png') }}"
+                     alt="Green X" class="product-image mb-3">
+                <h4 class="product-title">Green X</h4>
+                <p class="product-subtitle flex-grow-1">The Next Green Innovation</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('Green X', 'The Next Green Innovation', 'Sistema de tomografía con tecnología verde y eficiencia energética')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('Green X')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- EzRay Air Portable -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="rayos-x">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-warning">Rayos X</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v3.png') }}"
+                     alt="EzRay Air Portable" class="product-image mb-3">
+                <h4 class="product-title">EzRay Air Portable</h4>
+                <p class="product-subtitle flex-grow-1">Lightweight, Portable Innovation</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('EzRay Air Portable', 'Lightweight, Portable Innovation', 'Equipo de rayos X portátil con tecnología inalámbrica avanzada')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('EzRay Air Portable')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- EzRay Air Wall -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="rayos-x">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-warning">Rayos X</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v4.png') }}"
+                     alt="EzRay Air Wall" class="product-image mb-3">
+                <h4 class="product-title">EzRay Air Wall</h4>
+                <p class="product-subtitle flex-grow-1">The Smart Essentials For Your Clinic</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('EzRay Air Wall', 'The Smart Essentials For Your Clinic', 'Sistema de rayos X montado en pared con tecnología inteligente')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('EzRay Air Wall')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- EzRay Chair -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="rayos-x">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-warning">Rayos X</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v5.png') }}"
+                     alt="EzRay Chair" class="product-image mb-3">
+                <h4 class="product-title">EzRay Chair</h4>
+                <p class="product-subtitle flex-grow-1">Standard Intraoral X-ray</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('EzRay Chair', 'Standard Intraoral X-ray', 'Equipo de rayos X intraoral estándar para sillón dental')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('EzRay Chair')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- EzSensor HD -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="sensores">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-info">Sensores</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v6.png') }}"
+                     alt="EzSensor HD" class="product-image mb-3">
+                <h4 class="product-title">EzSensor HD</h4>
+                <p class="product-subtitle flex-grow-1">Make Your Operation Easier, Faster and More Professional</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('EzSensor HD', 'Make Your Operation Easier, Faster and More Professional', 'Sensor digital HD de alta resolución para radiografía intraoral')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('EzSensor HD')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- EzSensor Soft -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="sensores">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-info">Sensores</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v7.png') }}"
+                     alt="EzSensor Soft" class="product-image mb-3">
+                <h4 class="product-title">EzSensor Soft</h4>
+                <p class="product-subtitle flex-grow-1">Better Is Not Enough, Be Different</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('EzSensor Soft', 'Better Is Not Enough, Be Different', 'Sensor digital suave y flexible para mayor comodidad del paciente')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('EzSensor Soft')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- PaX-i Insight -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="panoramico">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-secondary">Panorámico</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v8.png') }}"
+                     alt="PaX-i Insight" class="product-image mb-3">
+                <h4 class="product-title">PaX-i Insight</h4>
+                <p class="product-subtitle flex-grow-1">Beyond 2D, Depth Added Panorama</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('PaX-i Insight', 'Beyond 2D, Depth Added Panorama', 'Equipo panorámico con capacidades de imagen en profundidad')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('PaX-i Insight')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- PaX-i Plus -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="panoramico">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-secondary">Panorámico</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v9.png') }}"
+                     alt="PaX-i Plus" class="product-image mb-3">
+                <h4 class="product-title">PaX-i Plus</h4>
+                <p class="product-subtitle flex-grow-1">Premium Panoramic Image Quality</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('PaX-i Plus', 'Premium Panoramic Image Quality', 'Sistema panorámico premium con calidad de imagen superior')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('PaX-i Plus')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Green 21 -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="tomografia-3d">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-success">Tomografía 3D</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v10.png') }}"
+                     alt="Green 21" class="product-image mb-3">
+                <h4 class="product-title">Green 21</h4>
+                <p class="product-subtitle flex-grow-1">Raising The Bar For Excellence</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('Green 21', 'Raising The Bar For Excellence', 'Tomógrafo CBCT de excelencia con tecnología Green')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('Green 21')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Green 18 -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="tomografia-3d">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-success">Tomografía 3D</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v11.png') }}"
+                     alt="Green 18" class="product-image mb-3">
+                <h4 class="product-title">Green 18</h4>
+                <p class="product-subtitle flex-grow-1">Green Innovation For The Next Generation</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('Green 18', 'Green Innovation For The Next Generation', 'Sistema de tomografía de nueva generación con innovación verde')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('Green 18')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- PaX-i3D Green -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="tomografia-3d">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-success">Tomografía 3D</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v12.png') }}"
+                     alt="PaX-i3D Green" class="product-image mb-3">
+                <h4 class="product-title">PaX-i3D Green</h4>
+                <p class="product-subtitle flex-grow-1">The New Digital Environment</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('PaX-i3D Green', 'The New Digital Environment', 'Entorno digital 3D con tecnología verde avanzada')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('PaX-i3D Green')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Green 16 -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="tomografia-3d">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-success">Tomografía 3D</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v13.png') }}"
+                     alt="Green 16" class="product-image mb-3">
+                <h4 class="product-title">Green 16</h4>
+                <p class="product-subtitle flex-grow-1">The Next Green Innovation</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('Green 16', 'The Next Green Innovation', 'Innovación verde de próxima generación en tomografía')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('Green 16')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- EzSensor Classic -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="sensores">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-info">Sensores</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v14.png') }}"
+                     alt="EzSensor Classic" class="product-image mb-3">
+                <h4 class="product-title">EzSensor Classic</h4>
+                <p class="product-subtitle flex-grow-1">Your Partner For Digital Clinic</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('EzSensor Classic', 'Your Partner For Digital Clinic', 'Sensor digital clásico confiable para clínicas digitales')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('EzSensor Classic')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- PaX-i (Featured) -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="panoramico">
+            <div class="vatech-product-card featured rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-danger">DESTACADO</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v15.png') }}"
+                     alt="PaX-i" class="product-image mb-3">
+                <h4 class="product-title" style="color: #ef4444;">PaX-i</h4>
+                <p class="product-subtitle flex-grow-1">Your Partner In Digital Success</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">Consultar precio</div>
+                    <button class="btn btn-outline-danger btn-sm rounded-pill"
+                            onclick="showProductDetails('PaX-i', 'Your Partner In Digital Success', 'Sistema panorámico líder para el éxito digital - PRODUCTO DESTACADO')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('PaX-i')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                    <i class="fas fa-star me-2"></i>Producto Destacado
+                </button>
+            </div>
+        </div>
+
+        <!-- Smart Plus -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="tomografia-3d">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-success">Tomografía 3D</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v16.png') }}"
+                     alt="Smart Plus" class="product-image mb-3">
+                <h4 class="product-title">Smart Plus</h4>
+                <p class="product-subtitle flex-grow-1">The innovative FOV of Smart Plus provides an arch-shaped volume</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('Smart Plus', 'The innovative FOV of Smart Plus provides an arch-shaped volume', 'FOV innovador con volumen en forma de arco para diagnósticos precisos')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('Smart Plus')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- PaX-i3D Smart -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="tomografia-3d">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-success">Tomografía 3D</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v17.png') }}"
+                     alt="PaX-i3D Smart" class="product-image mb-3">
+                <h4 class="product-title">PaX-i3D Smart</h4>
+                <p class="product-subtitle flex-grow-1">No More than what you want, No Less than what you need</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('PaX-i3D Smart', 'No More than what you want, No Less than what you need', 'Sistema 3D inteligente optimizado para necesidades específicas')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('PaX-i3D Smart')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- PaX-i3D -->
+        <div class="col-lg-4 col-md-6 slide-in-up" data-brand="vatech" data-category="tomografia-3d">
+            <div class="vatech-product-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary">VATECH</span>
+                    <span class="badge bg-success">Tomografía 3D</span>
+                </div>
+                <img src="{{ url_for('static', filename='images/vatech/v18.png') }}"
+                     alt="PaX-i3D" class="product-image mb-3">
+                <h4 class="product-title">PaX-i3D</h4>
+                <p class="product-subtitle flex-grow-1">Your First Partner For 3D Diagnosis</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showProductDetails('PaX-i3D', 'Your First Partner For 3D Diagnosis', 'Primer socio confiable para diagnósticos 3D profesionales')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="quote-btn-vatech" onclick="requestQuote('PaX-i3D')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Contact CTA -->
+<div class="container mb-5">
+    <div class="bg-primary rounded-4 p-5 text-white text-center fade-in">
+        <h3 class="fw-bold mb-3">¿Interesado en algún equipo Vatech?</h3>
+        <p class="lead mb-4">Nuestros especialistas en imagen dental están listos para asesorarte</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="tel:+593987553634" class="btn btn-light btn-lg rounded-pill px-4">
+                <i class="fas fa-phone me-2"></i>+593 98 755 3634
+            </a>
+            <a href="https://wa.me/593987553634" target="_blank" class="btn btn-success btn-lg rounded-pill px-4">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Catálogo
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="modal-overlay" id="productModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalProductName" class="text-primary mb-3"></h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Descripción:</h6>
+                <p id="modalProductDescription" class="text-muted"></p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Especificaciones:</h6>
+                <p id="modalProductSpecs" class="text-muted small"></p>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-outline-secondary" onclick="closeModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="requestQuoteFromModal()">
+                <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProduct = '';
+
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-up'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Show product details modal
+function showProductDetails(name, description, specs) {
+    currentProduct = name;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductDescription').textContent = description;
+    document.getElementById('modalProductSpecs').textContent = specs;
+    document.getElementById('productModal').style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('productModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Request quote function
+function requestQuote(productName) {
+    const message = `Hola, me interesa solicitar una cotización para el equipo Vatech: ${productName}. ¿Podrían enviarme más información sobre especificaciones técnicas, precios y disponibilidad?`;
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Request quote from modal
+function requestQuoteFromModal() {
+    if (currentProduct) {
+        requestQuote(currentProduct);
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+});
+</script>
+
+{% endblock %}

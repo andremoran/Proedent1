@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="/testing/styles.css">  <!--"/Proedent/static/css/styles.css"-->
+<div style="margin: auto; max-width: 800px; background: rgba(105, 105, 105, 0.4)">
+    <div class="px-4 my-4 text-center">
+        <h1 class="display-4 fw-bold mb-5"><FONT FACE="impact" SIZE=6 COLOR="white">
+            Visor de imágenes histológicas</FONT></h1>
+
+        <button id="toggleNavButton" style=" width: 72px; height: 30px"><FONT FACE="arial" SIZE=2 COLOR="white">
+            Navegador</FONT></button>
+        <div style="display: flex;margin-left: 0px">
+            <div id="navigatorDiv"
+                style="width: 120px; height: 70px; border: solid 0.1px black"
+            ></div>
+        </div>
+
+        <div class="mb-2">
+            <div class="container px-5">
+                <div id="app"
+                    style="width: 1200px; height: 700px; border: solid 0.2px black; margin-left: -270px;"
+                ></div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-5">
+            <div class="btn-group">
+                <button type="button"
+                        id="toggle-button"
+                        class="btn btn-primary btn-lg px-4 me-sm-3 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Seleccionar
+                </button>
+                <div class="dropdown-menu" id="btn-dropdown">
+                    <h6 class="dropdown-header">Escoger elemento</h6>
+                    <button class="dropdown-item" id="onRectShape">Rectángulo</button>
+                    <button class="dropdown-item" id="onPolygonShape">Poligono</button>
+                    <button class="dropdown-item" id="onBrushShape">Lápiz</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="selection">
+            <div id="exportButtonContainer">
+                <button id="importCSVButton">Importar CSV</button>
+                <input type="file" id="importCSV" accept=".csv" style="display: none;">
+                <button id="exportCSV">Exportar a CSV</button>
+            </div>
+            <table id="selectionTable" bgcolor="white">
+                <thead>
+                    <tr>
+                        <th>Elemento</th>
+                        <th>Posición x</th>
+                        <th>Posición y</th>
+                        <th>Ancho</th>
+                        <th>Altura
+                            <select id="unitSelector">
+                                <option value="px">px</option>
+                                <option value="um">μm</option>
+                            </select>
+                        </th>
+                        <th>Patología</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts necesarios para el funcionamiento del visor -->
+<script type="module" src="/testing/index2.js"></script>  <!--"/Proedent/static/js/index2.js"-->
+
+<!-- No es necesario cargar jQuery, Bootstrap o Bootstrap Icons ya que están en layout.html -->
+<!-- Solo cargamos los que no estén ya incluidos en el layout -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+{% endblock %}

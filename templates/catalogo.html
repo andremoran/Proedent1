@@ -1,0 +1,2664 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-left {
+        opacity: 0;
+        transform: translateX(-50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-left.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .slide-in-right {
+        opacity: 0;
+        transform: translateX(50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-right.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .product-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .product-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+    }
+
+    .product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444);
+        transition: left 0.4s ease;
+    }
+
+    .product-card:hover::before {
+        left: 0;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
+        border-radius: 15px;
+        transition: transform 0.4s ease;
+        background: #f8fafc;
+        padding: 20px;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.1);
+    }
+
+    .category-badge {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 10;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: inline-block;
+        margin-top: auto;
+    }
+
+    .quote-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .quote-btn:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #10b981 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .filter-btn {
+        background: transparent;
+        border: 2px solid #e2e8f0;
+        color: #6b7280;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.25rem;
+    }
+
+    .filter-btn.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        border-color: #3b82f6;
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .filter-btn:hover {
+        border-color: #3b82f6;
+        color: #3b82f6;
+        transform: translateY(-2px);
+    }
+
+    .filter-btn.active:hover {
+        color: white;
+    }
+
+    .specs-list {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #3b82f6;
+    }
+
+    .search-box {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 25px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-box:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+    }
+
+    .floating-download {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 50px;
+        font-size: 1.25rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    }
+
+    .floating-download:hover {
+        transform: scale(1.1);
+        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+    }
+
+    .brand-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        cursor: pointer;
+    }
+
+    .brand-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section text-white py-5 mb-5 position-relative">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <h1 class="display-4 fw-bold mb-4">Catálogo de Productos</h1>
+                <p class="lead mb-4">Descubre nuestra completa línea de equipos dentales y biomateriales de última generación</p>
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-award text-warning me-2"></i>
+                        <span>Calidad Certificada</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-truck text-info me-2"></i>
+                        <span>Envío Nacional</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-tools text-success me-2"></i>
+                        <span>Instalación Incluida</span>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-3">
+                    <input type="text" id="searchInput" class="search-box flex-grow-1"
+                           placeholder="Buscar productos..." style="min-width: 250px;">
+                    <button id="searchButton" class="btn btn-success btn-lg rounded-pill px-4">
+                        <i class="fas fa-search me-2"></i>Buscar
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center fade-in">
+                <i class="fas fa-clipboard-list" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Brands Section -->
+<div class="container mb-5">
+    <div class="text-center slide-in-left mb-5">
+        <h2 class="display-5 fw-bold text-primary mb-4">Nuestras Marcas</h2>
+        <p class="lead text-muted">Equipos de las marcas líderes mundiales en tecnología dental</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ url_for('vatech_catalog') }}" class="text-decoration-none">
+                <div class="brand-card rounded-4 p-4 h-100 text-center">
+                    <div class="brand-logo mb-3">
+                        <img src="{{ url_for('static', filename='images/vatech-logo.png') }}"
+                             alt="Vatech" class="img-fluid" style="max-height: 60px;">
+                    </div>
+                    <h5 class="fw-bold text-primary">VATECH</h5>
+                    <p class="text-muted small">Líder mundial en radiología e imagen dental</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ url_for('acteon_catalog') }}" class="text-decoration-none">
+                <div class="brand-card rounded-4 p-4 h-100 text-center">
+                    <div class="brand-logo mb-3">
+                        <img src="{{ url_for('static', filename='images/acteon-logo.jpg') }}"
+                             alt="Acteon" class="img-fluid" style="max-height: 60px;">
+                    </div>
+                    <h5 class="fw-bold text-primary">ACTEON</h5>
+                    <p class="text-muted small">Tecnología innovadora para odontología</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="brand-card rounded-4 p-4 h-100 text-center">
+                <div class="brand-logo mb-3">
+                    <img src="{{ url_for('static', filename='images/cattani-logo.png') }}"
+                         alt="Cattani" class="img-fluid" style="max-height: 60px;">
+                </div>
+                <h5 class="fw-bold text-primary">CATTANI</h5>
+                <p class="text-muted small">Sistemas de aspiración y compresores</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ url_for('dmg_catalog') }}" class="text-decoration-none">
+                <div class="brand-card rounded-4 p-4 h-100 text-center">
+                    <div class="brand-logo mb-3">
+                        <img src="{{ url_for('static', filename='images/DMG-logo.png') }}"
+                             alt="DMG" class="img-fluid" style="max-height: 60px;">
+                    </div>
+                    <h5 class="fw-bold text-primary">DMG</h5>
+                    <p class="text-muted small">Materiales dentales de alta calidad</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ url_for('euronda_catalog') }}" class="text-decoration-none">
+                <div class="brand-card rounded-4 p-4 h-100 text-center">
+                    <div class="brand-logo mb-3">
+                        <img src="{{ url_for('static', filename='images/euronda-logo.png') }}"
+                             alt="Euronda" class="img-fluid" style="max-height: 60px;">
+                    </div>
+                    <h5 class="fw-bold text-primary">EURONDA</h5>
+                    <p class="text-muted small">Soluciones en esterilización e higiene</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ url_for('faro_catalog') }}" class="text-decoration-none">
+                <div class="brand-card rounded-4 p-4 h-100 text-center">
+                    <div class="brand-logo mb-3">
+                        <img src="{{ url_for('static', filename='images/far-logo.png') }}"
+                             alt="FARO" class="img-fluid" style="max-height: 60px;">
+                    </div>
+                    <h5 class="fw-bold text-primary">FARO</h5>
+                    <p class="text-muted small">Equipos y accesorios dentales</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ url_for('frasaco_catalog') }}" class="text-decoration-none">
+                <div class="brand-card rounded-4 p-4 h-100 text-center">
+                    <div class="brand-logo mb-3">
+                        <img src="{{ url_for('static', filename='images/frasaco-logo.jpg') }}"
+                             alt="Frasaco" class="img-fluid" style="max-height: 60px;">
+                    </div>
+                    <h5 class="fw-bold text-primary">FRASACO</h5>
+                    <p class="text-muted small">Modelos educativos y fantomas</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="brand-card rounded-4 p-4 h-100 text-center">
+                <div class="brand-logo mb-3">
+                    <img src="{{ url_for('static', filename='images/metabiomed-logo.png') }}"
+                         alt="Meta Biomed" class="img-fluid" style="max-height: 60px;">
+                </div>
+                <h5 class="fw-bold text-primary">META BIOMED</h5>
+                <p class="text-muted small">Implantes y biomateriales</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="brand-card rounded-4 p-4 h-100 text-center">
+                <div class="brand-logo mb-3">
+                    <img src="{{ url_for('static', filename='images/micerium-logo.jpg') }}"
+                         alt="Micerium" class="img-fluid" style="max-height: 60px;">
+                </div>
+                <h5 class="fw-bold text-primary">MICERIUM</h5>
+                <p class="text-muted small">Materiales de restauración estética</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ url_for('nufona_catalog') }}" class="text-decoration-none">
+                <div class="brand-card rounded-4 p-4 h-100 text-center">
+                    <div class="brand-logo mb-3">
+                        <img src="{{ url_for('static', filename='images/nufona-logo.png') }}"
+                             alt="NUFONA" class="img-fluid" style="max-height: 60px;">
+                    </div>
+                    <h5 class="fw-bold text-primary">NUFONA</h5>
+                    <p class="text-muted small">Equipos dentales y turbinas</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="brand-card rounded-4 p-4 h-100 text-center">
+                <div class="brand-logo mb-3">
+                    <img src="{{ url_for('static', filename='images/primedent-logo.png') }}"
+                         alt="Primedent" class="img-fluid" style="max-height: 60px;">
+                </div>
+                <h5 class="fw-bold text-primary">PRIMEDENT</h5>
+                <p class="text-muted small">Instrumental y accesorios dentales</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Filters -->
+<div class="container mb-5">
+    <div class="text-center slide-in-left">
+        <h3 class="mb-4">Filtrar por Categoría</h3>
+        <div class="d-flex flex-wrap justify-content-center">
+            <button class="filter-btn active" data-category="">Todos los Productos</button>
+            <button class="filter-btn" data-category="Unidades Dentales">Unidades Dentales</button>
+            <button class="filter-btn" data-category="Turbinas de Alta Velocidad">Turbinas de Alta Velocidad</button>
+            <button class="filter-btn" data-category="Tomografía 3D">Tomografía 3D</button>
+            <button class="filter-btn" data-category="Cefalometría">Cefalometría</button>
+            <button class="filter-btn" data-category="Panorámico">Panorámico</button>
+            <button class="filter-btn" data-category="Rayos X">Rayos X</button>
+            <button class="filter-btn" data-category="Sensores">Sensores</button>
+            <button class="filter-btn" data-category="Piezas de Mano">Piezas de Mano</button>
+            <button class="filter-btn" data-category="Acoplamientos">Acoplamientos</button>
+            <button class="filter-btn" data-category="Autoclaves">Autoclaves</button>
+            <button class="filter-btn" data-category="Termoselladoras">Termoselladoras</button>
+            <button class="filter-btn" data-category="Termodesinfección">Termodesinfección</button>
+            <button class="filter-btn" data-category="Cubas multifuncionales">Cubas multifuncionales</button>
+            <button class="filter-btn" data-category="Cuba de ultrasonidos">Cuba de ultrasonidos</button>
+            <button class="filter-btn" data-category="Iluminación LED">Iluminación LED</button>
+            <button class="filter-btn" data-category="Modelos Educativos">Modelos Educativos</button>
+            <button class="filter-btn" data-category="Materiales Dentales">Materiales Dentales</button>
+        </div>
+    </div>
+</div>
+
+<!-- Products Grid -->
+<div class="container mb-5">
+    <div class="row g-4" id="productsGrid">
+
+        <!-- Productos originales existentes del loop -->
+        {% for product in products %}
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="{{ product.category }}">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">{{ product.brand }}</span>
+                        <div class="category-badge">{{ product.category }}</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}"
+                         alt="{{ product.name }}"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">{{ product.name }}</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">{{ product.description }}</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">{{ product.specifications }}</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">{{ product.price }}</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('{{ product.name }}', '{{ product.description }}', '{{ product.specifications }}')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('{{ product.name }}')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Productos NUFONA agregados manualmente -->
+
+        <!-- Unidades Dentales NUFONA -->
+        <!-- X1 Preferred (DESTACADO) -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Unidades Dentales">
+            <div class="product-card rounded-4 p-4 d-flex flex-column" style="border: 3px solid #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">DESTACADO</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x1preferred.png') }}"
+                         alt="X1 Preferred"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold mb-3" style="color: #10b981;">X1 Preferred</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Unidad dental premium con características avanzadas y ergonomía superior. Diseñada para profesionales que buscan la máxima calidad.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Control táctil avanzado, sillón ergonómico premium, sistema de aspiración dual, iluminación LED integrada</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showProductDetails('X1 Preferred', 'Unidad dental premium con características avanzadas y ergonomía superior', 'Control táctil avanzado, sillón ergonómico premium, sistema de aspiración dual, iluminación LED integrada')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('X1 Preferred')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="fas fa-star me-2"></i>Producto Destacado
+                </button>
+            </div>
+        </div>
+
+        <!-- X1 Smart -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Unidades Dentales">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);">Unidades Dentales</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x1smart.png') }}"
+                         alt="X1 Smart"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">X1 Smart</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Unidad dental inteligente con tecnología de control automatizado y funciones avanzadas de diagnóstico integrado.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Sistema de control inteligente, memoria de posiciones, conectividad avanzada, panel de control intuitivo</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X1 Smart', 'Unidad dental inteligente con tecnología de control automatizado', 'Sistema de control inteligente, memoria de posiciones, conectividad avanzada, panel de control intuitivo')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('X1 Smart')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- X1 Expert -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Unidades Dentales">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);">Unidades Dentales</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x1expert.png') }}"
+                         alt="X1 Expert"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">X1 Expert</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Unidad dental profesional diseñada para especialistas, con características avanzadas para tratamientos complejos.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Configuración especializada, instrumentos de alta precisión, sistema de irrigación avanzado, ergonomía optimizada</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X1 Expert', 'Unidad dental profesional diseñada para especialistas', 'Configuración especializada, instrumentos de alta precisión, sistema de irrigación avanzado, ergonomía optimizada')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('X1 Expert')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- X1 Master -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Unidades Dentales">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);">Unidades Dentales</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x1master.png') }}"
+                         alt="X1 Master"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">X1 Master</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">La unidad dental más completa de la serie X1, con todas las características avanzadas para consultas de alta gama.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Configuración máxima completa, tecnología de última generación, sistema multimedia integrado, control remoto avanzado</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X1 Master', 'La unidad dental más completa de la serie X1', 'Configuración máxima completa, tecnología de última generación, sistema multimedia integrado, control remoto avanzado')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('X1 Master')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Turbinas de Alta Velocidad NUFONA -->
+        <!-- M200 Surgical 45 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Turbinas de Alta Velocidad">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Turbinas Alta Velocidad</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-m200surgical45.png') }}"
+                         alt="M200 Surgical 45"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Maxso M200 Surgical 45</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Turbina quirúrgica de alta precisión sin fibra óptica, ideal para procedimientos que requieren máximo control.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Cabeza quirúrgica compacta, rotación de 45°, sistema de refrigeración eficiente, bajo nivel de ruido</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Maxso M200 Surgical 45', 'Turbina quirúrgica de alta precisión sin fibra óptica', 'Cabeza quirúrgica compacta, rotación de 45°, sistema de refrigeración eficiente, bajo nivel de ruido')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Maxso M200 Surgical 45')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- M200E Smart -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Turbinas de Alta Velocidad">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Turbinas Alta Velocidad</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-m200esmart.png') }}"
+                         alt="M200E Smart"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Maxso M200E Smart</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Turbina inteligente con sistema de control automático y características avanzadas de rendimiento.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Sistema smart integrado, control de velocidad automático, ergonomía optimizada, mantenimiento simplificado</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Maxso M200E Smart', 'Turbina inteligente con sistema de control automático', 'Sistema smart integrado, control de velocidad automático, ergonomía optimizada, mantenimiento simplificado')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Maxso M200E Smart')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- F1000 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Turbinas de Alta Velocidad">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Turbinas Alta Velocidad</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-f1000.png') }}"
+                         alt="F1000"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">F1000</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Turbina estándar confiable y eficiente, ideal para uso diario en consulta general.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Diseño clásico confiable, mantenimiento sencillo, excelente relación calidad-precio, compatible con múltiples sistemas</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('F1000', 'Turbina estándar confiable y eficiente', 'Diseño clásico confiable, mantenimiento sencillo, excelente relación calidad-precio, compatible con múltiples sistemas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('F1000')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- X200 Surgical 45 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Turbinas de Alta Velocidad">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Turbinas Alta Velocidad</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x200surgical45.png') }}"
+                         alt="X200 Surgical 45"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Maxso X200 Surgical 45</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Turbina quirúrgica con fibra óptica integrada para máxima visibilidad en procedimientos complejos.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Fibra óptica integrada, iluminación LED superior, cabeza quirúrgica 45°, visibilidad excepcional</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Maxso X200 Surgical 45', 'Turbina quirúrgica con fibra óptica integrada', 'Fibra óptica integrada, iluminación LED superior, cabeza quirúrgica 45°, visibilidad excepcional')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Maxso X200 Surgical 45')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- X200 X -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Turbinas de Alta Velocidad">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Turbinas Alta Velocidad</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-x200x.png') }}"
+                         alt="X200 X"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Maxso X200 X</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Turbina avanzada con tecnología de fibra óptica y características premium para profesionales exigentes.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Tecnología de fibra óptica avanzada, potencia superior, durabilidad excepcional, ergonomía profesional</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Maxso X200 X', 'Turbina avanzada con tecnología de fibra óptica', 'Tecnología de fibra óptica avanzada, potencia superior, durabilidad excepcional, ergonomía profesional')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Maxso X200 X')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- F2000 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Turbinas de Alta Velocidad">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Turbinas Alta Velocidad</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-f2000.png') }}"
+                         alt="F2000"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">F2000</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Turbina con fibra óptica de excelente relación calidad-precio, perfecta para consultas que buscan iluminación superior.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Fibra óptica estándar, iluminación LED eficiente, fácil mantenimiento, versatilidad de uso</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('F2000', 'Turbina con fibra óptica de excelente relación calidad-precio', 'Fibra óptica estándar, iluminación LED eficiente, fácil mantenimiento, versatilidad de uso')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('F2000')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Piezas de Mano NUFONA -->
+        <!-- Air Motor -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Piezas de Mano">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">Piezas de Mano</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-airmotor.png') }}"
+                         alt="Air Motor"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Air Motor</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Motor neumático de baja velocidad para procedimientos de pulido y acabado.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Velocidad variable, torque constante, acoplamiento universal, operación silenciosa</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Air Motor', 'Motor neumático de baja velocidad', 'Velocidad variable, torque constante, acoplamiento universal, operación silenciosa')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Air Motor')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Contra Angle -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Piezas de Mano">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">Piezas de Mano</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-contraangle.png') }}"
+                         alt="Contra Angle"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Contra Angle</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Contraángulo ergonómico para acceso óptimo en todas las zonas de la boca.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Cabeza angulada optimizada, sistema de refrigeración, fácil cambio de fresas, diseño ergonómico</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Contra Angle', 'Contraángulo ergonómico para acceso óptimo', 'Cabeza angulada optimizada, sistema de refrigeración, fácil cambio de fresas, diseño ergonómico')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Contra Angle')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Straight Nose Cone -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Piezas de Mano">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">Piezas de Mano</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-straightnosecone.png') }}"
+                         alt="Straight Nose Cone"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Straight Nose Cone</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Pieza de mano recta para trabajos de precisión y pulido directo.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Acceso directo lineal, control preciso, compatible con múltiples fresas, construcción robusta</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Straight Nose Cone', 'Pieza de mano recta para trabajos de precisión', 'Acceso directo lineal, control preciso, compatible con múltiples fresas, construcción robusta')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Straight Nose Cone')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Acoplamientos NUFONA -->
+        <!-- Coupler -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Acoplamientos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">NUFONA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">Acoplamientos</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/nufona/nu-coupler.png') }}"
+                         alt="Coupler"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Coupler</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Acoplamiento universal para conexión de instrumentos con diferentes sistemas.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Conexión universal, sellado hermético, fácil instalación, compatibilidad amplia</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Coupler', 'Acoplamiento universal para conexión de instrumentos', 'Conexión universal, sellado hermético, fácil instalación, compatibilidad amplia')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Coupler')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Productos ACTEON agregados manualmente -->
+        <!-- X-MIND® prime 3D -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Tomografía 3D">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-info">ACTEON</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">Tomografía 3D</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}"
+                         alt="X-MIND® prime 3D"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">X-MIND® prime 3D</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">¡Es la nueva inteligencia! Siempre dependerá de imágenes de alta calidad y potentes herramientas de imagen para tener éxito en el diagnóstico y la planificación del tratamiento.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Tecnología de vanguardia en tomografía 3D con imágenes de alta resolución e interface intuitiva</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X-MIND® prime 3D', '¡Es la nueva inteligencia! Siempre dependerá de imágenes de alta calidad y potentes herramientas de imagen para tener éxito en el diagnóstico y la planificación del tratamiento.', 'Tecnología de vanguardia en tomografía 3D con imágenes de alta resolución e interface intuitiva')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('X-MIND® prime 3D')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- X-MIND® optima 3D -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Tomografía 3D">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-info">ACTEON</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">Tomografía 3D</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/acteon/a-x-mind-optima-3d.png') }}"
+                         alt="X-MIND® optima 3D"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">X-MIND® optima 3D</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Personifica la visión de ACTEON: soluciones innovadoras y centradas en el usuario. Su diseño compacto se integra perfectamente en cualquier consulta dental.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Diseño compacto con máxima accesibilidad y optimización de espacio en consulta</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X-MIND® optima 3D', 'Personifica la visión de ACTEON: soluciones innovadoras y centradas en el usuario. Su diseño compacto se integra perfectamente en cualquier consulta dental.', 'Diseño compacto con máxima accesibilidad y optimización de espacio en consulta')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('X-MIND® optima 3D')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- X-MIND® Ceph -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Cefalometría">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-info">ACTEON</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">Cefalometría</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/acteon/a-x-mind-ceph.png') }}"
+                         alt="X-MIND® Ceph"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">X-MIND® Ceph</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Diseño elegante y fluido con tecnología de vanguardia, muy intuitivo... para estar al alcance de todos.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Sistema cefalométrico con adquisición rápida y alta calidad de imagen, protección óptima del paciente</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X-MIND® Ceph', 'Diseño elegante y fluido con tecnología de vanguardia, muy intuitivo... para estar al alcance de todos.', 'Sistema cefalométrico con adquisición rápida y alta calidad de imagen, protección óptima del paciente')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('X-MIND® Ceph')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- X-MIND® prime -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Panorámico">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-info">ACTEON</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);">Panorámico</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/acteon/a-x-mind-prime.png') }}"
+                         alt="X-MIND® prime"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">X-MIND® prime</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Es una unidad dental extraoral digital de nueva generación. Presenta un diseño elegante y tecnología de última generación.</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Unidad panorámica digital con diseño elegante, tecnología avanzada e imágenes de alta calidad</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('X-MIND® prime', 'Es una unidad dental extraoral digital de nueva generación. Presenta un diseño elegante y tecnología de última generación.', 'Unidad panorámica digital con diseño elegante, tecnología avanzada e imágenes de alta calidad')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('X-MIND® prime')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Productos EURONDA agregados manualmente -->
+
+        <!-- Autoclaves EURONDA -->
+        <!-- E10 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Autoclaves">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);">Autoclaves</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-e10.png') }}"
+                         alt="E10"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">E10</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Autoclave de clase B con tecnología avanzada de esterilización</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Clase B según EN 13060 con capacidad optimizada y tecnología de vapor avanzada</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('E10', 'Autoclave de clase B con tecnología avanzada de esterilización', 'Clase B según EN 13060 con capacidad optimizada y tecnología de vapor avanzada')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('E10')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- EXL -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Autoclaves">
+            <div class="product-card rounded-4 p-4 d-flex flex-column" style="border: 3px solid #16a34a; box-shadow: 0 0 20px rgba(22, 163, 74, 0.2);">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">DESTACADO</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-exl.png') }}"
+                         alt="EXL"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold mb-3" style="color: #16a34a;">EXL</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Autoclave premium con tecnología de excelencia para consultas exigentes</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Tecnología premium con mayor capacidad y eficiencia energética</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showProductDetails('EXL', 'Autoclave premium con tecnología de excelencia para consultas exigentes', 'Tecnología premium con mayor capacidad y eficiencia energética')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('EXL')" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">
+                    <i class="fas fa-star me-2"></i>Producto Destacado
+                </button>
+            </div>
+        </div>
+
+        <!-- E9 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Autoclaves">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);">Autoclaves</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-e9.png') }}"
+                         alt="E9"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">E9</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Autoclave confiable con excelente relación calidad-precio</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Diseño compacto con operación sencilla y ciclos de esterilización rápidos</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('E9', 'Autoclave confiable con excelente relación calidad-precio', 'Diseño compacto con operación sencilla y ciclos de esterilización rápidos')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('E9')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- E8 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Autoclaves">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);">Autoclaves</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-e8.png') }}"
+                         alt="E8"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">E8</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Autoclave de entrada ideal para consultas pequeñas</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Tamaño compacto con fácil instalación y controles intuitivos</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('E8', 'Autoclave de entrada ideal para consultas pequeñas', 'Tamaño compacto con fácil instalación y controles intuitivos')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('E8')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Termoselladoras EURONDA -->
+        <!-- Euromatic -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Termoselladoras">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">Termoselladoras</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-euromatic.png') }}"
+                         alt="Euromatic"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Euromatic</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Termoselladora automática de alta eficiencia</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Operación automática con sellado uniforme y alta velocidad</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Euromatic', 'Termoselladora automática de alta eficiencia', 'Operación automática con sellado uniforme y alta velocidad')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Euromatic')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Euroseal Valida -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Termoselladoras">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">Termoselladoras</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosealvalida.png') }}"
+                         alt="Euroseal Valida"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Euroseal Valida</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Termoselladora con sistema de validación integrado</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Sistema de validación con control de temperatura y trazabilidad del proceso</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Euroseal Valida', 'Termoselladora con sistema de validación integrado', 'Sistema de validación con control de temperatura y trazabilidad del proceso')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Euroseal Valida')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Euroseal -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Termoselladoras">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">Termoselladoras</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-euroseal.png') }}"
+                         alt="Euroseal"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Euroseal</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Termoselladora estándar confiable y eficiente</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Operación manual con diseño robusto y sellado consistente</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Euroseal', 'Termoselladora estándar confiable y eficiente', 'Operación manual con diseño robusto y sellado consistente')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Euroseal')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Euroseal Infinity -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Termoselladoras">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">Termoselladoras</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosealiinfinity.png') }}"
+                         alt="Euroseal Infinity"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Euroseal Infinity</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Termoselladora de uso continuo para alta demanda</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Uso continuo con alta productividad y resistencia extrema</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Euroseal Infinity', 'Termoselladora de uso continuo para alta demanda', 'Uso continuo con alta productividad y resistencia extrema')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Euroseal Infinity')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Termodesinfección EURONDA -->
+        <!-- Eurosafe 60 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Termodesinfección">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Termodesinfección</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosafe60.png') }}"
+                         alt="Eurosafe 60"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Eurosafe 60</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Termodesinfectora compacta de 60 litros</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Capacidad de 60 litros con desinfección térmica eficiente y ciclos automáticos</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosafe 60', 'Termodesinfectora compacta de 60 litros', 'Capacidad de 60 litros con desinfección térmica eficiente y ciclos automáticos')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Eurosafe 60')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Eurosafe 170 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Termodesinfección">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Termodesinfección</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosafe170.png') }}"
+                         alt="Eurosafe 170"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Eurosafe 170</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Termodesinfectora de gran capacidad 170 litros</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Capacidad de 170 litros con alta productividad y múltiples programas</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosafe 170', 'Termodesinfectora de gran capacidad 170 litros', 'Capacidad de 170 litros con alta productividad y múltiples programas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Eurosafe 170')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Cubas multifuncionales EURONDA -->
+        <!-- Eurosafe Smart -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Cubas multifuncionales">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">Multifuncional</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosafesmart.png') }}"
+                         alt="Eurosafe Smart"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Eurosafe Smart</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Sistema multifuncional inteligente de limpieza y desinfección</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Múltiples funciones integradas con control inteligente y diseño compacto</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosafe Smart', 'Sistema multifuncional inteligente de limpieza y desinfección', 'Múltiples funciones integradas con control inteligente y diseño compacto')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Eurosafe Smart')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Cuba de ultrasonidos EURONDA -->
+        <!-- Eurosonic -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Cuba de ultrasonidos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">Ultrasonidos</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosonic3d.png') }}"
+                         alt="Eurosonic"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Eurosonic</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Cuba de ultrasonidos estándar para limpieza eficaz</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Limpieza ultrasónica con frecuencia optimizada y fácil operación</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosonic', 'Cuba de ultrasonidos estándar para limpieza eficaz', 'Limpieza ultrasónica con frecuencia optimizada y fácil operación')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Eurosonic')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Eurosonic Micro -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Cuba de ultrasonidos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">Ultrasonidos</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosonicmicro.png') }}"
+                         alt="Eurosonic Micro"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Eurosonic Micro</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Cuba de ultrasonidos compacta para espacios reducidos</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Diseño compacto con eficiencia espacial, ideal para consultas pequeñas</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosonic Micro', 'Cuba de ultrasonidos compacta para espacios reducidos', 'Diseño compacto con eficiencia espacial, ideal para consultas pequeñas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Eurosonic Micro')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Eurosonic Energy -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Cuba de ultrasonidos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">Ultrasonidos</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosonicenergy.png') }}"
+                         alt="Eurosonic Energy"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Eurosonic Energy</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Cuba de ultrasonidos de alta potencia para limpieza intensiva</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Alta potencia con limpieza intensiva y mayor eficiencia</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosonic Energy', 'Cuba de ultrasonidos de alta potencia para limpieza intensiva', 'Alta potencia con limpieza intensiva y mayor eficiencia')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Eurosonic Energy')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Eurosonic 4D -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Cuba de ultrasonidos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">Ultrasonidos</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosonic4d.png') }}"
+                         alt="Eurosonic 4D"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Eurosonic 4D</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Cuba de ultrasonidos con tecnología 4D para limpieza superior</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Tecnología 4D con múltiples frecuencias para resultados excepcionales</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosonic 4D', 'Cuba de ultrasonidos con tecnología 4D para limpieza superior', 'Tecnología 4D con múltiples frecuencias para resultados excepcionales')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Eurosonic 4D')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Productos FARO agregados manualmente -->
+
+        <!-- Iluminación LED FARO -->
+        <!-- Lámpara Quirúrgica y Dental B75 (NEW) -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Iluminación LED">
+            <div class="product-card rounded-4 p-4 d-flex flex-column" style="border: 3px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">NUEVO</div>
+                    </div>
+                    <div style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.75rem; font-weight: 700; z-index: 10;">NEW</div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-b75.png') }}"
+                         alt="Lámpara Quirúrgica y Dental B75"
+                         class="product-image"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display: none; height: 200px; background: #f0f0f0; border-radius: 15px; align-items: center; justify-content: center; color: #999;">
+                        <i class="fas fa-lightbulb" style="font-size: 3rem;"></i>
+                    </div>
+                </div>
+
+                <h4 class="fw-bold mb-3" style="color: #ef4444;">Lámpara Quirúrgica y Dental B75</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Nueva lámpara quirúrgica LED de última generación para procedimientos médicos y dentales</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Tecnología LED avanzada con iluminación quirúrgica profesional y control de intensidad variable</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-danger btn-sm rounded-pill"
+                                onclick="showProductDetails('Lámpara Quirúrgica y Dental B75', 'Nueva lámpara quirúrgica LED de última generación para procedimientos médicos y dentales', 'Tecnología LED avanzada con iluminación quirúrgica profesional y control de intensidad variable')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Lámpara Quirúrgica y Dental B75')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                    <i class="fas fa-star me-2"></i>Producto Nuevo
+                </button>
+            </div>
+        </div>
+
+        <!-- Lámpara Led Dental Eva (DESTACADO) -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Iluminación LED">
+            <div class="product-card rounded-4 p-4 d-flex flex-column" style="border: 3px solid #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">DESTACADO</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-eva.png') }}"
+                         alt="Lámpara Led Dental Eva"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold mb-3" style="color: #10b981;">Lámpara Led Dental Eva</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Lámpara LED dental de alto rendimiento con tecnología avanzada de iluminación</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">LED de alta eficiencia con brazo articulado flexible y control táctil intuitivo</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showProductDetails('Lámpara Led Dental Eva', 'Lámpara LED dental de alto rendimiento con tecnología avanzada de iluminación', 'LED de alta eficiencia con brazo articulado flexible y control táctil intuitivo')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Lámpara Led Dental Eva')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="fas fa-star me-2"></i>Producto Destacado
+                </button>
+            </div>
+        </div>
+
+        <!-- Lámpara Led Dental Eva Cam -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Iluminación LED">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Iluminación LED</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-evacam.png') }}"
+                         alt="Lámpara Led Dental Eva Cam"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Lámpara Led Dental Eva Cam</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Lámpara LED dental Eva con cámara integrada para documentación</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Cámara intraoral integrada con documentación digital e iluminación LED premium</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Lámpara Led Dental Eva Cam', 'Lámpara LED dental Eva con cámara integrada para documentación', 'Cámara intraoral integrada con documentación digital e iluminación LED premium')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Lámpara Led Dental Eva Cam')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Productos FRASACO agregados manualmente -->
+
+        <!-- Modelos Educativos FRASACO -->
+        <!-- Serie ANA-4 (DESTACADO) -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Modelos Educativos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column" style="border: 3px solid #16a34a; box-shadow: 0 0 20px rgba(22, 163, 74, 0.2);">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">DESTACADO</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-ana4.png') }}"
+                         alt="Serie ANA-4"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold mb-3" style="color: #16a34a;">Serie ANA-4</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Serie de modelos estándar para enseñanza dental básica y avanzada</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Dentición completa anatómicamente correcta con material resistente, ideal para prácticas de preparación</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showProductDetails('Serie ANA-4', 'Serie de modelos estándar para enseñanza dental básica y avanzada', 'Dentición completa anatómicamente correcta con material resistente, ideal para prácticas de preparación')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Serie ANA-4')" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">
+                    <i class="fas fa-star me-2"></i>Producto Destacado
+                </button>
+            </div>
+        </div>
+
+        <!-- Endodoncia -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Modelos Educativos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Modelos Educativos</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-endodoncia.png') }}"
+                         alt="Endodoncia"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Endodoncia</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Modelos especializados para entrenamiento en endodoncia</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Canales radiculares realistas con pulpa visible para práctica de instrumentación</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Endodoncia', 'Modelos especializados para entrenamiento en endodoncia', 'Canales radiculares realistas con pulpa visible para práctica de instrumentación')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Endodoncia')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Implantología -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Modelos Educativos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Modelos Educativos</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-implantologia.png') }}"
+                         alt="Implantología"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Implantología</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Modelos para práctica de técnicas de implantología oral</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Hueso artificial realista con sitios de implante marcados para entrenamiento quirúrgico</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Implantología', 'Modelos para práctica de técnicas de implantología oral', 'Hueso artificial realista con sitios de implante marcados para entrenamiento quirúrgico')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Implantología')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Phantom Head P-6/3 -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Modelos Educativos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Modelos Educativos</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-cabezaP63.png') }}"
+                         alt="Modelos P-6/3"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Phantom Head P-6/3</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Phantom heads P-6/3 para simulación dental completa</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Anatomía facial realista con apertura bucal natural, compatible con unidades dentales</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Phantom Head P-6/3', 'Phantom heads P-6/3 para simulación dental completa', 'Anatomía facial realista con apertura bucal natural, compatible con unidades dentales')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Phantom Head P-6/3')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Odontología Infantil -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Modelos Educativos">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">FRASACO</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Modelos Educativos</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/frasaco/fra-infantil.png') }}"
+                         alt="Odontología Infantil"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Odontología Infantil</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Modelos para odontología pediátrica y dentición decidua</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Dentición decidua completa con caries típicas infantiles para técnicas de odontopediatría</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Odontología Infantil', 'Modelos para odontología pediátrica y dentición decidua', 'Dentición decidua completa con caries típicas infantiles para técnicas de odontopediatría')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Odontología Infantil')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Productos DMG agregados manualmente -->
+
+        <!-- Materiales Dentales DMG -->
+        <!-- Icon Proximal -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Materiales Dentales">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">Materiales Dentales</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-iconproximal.png') }}"
+                         alt="Icon Proximal"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Icon Proximal</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Infiltrante de resina para lesiones cariosas proximales</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Tratamiento microinvasivo de caries proximal incipiente sin preparación cavitaria</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Icon Proximal', 'Infiltrante de resina para lesiones cariosas proximales', 'Tratamiento microinvasivo de caries proximal incipiente sin preparación cavitaria')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Icon Proximal')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- Luxatemp Star (DESTACADO) -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Materiales Dentales">
+            <div class="product-card rounded-4 p-4 d-flex flex-column" style="border: 3px solid #16a34a; box-shadow: 0 0 20px rgba(22, 163, 74, 0.2);">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">DESTACADO</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-luxatempstar.png') }}"
+                         alt="Luxatemp Star"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold mb-3" style="color: #16a34a;">Luxatemp Star</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Material de restauración provisional de última generación</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Composite autopolimerizable para coronas y puentes provisionales con excelentes propiedades estéticas</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showProductDetails('Luxatemp Star', 'Material de restauración provisional de última generación', 'Composite autopolimerizable para coronas y puentes provisionales con excelentes propiedades estéticas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Luxatemp Star')" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">
+                    <i class="fas fa-star me-2"></i>Producto Destacado
+                </button>
+            </div>
+        </div>
+
+        <!-- Silagum Light -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Materiales Dentales">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">Materiales Dentales</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-silagumlight.png') }}"
+                         alt="Silagum Light"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Silagum Light</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Silicona de impresión de baja viscosidad para técnica de doble impresión</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">A-silicona de adición con excelentes propiedades de flujo y precisión dimensional</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Silagum Light', 'Silicona de impresión de baja viscosidad para técnica de doble impresión', 'A-silicona de adición con excelentes propiedades de flujo y precisión dimensional')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('Silagum Light')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+        <!-- PermaCem Universal -->
+        <div class="col-lg-6 col-xl-4 product-item slide-in-right"
+             data-category="Materiales Dentales">
+            <div class="product-card rounded-4 p-4 d-flex flex-column">
+                <div class="position-relative mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <div class="category-badge" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">Materiales Dentales</div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-permacemuniversal.png') }}"
+                         alt="PermaCem Universal"
+                         class="product-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">PermaCem Universal</h4>
+
+                <p class="text-muted mb-3 flex-grow-1">Cemento de resina universal para cementación permanente</p>
+
+                <div class="specs-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-cog me-2"></i>Especificaciones:
+                    </h6>
+                    <p class="mb-0 small text-muted">Cemento dual para todo tipo de restauraciones indirectas con adhesión universal</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">Consultar precio</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('PermaCem Universal', 'Cemento de resina universal para cementación permanente', 'Cemento dual para todo tipo de restauraciones indirectas con adhesión universal')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <button class="quote-btn" onclick="requestQuote('PermaCem Universal')">
+                    <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Empty State -->
+    <div id="noProducts" class="text-center py-5" style="display: none;">
+        <i class="fas fa-search text-muted mb-4" style="font-size: 4rem; opacity: 0.3;"></i>
+        <h3 class="text-muted mb-3">No se encontraron productos</h3>
+        <p class="text-muted">Intenta con otros términos de búsqueda o categorías</p>
+    </div>
+</div>
+
+<!-- Why Choose Proedent Section -->
+<div class="bg-light py-5 mb-5">
+    <div class="container">
+        <div class="text-center mb-5 fade-in">
+            <h2 class="display-5 fw-bold text-primary mb-4">¿Por qué elegir Proedent?</h2>
+            <p class="lead text-muted">Somos más que una distribuidora, somos tu socio tecnológico</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3 slide-in-left">
+                <div class="text-center h-100 p-4">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-award text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Calidad Garantizada</h5>
+                    <p class="text-muted">Productos certificados de marcas líderes mundiales</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 slide-in-left" style="animation-delay: 0.1s;">
+                <div class="text-center h-100 p-4">
+                    <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-tools text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Instalación Profesional</h5>
+                    <p class="text-muted">Técnicos especialistas en puesta en marcha</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 slide-in-right">
+                <div class="text-center h-100 p-4">
+                    <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-headset text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Soporte 24/7</h5>
+                    <p class="text-muted">Asistencia técnica permanente para tu tranquilidad</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 slide-in-right" style="animation-delay: 0.1s;">
+                <div class="text-center h-100 p-4">
+                    <div class="bg-info rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-graduation-cap text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Capacitación Incluida</h5>
+                    <p class="text-muted">Entrenamiento completo para tu equipo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact CTA -->
+<div class="container mb-5">
+    <div class="bg-primary rounded-4 p-5 text-white text-center fade-in">
+        <h3 class="fw-bold mb-3">¿Necesitas una cotización personalizada?</h3>
+        <p class="lead mb-4">Nuestros especialistas están listos para asesorarte</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="tel:+593987553634" class="btn btn-light btn-lg rounded-pill px-4">
+                <i class="fas fa-phone me-2"></i>+593 98 755 3634
+            </a>
+            <a href="mailto:proedent@hotmail.com" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <i class="fas fa-envelope me-2"></i>Enviar Email
+            </a>
+            <a href="https://wa.me/593987553634" target="_blank" class="btn btn-success btn-lg rounded-pill px-4">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Download Button -->
+<a href="{{ url_for('download_catalog') }}" class="floating-download" title="Descargar Catálogo PDF">
+    <i class="fas fa-download"></i>
+</a>
+
+<!-- Product Details Modal -->
+<div class="modal-overlay" id="productModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalProductName" class="text-primary mb-3"></h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Descripción:</h6>
+                <p id="modalProductDescription" class="text-muted"></p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Especificaciones:</h6>
+                <p id="modalProductSpecs" class="text-muted small"></p>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-outline-secondary" onclick="closeModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="requestQuoteFromModal()">
+                <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProduct = '';
+
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-left, .slide-in-right'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Category Filter
+function setupCategoryFilter() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const productItems = document.querySelectorAll('.product-item');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            const category = this.getAttribute('data-category');
+            filterProducts(category);
+        });
+    });
+}
+
+// Search functionality
+function setupSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        filterProducts(null, searchTerm);
+    });
+
+    searchButton.addEventListener('click', function() {
+        const searchTerm = searchInput.value.toLowerCase();
+        filterProducts(null, searchTerm);
+    });
+
+    // Also search on Enter key
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const searchTerm = this.value.toLowerCase();
+            filterProducts(null, searchTerm);
+        }
+    });
+}
+
+// Filter products by category and/or search term
+function filterProducts(category = null, searchTerm = '') {
+    const productItems = document.querySelectorAll('.product-item');
+    const noProductsDiv = document.getElementById('noProducts');
+    let visibleCount = 0;
+
+    productItems.forEach(item => {
+        const itemCategory = item.getAttribute('data-category');
+        const itemText = item.textContent.toLowerCase();
+
+        const categoryMatch = !category || category === '' || itemCategory === category;
+        const searchMatch = !searchTerm || itemText.includes(searchTerm);
+
+        if (categoryMatch && searchMatch) {
+            item.style.display = 'block';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Show/hide no results message
+    noProductsDiv.style.display = visibleCount === 0 ? 'block' : 'none';
+}
+
+// Show product details modal
+function showProductDetails(name, description, specs) {
+    currentProduct = name;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductDescription').textContent = description;
+    document.getElementById('modalProductSpecs').textContent = specs;
+    document.getElementById('productModal').style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('productModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Request quote
+function requestQuote(productName) {
+    const message = `Hola, me interesa solicitar una cotización para: ${productName}. ¿Podrían enviarme más información?`;
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Request quote from modal
+function requestQuoteFromModal() {
+    if (currentProduct) {
+        requestQuote(currentProduct);
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+    setupCategoryFilter();
+    setupSearch();
+
+    // Add stagger effect to product cards
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+
+// Add CSS animation for pulse
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+
+{% endblock %}

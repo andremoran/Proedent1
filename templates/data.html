@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h2>Evolución de Hemoglobina</h2>
+  <canvas id="hemoglobinChart" width="400" height="200"></canvas>
+
+  <h2 class="mt-5">Distribución de Riesgo</h2>
+  <canvas id="riskChart" width="400" height="200"></canvas>
+
+  <h2 class="mt-5">Registro de Datos Clínicos</h2>
+  <style>
+    table {
+      background-color: #ffffff;
+      color: #000000;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+  </style>
+  {% if clinical_data %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>ID Paciente</th>
+        <th>Hemoglobina</th>
+        <th>Hematocrito</th>
+        <th>MCV</th>
+        <th>Hierro Sérico</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in clinical_data %}
+      <tr>
+        <td>{{ record.id }}</td>
+        <td>{{ record.patient_id }}</td>
+        <td>{{ record.hemoglobin }}</td>
+        <td>{{ record.hematocrit }}</td>
+        <td>{{ record.mcv }}</td>
+        <td>{{ record.serum_iron }}</td>
+        <td>{{ record.timestamp }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No se han registrado datos clínicos.</p>
+  {% endif %}
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Datos para el gráfico de línea: Usamos escala de tipo "category" en vez de "time"
+    const hemoglobinData = {{ hemoglobin_data|tojson }};
+    const hemoglobinLabels = hemoglobinData.map(item => item.x);
+    const hemoglobinValues = hemoglobinData.map(item => item.y);
+
+    const ctxHemoglobin = document.getElementById('hemoglobinChart').getContext('2d');
+    const hemoglobinChart = new Chart(ctxHemoglobin, {
+      type: 'line',
+      data: {
+        labels: hemoglobinLabels,
+        datasets: [{
+          label: 'Nivel de Hemoglobina (g/dL)',
+          data: hemoglobinValues,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            // Usamos escala tipo "category" ya que las fechas vienen formateadas como cadenas
+            title: { display: true, text: 'Fecha' }
+          },
+          y: {
+            title: { display: true, text: 'Hemoglobina (g/dL)' }
+          }
+        }
+      }
+    });
+
+    // Datos para el gráfico de pastel: Distribución de Riesgo
+    const riskCounts = {{ risk_counts|tojson }};
+    const riskLabels = Object.keys(riskCounts);
+    const riskValues = Object.values(riskCounts);
+
+    const ctxRisk = document.getElementById('riskChart').getContext('2d');
+    const riskChart = new Chart(ctxRisk, {
+      type: 'pie',
+      data: {
+        labels: riskLabels,
+        datasets: [{
+          label: 'Distribución de Riesgo',
+          data: riskValues,
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(255, 99, 132, 0.6)'
+          ]
+        }]
+      },
+      options: { responsive: true }
+    });
+  </script>
+{% endblock %}

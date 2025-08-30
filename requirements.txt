@@ -1,0 +1,13 @@
+Flask==3.1.0
+Flask-Login==0.6.3
+Flask-SocketIO==5.5.0
+pandas==2.1.0
+scikit-learn==1.3.0
+pickle-mixin
+twilio
+openpyxl
+matplotlib==3.7.2
+numpy==1.24.3
+gunicorn==21.2.0
+google-cloud-dialogflow
+

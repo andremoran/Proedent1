@@ -1,0 +1,1039 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-up {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .slide-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .euronda-product-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .euronda-product-card:hover {
+        border-color: #dc2626;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(220, 38, 38, 0.15);
+    }
+
+    .euronda-product-card.featured {
+        border: 3px solid #16a34a;
+        box-shadow: 0 0 20px rgba(22, 163, 74, 0.2);
+    }
+
+    .euronda-product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #dc2626, #16a34a, #2563eb);
+        transition: left 0.4s ease;
+    }
+
+    .euronda-product-card:hover::before {
+        left: 0;
+    }
+
+    .euronda-product-card.featured::before {
+        background: linear-gradient(90deg, #16a34a, #15803d, #166534);
+        left: 0;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
+        border-radius: 10px;
+        transition: transform 0.4s ease;
+        background: #f8fafc;
+        padding: 15px;
+    }
+
+    .euronda-product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .hero-euronda {
+        background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+                    url('{{ url_for('static', filename='images/euronda-hero-bg.jpg') }}');
+        min-height: 70vh;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-euronda::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="euronda" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="30" cy="30" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23euronda)"/></svg>');
+        opacity: 0.4;
+    }
+
+    .product-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #dc2626;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-style: italic;
+        margin-bottom: 1rem;
+    }
+
+    .quote-btn-euronda {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .quote-btn-euronda:hover {
+        background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .euronda-logo {
+        font-size: 3rem;
+        font-weight: 900;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 0.1em;
+    }
+
+    .specs-list {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #dc2626;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .category-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #dc2626, #16a34a);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-euronda {
+            min-height: 60vh;
+        }
+
+        .euronda-logo {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-euronda text-white py-5 mb-5 position-relative">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <a href="{{ url_for('catalogo') }}" class="back-btn mb-4">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Catálogo
+                </a>
+                <div class="euronda-logo mb-4">EURONDA</div>
+                <h1 class="display-5 fw-bold mb-4">Catálogo Completo de Productos</h1>
+                <p class="lead mb-4">Descubre la línea completa de equipos de esterilización e higiene EURONDA, calidad italiana para tu consulta dental</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-award text-warning me-2"></i>
+                        <span>Calidad Italiana</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-shield-virus text-info me-2"></i>
+                        <span>Esterilización</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-hand-sparkles text-success me-2"></i>
+                        <span>Higiene Dental</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center fade-in">
+                <i class="fas fa-prescription-bottle-alt" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Categories Section -->
+<div class="container mb-5">
+
+    <!-- Autoclaves Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-fire"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Autoclaves</h2>
+            <p class="lead text-muted">Sistemas de esterilización por vapor de alta eficiencia para garantizar la máxima seguridad en sus instrumentos dentales.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- E10 -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-warning">Autoclave</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-e10.png') }}"
+                         alt="E10" class="product-image mb-3">
+                    <h4 class="product-title">E10</h4>
+                    <p class="product-subtitle flex-grow-1">Autoclave de clase B con tecnología avanzada de esterilización</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Clase B según EN 13060</li>
+                            <li>Capacidad optimizada</li>
+                            <li>Tecnología de vapor avanzada</li>
+                            <li>Interface intuitiva</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('E10', 'Autoclave de clase B con tecnología avanzada de esterilización', 'Clase B según EN 13060 con capacidad optimizada y tecnología de vapor avanzada')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('E10')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- EXL -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card featured rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-success">DESTACADO</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-exl.png') }}"
+                         alt="EXL" class="product-image mb-3">
+                    <h4 class="product-title" style="color: #16a34a;">EXL</h4>
+                    <p class="product-subtitle flex-grow-1">Autoclave premium con tecnología de excelencia para consultas exigentes</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Tecnología premium</li>
+                            <li>Mayor capacidad</li>
+                            <li>Eficiencia energética</li>
+                            <li>Sistema de control avanzado</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">Consultar precio</div>
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showProductDetails('EXL', 'Autoclave premium con tecnología de excelencia para consultas exigentes', 'Tecnología premium con mayor capacidad y eficiencia energética')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('EXL')" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">
+                        <i class="fas fa-star me-2"></i>Producto Destacado
+                    </button>
+                </div>
+            </div>
+
+            <!-- E9 -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-warning">Autoclave</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-e9.png') }}"
+                         alt="E9" class="product-image mb-3">
+                    <h4 class="product-title">E9</h4>
+                    <p class="product-subtitle flex-grow-1">Autoclave confiable con excelente relación calidad-precio</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Diseño compacto</li>
+                            <li>Operación sencilla</li>
+                            <li>Ciclos de esterilización rápidos</li>
+                            <li>Mantenimiento mínimo</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('E9', 'Autoclave confiable con excelente relación calidad-precio', 'Diseño compacto con operación sencilla y ciclos de esterilización rápidos')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('E9')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- E8 -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-warning">Autoclave</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-e8.png') }}"
+                         alt="E8" class="product-image mb-3">
+                    <h4 class="product-title">E8</h4>
+                    <p class="product-subtitle flex-grow-1">Autoclave de entrada ideal para consultas pequeñas</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Tamaño compacto</li>
+                            <li>Fácil instalación</li>
+                            <li>Controles intuitivos</li>
+                            <li>Precio accesible</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('E8', 'Autoclave de entrada ideal para consultas pequeñas', 'Tamaño compacto con fácil instalación y controles intuitivos')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('E8')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Termoselladoras Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-compress-alt"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Termoselladoras</h2>
+            <p class="lead text-muted">Equipos de sellado térmico para el empaquetado seguro de instrumentos antes del proceso de esterilización.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Euromatic -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-info">Termoselladora</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-euromatic.png') }}"
+                         alt="Euromatic" class="product-image mb-3">
+                    <h4 class="product-title">Euromatic</h4>
+                    <p class="product-subtitle flex-grow-1">Termoselladora automática de alta eficiencia</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Operación automática</li>
+                            <li>Sellado uniforme</li>
+                            <li>Alta velocidad</li>
+                            <li>Fácil mantenimiento</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Euromatic', 'Termoselladora automática de alta eficiencia', 'Operación automática con sellado uniforme y alta velocidad')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Euromatic')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Euroseal Valida -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-info">Termoselladora</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosealvalida.png') }}"
+                         alt="Euroseal Valida" class="product-image mb-3">
+                    <h4 class="product-title">Euroseal Valida</h4>
+                    <p class="product-subtitle flex-grow-1">Termoselladora con sistema de validación integrado</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Sistema de validación</li>
+                            <li>Control de temperatura</li>
+                            <li>Indicadores de calidad</li>
+                            <li>Trazabilidad del proceso</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Euroseal Valida', 'Termoselladora con sistema de validación integrado', 'Sistema de validación con control de temperatura y trazabilidad del proceso')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Euroseal Valida')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Euroseal -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-info">Termoselladora</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-euroseal.png') }}"
+                         alt="Euroseal" class="product-image mb-3">
+                    <h4 class="product-title">Euroseal</h4>
+                    <p class="product-subtitle flex-grow-1">Termoselladora estándar confiable y eficiente</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Operación manual</li>
+                            <li>Diseño robusto</li>
+                            <li>Sellado consistente</li>
+                            <li>Mantenimiento sencillo</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Euroseal', 'Termoselladora estándar confiable y eficiente', 'Operación manual con diseño robusto y sellado consistente')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Euroseal')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Euroseal Infinity -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-info">Termoselladora</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosealiinfinity.png') }}"
+                         alt="Euroseal Infinity" class="product-image mb-3">
+                    <h4 class="product-title">Euroseal Infinity</h4>
+                    <p class="product-subtitle flex-grow-1">Termoselladora de uso continuo para alta demanda</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Uso continuo</li>
+                            <li>Alta productividad</li>
+                            <li>Resistencia extrema</li>
+                            <li>Tecnología avanzada</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Euroseal Infinity', 'Termoselladora de uso continuo para alta demanda', 'Uso continuo con alta productividad y resistencia extrema')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Euroseal Infinity')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Termodesinfección Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-thermometer-half"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Termodesinfección</h2>
+            <p class="lead text-muted">Equipos de desinfección térmica para la limpieza y preparación de instrumentos antes del proceso de esterilización.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <!-- Eurosafe 60 -->
+            <div class="col-lg-6 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-primary">Termodesinfección</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosafe60.png') }}"
+                         alt="Eurosafe 60" class="product-image mb-3">
+                    <h4 class="product-title">Eurosafe 60</h4>
+                    <p class="product-subtitle flex-grow-1">Termodesinfectora compacta de 60 litros</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Capacidad: 60 litros</li>
+                            <li>Desinfección térmica eficiente</li>
+                            <li>Ciclos automáticos</li>
+                            <li>Interface digital</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosafe 60', 'Termodesinfectora compacta de 60 litros', 'Capacidad de 60 litros con desinfección térmica eficiente y ciclos automáticos')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Eurosafe 60')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Eurosafe 170 -->
+            <div class="col-lg-6 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-primary">Termodesinfección</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosafe170.png') }}"
+                         alt="Eurosafe 170" class="product-image mb-3">
+                    <h4 class="product-title">Eurosafe 170</h4>
+                    <p class="product-subtitle flex-grow-1">Termodesinfectora de gran capacidad 170 litros</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Capacidad: 170 litros</li>
+                            <li>Alta productividad</li>
+                            <li>Múltiples programas</li>
+                            <li>Control avanzado</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosafe 170', 'Termodesinfectora de gran capacidad 170 litros', 'Capacidad de 170 litros con alta productividad y múltiples programas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Eurosafe 170')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cubas multifuncionales Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-cube"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Cubas Multifuncionales</h2>
+            <p class="lead text-muted">Equipos versátiles que combinan múltiples funciones de limpieza y desinfección en un solo dispositivo.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Eurosafe Smart -->
+            <div class="col-lg-8 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-success">Multifuncional</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosafesmart.png') }}"
+                         alt="Eurosafe Smart" class="product-image mb-3">
+                    <h4 class="product-title">Eurosafe Smart</h4>
+                    <p class="product-subtitle flex-grow-1">Sistema multifuncional inteligente de limpieza y desinfección</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Múltiples funciones integradas</li>
+                            <li>Control inteligente</li>
+                            <li>Eficiencia energética</li>
+                            <li>Diseño compacto</li>
+                            <li>Interface táctil</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosafe Smart', 'Sistema multifuncional inteligente de limpieza y desinfección', 'Múltiples funciones integradas con control inteligente y diseño compacto')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Eurosafe Smart')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cuba de ultrasonidos Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-wave-square"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Cuba de Ultrasonidos</h2>
+            <p class="lead text-muted">Equipos de limpieza ultrasónica para la eliminación eficaz de residuos y contaminantes de los instrumentos dentales.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Eurosonic -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-purple">Ultrasonidos</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosonic3d.png') }}"
+                         alt="Eurosonic" class="product-image mb-3">
+                    <h4 class="product-title">Eurosonic</h4>
+                    <p class="product-subtitle flex-grow-1">Cuba de ultrasonidos estándar para limpieza eficaz</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Limpieza ultrasónica</li>
+                            <li>Frecuencia optimizada</li>
+                            <li>Capacidad estándar</li>
+                            <li>Fácil operación</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosonic', 'Cuba de ultrasonidos estándar para limpieza eficaz', 'Limpieza ultrasónica con frecuencia optimizada y fácil operación')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Eurosonic')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Eurosonic Micro -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-purple">Ultrasonidos</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosonicmicro.png') }}"
+                         alt="Eurosonic Micro" class="product-image mb-3">
+                    <h4 class="product-title">Eurosonic Micro</h4>
+                    <p class="product-subtitle flex-grow-1">Cuba de ultrasonidos compacta para espacios reducidos</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Diseño compacto</li>
+                            <li>Eficiencia espacial</li>
+                            <li>Tecnología micro</li>
+                            <li>Ideal para consultas pequeñas</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosonic Micro', 'Cuba de ultrasonidos compacta para espacios reducidos', 'Diseño compacto con eficiencia espacial, ideal para consultas pequeñas')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Eurosonic Micro')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Eurosonic Energy -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-purple">Ultrasonidos</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosonicenergy.png') }}"
+                         alt="Eurosonic Energy" class="product-image mb-3">
+                    <h4 class="product-title">Eurosonic Energy</h4>
+                    <p class="product-subtitle flex-grow-1">Cuba de ultrasonidos de alta potencia para limpieza intensiva</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Alta potencia</li>
+                            <li>Limpieza intensiva</li>
+                            <li>Mayor eficiencia</li>
+                            <li>Tecnología avanzada</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosonic Energy', 'Cuba de ultrasonidos de alta potencia para limpieza intensiva', 'Alta potencia con limpieza intensiva y mayor eficiencia')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Eurosonic Energy')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Eurosonic 4D -->
+            <div class="col-lg-6 col-xl-3 slide-in-up">
+                <div class="euronda-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">EURONDA</span>
+                        <span class="badge bg-purple">Ultrasonidos</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/euronda/eu-eurosonic4d.png') }}"
+                         alt="Eurosonic 4D" class="product-image mb-3">
+                    <h4 class="product-title">Eurosonic 4D</h4>
+                    <p class="product-subtitle flex-grow-1">Cuba de ultrasonidos con tecnología 4D para limpieza superior</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Tecnología 4D</li>
+                            <li>Limpieza superior</li>
+                            <li>Múltiples frecuencias</li>
+                            <li>Resultados excepcionales</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Eurosonic 4D', 'Cuba de ultrasonidos con tecnología 4D para limpieza superior', 'Tecnología 4D con múltiples frecuencias para resultados excepcionales')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-euronda" onclick="requestQuote('Eurosonic 4D')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact CTA -->
+<div class="container mb-5">
+    <div class="bg-primary rounded-4 p-5 text-white text-center fade-in">
+        <h3 class="fw-bold mb-3">¿Interesado en algún equipo EURONDA?</h3>
+        <p class="lead mb-4">Nuestros especialistas en esterilización están listos para asesorarte</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="tel:+593987553634" class="btn btn-light btn-lg rounded-pill px-4">
+                <i class="fas fa-phone me-2"></i>+593 98 755 3634
+            </a>
+            <a href="https://wa.me/593987553634" target="_blank" class="btn btn-success btn-lg rounded-pill px-4">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Catálogo
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="modal-overlay" id="productModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalProductName" class="text-primary mb-3"></h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Descripción:</h6>
+                <p id="modalProductDescription" class="text-muted"></p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Especificaciones:</h6>
+                <p id="modalProductSpecs" class="text-muted small"></p>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-outline-secondary" onclick="closeModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="requestQuoteFromModal()">
+                <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProduct = '';
+
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-up'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Show product details modal
+function showProductDetails(name, description, specs) {
+    currentProduct = name;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductDescription').textContent = description;
+    document.getElementById('modalProductSpecs').textContent = specs;
+    document.getElementById('productModal').style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('productModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Request quote function
+function requestQuote(productName) {
+    const message = `Hola, me interesa solicitar una cotización para el equipo EURONDA: ${productName}. ¿Podrían enviarme más información sobre especificaciones técnicas, precios y disponibilidad?`;
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Request quote from modal
+function requestQuoteFromModal() {
+    if (currentProduct) {
+        requestQuote(currentProduct);
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+});
+</script>
+
+{% endblock %}

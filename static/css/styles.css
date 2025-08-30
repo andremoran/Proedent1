@@ -1,0 +1,159 @@
+.is-selecting {
+  cursor: crosshair;
+}
+
+#app {
+  width: 100%;
+  height: 110vh;
+  margin: 1em auto;
+  border: #0d1736 solid 2px;
+}
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 10px; 
+    background-image: url('images2.svg'); /* Reemplaza 'ruta/de/la/imagen.jpg' con la ubicación de tu imagen */
+    background-size: cover; /* Ajusta el tamaño de la imagen para cubrir todo el fondo */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-position: center;
+   /* Add the blur effect */
+  
+  
+  }
+   
+  
+  h1 {
+    text-shadow: 0 0 3px #FF0000, 0 0 5px #0000FF;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+  }
+  
+  
+    button {
+      cursor: pointer;
+      background-color: #3a4857;
+      color: #fff;
+      border: none;
+    }
+    
+  /* 
+    #osd {
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+  
+    .osd-canvas:focus {
+      outline: none;
+    }
+  
+    #overlay3 {
+      font-size: 2px;
+      cursor: grab;
+      color: #000;
+      background: rgba(0, 255, 255, .2);
+      padding: 1px;
+      pointer-events: auto;
+    }
+  
+    .viewer-container
+      position absolute
+      width 100%
+      height 100vh
+      left 0
+      top 0
+      
+      .viewer
+          position absolute
+          left 0
+          top 0
+          width 100%
+          height 100vh
+          pointer-events none
+          
+      .container
+          position relative
+          left 0
+          top 0
+          width 100%
+          height 100vh
+          
+      #osd
+          pointer-events auto
+          
+      #geojs
+          .geojs-layer
+              pointer-events none
+              
+    */
+  
+      .inputs {
+      margin-bottom: 10px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    
+    input[type="text"],
+    button {
+      padding: 5px;
+      font-size: 16px;
+    }
+    
+  
+    
+    button:hover {
+      background-color: #0056b3;
+    }
+    
+    #valores {
+      margin-top: 20px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+    
+    table,
+    th,
+    td {
+      border: 1px solid #ccc;
+    }
+    
+    th,
+    td {
+      padding: 8px;
+      text-align: left;
+    }
+    
+    #resultado {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 15px;
+      padding: 10px;
+      border: 2px solid 
+      #007bff7a;
+      border-radius: 5px;
+      background-color: #f7f7f7;
+    }
+    
+    
+    #exportButtonContainer {
+      position: relative;
+      margin-right: -530px;
+    }
+
+  #exportCSV,#importCSVButton {
+      padding: 2px 5px;
+      background-color: #323d32;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 2px;
+  }

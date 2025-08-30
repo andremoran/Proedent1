@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block content %}
+        <!-- Video Background -->
+    <div class="video-container" style="top: 0; left: 0; overflow: hidden; ">
+        <video
+            id="bgVideo"
+            autoplay
+            muted
+            loop
+            playsinline
+            webkit-playsinline
+            class="video-background"
+        >
+            <source src="{{ url_for('static', filename='videos/backgroundAnemia.mp4') }}" type="video/mp4">
+        </video>
+    </div>
+
+  <h2>Resultados</h2>
+  <form method="POST" action="{{ url_for('schedule') }}">
+    <div class="mb-3">
+      <label for="patient_id" class="form-label">ID del Paciente</label>
+      <input type="number" class="form-control" id="patient_id" name="patient_id" required>
+    </div>
+    <div class="mb-3">
+      <label for="telefono" class="form-label">Número de teléfono (incluyendo código de país)</label>
+      <input type="text" class="form-control" id="telefono" name="telefono" required>
+    </div>
+    <div class="mb-3">
+      <label for="fecha_cita" class="form-label">Fecha de la cita</label>
+      <input type="date" class="form-control" id="fecha_cita" name="fecha_cita" required>
+    </div>
+    <div class="mb-3">
+      <label for="hora_cita" class="form-label">Hora de la cita</label>
+      <input type="time" class="form-control" id="hora_cita" name="hora_cita" required>
+    </div>
+    <h4>Resultados de Examen</h4>
+    <div class="mb-3">
+      <label for="hemoglobin" class="form-label">Nivel de Hemoglobina (g/dL)</label>
+      <input type="number" step="0.1" class="form-control" id="hemoglobin" name="hemoglobin" required>
+    </div>
+    <div class="mb-3">
+      <label for="hematocrit" class="form-label">Hematocrito (%)</label>
+      <input type="number" step="0.1" class="form-control" id="hematocrit" name="hematocrit" required>
+    </div>
+    <div class="mb-3">
+      <label for="mcv" class="form-label">Volumen Corpuscular Medio (fL)</label>
+      <input type="number" step="0.1" class="form-control" id="mcv" name="mcv" required>
+    </div>
+    <div class="mb-3">
+      <label for="serum_iron" class="form-label">Hierro Sérico (µg/dL)</label>
+      <input type="number" step="0.1" class="form-control" id="serum_iron" name="serum_iron" required>
+    </div>
+    <div class="mb-3">
+      <label for="diagnostico" class="form-label">Diagnóstico</label>
+      <textarea class="form-control" id="diagnostico" name="diagnostico" required></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="receta" class="form-label">Receta médica</label>
+      <textarea class="form-control" id="receta" name="receta" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Enviar por Whatsapp</button>
+    <a href="{{ url_for('download_excel') }}" class="btn btn-secondary ml-2">Descargar Excel</a>
+  </form>
+
+  <script>
+    // Obtener la fecha y hora actual
+    const today = new Date();
+    const date = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    const time = today.toTimeString().split(' ')[0].slice(0, 5); // Formato HH:MM
+
+    // Asignar la fecha y hora actuales a los campos correspondientes
+    document.getElementById('fecha_cita').value = date;
+    document.getElementById('hora_cita').value = time;
+  </script>
+{% endblock %}

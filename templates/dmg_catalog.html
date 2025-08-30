@@ -1,0 +1,1480 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-up {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .slide-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .dmg-product-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .dmg-product-card:hover {
+        border-color: #10b981;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+    }
+
+    .dmg-product-card.featured {
+        border: 3px solid #f59e0b;
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+    }
+
+    .dmg-product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+        transition: left 0.4s ease;
+    }
+
+    .dmg-product-card:hover::before {
+        left: 0;
+    }
+
+    .dmg-product-card.featured::before {
+        background: linear-gradient(90deg, #f59e0b, #eab308, #d97706);
+        left: 0;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
+        border-radius: 10px;
+        transition: transform 0.4s ease;
+        background: #f8fafc;
+        padding: 15px;
+    }
+
+    .dmg-product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .hero-dmg {
+        background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+                    url('{{ url_for('static', filename='images/dmg-hero-bg.jpg') }}');
+        min-height: 70vh;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-dmg::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dmg" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="30" cy="30" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23dmg)"/></svg>');
+        opacity: 0.4;
+    }
+
+    .product-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #10b981;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-style: italic;
+        margin-bottom: 1rem;
+    }
+
+    .quote-btn-dmg {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .quote-btn-dmg:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .dmg-logo {
+        font-size: 3rem;
+        font-weight: 900;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 0.1em;
+    }
+
+    .specs-list {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #10b981;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .category-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #10b981, #f59e0b);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-dmg {
+            min-height: 60vh;
+        }
+
+        .dmg-logo {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-dmg text-white py-5 mb-5 position-relative">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <a href="{{ url_for('catalogo') }}" class="back-btn mb-4">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Catálogo
+                </a>
+                <div class="dmg-logo mb-4">DMG</div>
+                <h1 class="display-5 fw-bold mb-4">Catálogo Completo de Productos</h1>
+                <p class="lead mb-4">Descubre la línea completa de materiales dentales DMG, innovación alemana en materiales de restauración, impresión y cementación</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-flask text-warning me-2"></i>
+                        <span>Materiales Dentales</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-microscope text-info me-2"></i>
+                        <span>Innovación Alemana</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-award text-success me-2"></i>
+                        <span>Alta Calidad</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center fade-in">
+                <i class="fas fa-vials" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Categories Section -->
+<div class="container mb-5">
+    
+    <!-- Prevención e Intervención Precoz Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Prevención e Intervención Precoz</h2>
+            <p class="lead text-muted">Productos especializados para la prevención de caries y tratamientos de intervención temprana en odontología preventiva.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            
+            <!-- Icon Proximal (DESTACADO) -->
+            <div class="col-lg-6 slide-in-up">
+                <div class="dmg-product-card featured rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-warning">DESTACADO</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-iconproximal.png') }}"
+                         alt="Icon Proximal" class="product-image mb-3">
+                    <h4 class="product-title" style="color: #f59e0b;">Icon Proximal</h4>
+                    <p class="product-subtitle flex-grow-1">Sistema innovador para infiltración de lesiones cariosas proximales</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Infiltración de lesiones proximales</li>
+                            <li>Tratamiento micro-invasivo</li>
+                            <li>Preserva estructura dental</li>
+                            <li>Técnica innovadora sin anestesia</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag" style="background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);">Consultar precio</div>
+                        <button class="btn btn-outline-warning btn-sm rounded-pill"
+                                onclick="showProductDetails('Icon Proximal', 'Sistema innovador para infiltración de lesiones cariosas proximales', 'Infiltración de lesiones proximales con tratamiento micro-invasivo, preserva estructura dental')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Icon Proximal')" style="background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);">
+                        <i class="fas fa-star me-2"></i>Producto Destacado
+                    </button>
+                </div>
+            </div>
+
+            <!-- Icon Vestibular -->
+            <div class="col-lg-6 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-info">Prevención</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-iconvestibular.png') }}"
+                         alt="Icon Vestibular" class="product-image mb-3">
+                    <h4 class="product-title">Icon Vestibular</h4>
+                    <p class="product-subtitle flex-grow-1">Sistema de infiltración para lesiones vestibulares y oclusales</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Infiltración vestibular y oclusal</li>
+                            <li>Estética mejorada</li>
+                            <li>Técnica conservadora</li>
+                            <li>Resultados inmediatos</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Icon Vestibular', 'Sistema de infiltración para lesiones vestibulares y oclusales', 'Infiltración vestibular y oclusal con estética mejorada y técnica conservadora')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Icon Vestibular')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Materiales de Impresión Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-print"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Materiales de Impresión</h2>
+            <p class="lead text-muted">Línea completa de materiales de impresión de alta precisión para obtener reproducciones exactas y detalladas.</p>
+        </div>
+
+        <div class="row g-4">
+            
+            <!-- Silagum Light -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-primary">Impresión</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-silagumlight.png') }}"
+                         alt="Silagum Light" class="product-image mb-3">
+                    <h4 class="product-title">Silagum Light</h4>
+                    <p class="product-subtitle flex-grow-1">Silicona de adición ligera para impresiones de precisión</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Consistencia ligera</li>
+                            <li>Alta precisión dimensional</li>
+                            <li>Fácil aplicación</li>
+                            <li>Excelente fluidez</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Silagum Light', 'Silicona de adición ligera para impresiones de precisión', 'Consistencia ligera con alta precisión dimensional y excelente fluidez')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Silagum Light')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Silagum Medium -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-primary">Impresión</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-silagummedium.png') }}"
+                         alt="Silagum Medium" class="product-image mb-3">
+                    <h4 class="product-title">Silagum Medium</h4>
+                    <p class="product-subtitle flex-grow-1">Silicona de adición de consistencia media, ideal para técnica de doble mezcla</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Consistencia media</li>
+                            <li>Técnica de doble mezcla</li>
+                            <li>Estabilidad dimensional</li>
+                            <li>Tiempo de trabajo óptimo</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Silagum Medium', 'Silicona de adición de consistencia media, ideal para técnica de doble mezcla', 'Consistencia media con estabilidad dimensional y tiempo de trabajo óptimo')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Silagum Medium')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Silagum Mono -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-primary">Impresión</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-silagummono.png') }}"
+                         alt="Silagum Mono" class="product-image mb-3">
+                    <h4 class="product-title">Silagum Mono</h4>
+                    <p class="product-subtitle flex-grow-1">Silicona monofásica para impresiones en una sola fase</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Técnica monofásica</li>
+                            <li>Una sola consistencia</li>
+                            <li>Procedimiento simplificado</li>
+                            <li>Eficiencia clínica</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Silagum Mono', 'Silicona monofásica para impresiones en una sola fase', 'Técnica monofásica con procedimiento simplificado y eficiencia clínica')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Silagum Mono')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Silagum Putty -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-primary">Impresión</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-silagumputty.png') }}"
+                         alt="Silagum Putty" class="product-image mb-3">
+                    <h4 class="product-title">Silagum Putty</h4>
+                    <p class="product-subtitle flex-grow-1">Silicona de adición de consistencia densa para primera impresión</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Consistencia densa</li>
+                            <li>Primera impresión</li>
+                            <li>Soporte estructural</li>
+                            <li>Compatible con toda la línea</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Silagum Putty', 'Silicona de adición de consistencia densa para primera impresión', 'Consistencia densa con soporte estructural, compatible con toda la línea')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Silagum Putty')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Silagum Putty Soft -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-primary">Impresión</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-silagumputtysort.png') }}"
+                         alt="Silagum Putty Soft" class="product-image mb-3">
+                    <h4 class="product-title">Silagum Putty Soft</h4>
+                    <p class="product-subtitle flex-grow-1">Versión suave de silicona putty para mayor comodidad del paciente</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Textura suave</li>
+                            <li>Mayor comodidad</li>
+                            <li>Fácil remoción</li>
+                            <li>Menos presión intraoral</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Silagum Putty Soft', 'Versión suave de silicona putty para mayor comodidad del paciente', 'Textura suave con mayor comodidad y fácil remoción, menos presión intraoral')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Silagum Putty Soft')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- O-Bite -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-warning">Registro</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-obite.png') }}"
+                         alt="O-Bite" class="product-image mb-3">
+                    <h4 class="product-title">O-Bite</h4>
+                    <p class="product-subtitle flex-grow-1">Material de registro de mordida de alta precisión</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Registro de mordida preciso</li>
+                            <li>Endurecimiento rápido</li>
+                            <li>No se deforma</li>
+                            <li>Fácil recorte</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('O-Bite', 'Material de registro de mordida de alta precisión', 'Registro de mordida preciso con endurecimiento rápido, no se deforma y fácil recorte')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('O-Bite')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Silagum Comfort -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-secondary">Rebase</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-silagumcomfort.png') }}"
+                         alt="Silagum Comfort" class="product-image mb-3">
+                    <h4 class="product-title">Silagum Comfort</h4>
+                    <p class="product-subtitle flex-grow-1">Material de rebase suave para mayor comodidad</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Rebase de prótesis</li>
+                            <li>Textura suave</li>
+                            <li>Mayor comodidad</li>
+                            <li>Larga duración</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Silagum Comfort', 'Material de rebase suave para mayor comodidad', 'Rebase de prótesis con textura suave, mayor comodidad y larga duración')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Silagum Comfort')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Materiales de Cementación Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-link"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Materiales de Cementación</h2>
+            <p class="lead text-muted">Cementos dentales de última generación para cementación permanente y provisional, con excelente adhesión y biocompatibilidad.</p>
+        </div>
+
+        <div class="row g-4">
+            
+            <!-- LuxaCore Z Dual -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-danger">Cementación</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-luxacorezddual.png') }}"
+                         alt="LuxaCore Z Dual" class="product-image mb-3">
+                    <h4 class="product-title">LuxaCore Z Dual</h4>
+                    <p class="product-subtitle flex-grow-1">Material de reconstrucción radicular y cementación dual</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Curado dual</li>
+                            <li>Reconstrucción de muñones</li>
+                            <li>Alta resistencia</li>
+                            <li>Radiopaco</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('LuxaCore Z Dual', 'Material de reconstrucción radicular y cementación dual', 'Curado dual para reconstrucción de muñones con alta resistencia y radiopacidad')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('LuxaCore Z Dual')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- LuxaCore Z Post -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-danger">Cementación</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-luxacorezpost.png') }}"
+                         alt="LuxaCore Z Post System" class="product-image mb-3">
+                    <h4 class="product-title">LuxaCore Z Post System</h4>
+                    <p class="product-subtitle flex-grow-1">Sistema completo para cementación de postes y reconstrucción</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Cementación de postes</li>
+                            <li>Sistema completo</li>
+                            <li>Adhesión excepcional</li>
+                            <li>Fácil aplicación</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('LuxaCore Z Post System', 'Sistema completo para cementación de postes y reconstrucción', 'Cementación de postes con adhesión excepcional y fácil aplicación')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('LuxaCore Z Post System')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- PermaCem Universal -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-danger">Cementación</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-permacemuuniversal.png') }}"
+                         alt="PermaCem Universal" class="product-image mb-3">
+                    <h4 class="product-title">PermaCem Universal</h4>
+                    <p class="product-subtitle flex-grow-1">Cemento universal para cementación permanente</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Cementación universal</li>
+                            <li>Adhesión permanente</li>
+                            <li>Biocompatible</li>
+                            <li>Fácil limpieza de excesos</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('PermaCem Universal', 'Cemento universal para cementación permanente', 'Cementación universal con adhesión permanente, biocompatible y fácil limpieza')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('PermaCem Universal')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- PermaCem 2.0 -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-danger">Cementación</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-permacem2.png') }}"
+                         alt="PermaCem 2.0" class="product-image mb-3">
+                    <h4 class="product-title">PermaCem 2.0</h4>
+                    <p class="product-subtitle flex-grow-1">Nueva generación de cemento permanente con propiedades mejoradas</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Nueva generación</li>
+                            <li>Propiedades mejoradas</li>
+                            <li>Mayor resistencia</li>
+                            <li>Estética optimizada</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('PermaCem 2.0', 'Nueva generación de cemento permanente con propiedades mejoradas', 'Nueva generación con propiedades mejoradas, mayor resistencia y estética optimizada')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('PermaCem 2.0')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- PermaCem Dual -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-danger">Cementación</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-permacemdual.png') }}"
+                         alt="PermaCem Dual" class="product-image mb-3">
+                    <h4 class="product-title">PermaCem Dual</h4>
+                    <p class="product-subtitle flex-grow-1">Cemento de curado dual para máxima versatilidad</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Curado dual</li>
+                            <li>Máxima versatilidad</li>
+                            <li>Autopolimerizable</li>
+                            <li>Fotopolimerizable</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('PermaCem Dual', 'Cemento de curado dual para máxima versatilidad', 'Curado dual con máxima versatilidad, autopolimerizable y fotopolimerizable')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('PermaCem Dual')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- PermaCem -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-danger">Cementación</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-permacem.png') }}"
+                         alt="PermaCem" class="product-image mb-3">
+                    <h4 class="product-title">PermaCem</h4>
+                    <p class="product-subtitle flex-grow-1">Cemento permanente de referencia con confiabilidad probada</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Cemento de referencia</li>
+                            <li>Confiabilidad probada</li>
+                            <li>Cementación permanente</li>
+                            <li>Resultados predecibles</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('PermaCem', 'Cemento permanente de referencia con confiabilidad probada', 'Cemento de referencia con confiabilidad probada y resultados predecibles')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('PermaCem')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Prótesis Provisionales Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Prótesis Provisionales</h2>
+            <p class="lead text-muted">Materiales especializados para la fabricación de prótesis provisionales con excelentes propiedades estéticas y funcionales.</p>
+        </div>
+
+        <div class="row g-4">
+            
+            <!-- Luxatemp Star -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-purple">Provisional</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-luxatempstar.png') }}"
+                         alt="Luxatemp Star" class="product-image mb-3">
+                    <h4 class="product-title">Luxatemp Star</h4>
+                    <p class="product-subtitle flex-grow-1">Material provisional de alta calidad con excelente estética</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Alta calidad estética</li>
+                            <li>Fácil pulimento</li>
+                            <li>Resistencia mecánica</li>
+                            <li>Estabilidad de color</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Luxatemp Star', 'Material provisional de alta calidad con excelente estética', 'Alta calidad estética con fácil pulimento, resistencia mecánica y estabilidad de color')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Luxatemp Star')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Luxatemp Fluorescence -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-purple">Provisional</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-luxatempfluorescence.png') }}"
+                         alt="Luxatemp Fluorescence" class="product-image mb-3">
+                    <h4 class="product-title">Luxatemp Fluorescence</h4>
+                    <p class="product-subtitle flex-grow-1">Material provisional con propiedades de fluorescencia natural</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Fluorescencia natural</li>
+                            <li>Estética superior</li>
+                            <li>Imitación dental realista</li>
+                            <li>Apariencia natural</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Luxatemp Fluorescence', 'Material provisional con propiedades de fluorescencia natural', 'Fluorescencia natural con estética superior e imitación dental realista')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Luxatemp Fluorescence')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Luxatemp Plus -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-purple">Provisional</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-luxatempplus.png') }}"
+                         alt="Luxatemp Plus" class="product-image mb-3">
+                    <h4 class="product-title">Luxatemp Plus</h4>
+                    <p class="product-subtitle flex-grow-1">Material provisional mejorado con propiedades optimizadas</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Propiedades optimizadas</li>
+                            <li>Mayor resistencia</li>
+                            <li>Mejor manipulación</li>
+                            <li>Versión mejorada</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Luxatemp Plus', 'Material provisional mejorado con propiedades optimizadas', 'Propiedades optimizadas con mayor resistencia y mejor manipulación')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Luxatemp Plus')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Luxatemp Solar -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-purple">Provisional</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-luxatempsolar.png') }}"
+                         alt="Luxatemp Solar" class="product-image mb-3">
+                    <h4 class="product-title">Luxatemp Solar</h4>
+                    <p class="product-subtitle flex-grow-1">Material provisional fotopolimerizable para un control preciso</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Fotopolimerizable</li>
+                            <li>Control preciso de curado</li>
+                            <li>Tiempo de trabajo extendido</li>
+                            <li>Curado a demanda</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Luxatemp Solar', 'Material provisional fotopolimerizable para un control preciso', 'Fotopolimerizable con control preciso de curado y tiempo de trabajo extendido')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Luxatemp Solar')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Luxatemp Glaze & Bond -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-secondary">Sellador</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-luxatempglazeb.png') }}"
+                         alt="Luxatemp Glaze & Bond" class="product-image mb-3">
+                    <h4 class="product-title">Luxatemp Glaze & Bond</h4>
+                    <p class="product-subtitle flex-grow-1">Sellador de superficies para acabado y protección de provisionales</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Sellado de superficies</li>
+                            <li>Acabado brillante</li>
+                            <li>Protección adicional</li>
+                            <li>Fácil aplicación</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Luxatemp Glaze & Bond', 'Sellador de superficies para acabado y protección de provisionales', 'Sellado de superficies con acabado brillante y protección adicional')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Luxatemp Glaze & Bond')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- TempoCem ID -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-warning">Provisional</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-tempocemid.png') }}"
+                         alt="TempoCem ID" class="product-image mb-3">
+                    <h4 class="product-title">TempoCem ID</h4>
+                    <p class="product-subtitle flex-grow-1">Cemento provisional con identificación de color</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Identificación por color</li>
+                            <li>Fácil localización</li>
+                            <li>Remoción sencilla</li>
+                            <li>Cementación temporal</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('TempoCem ID', 'Cemento provisional con identificación de color', 'Identificación por color con fácil localización y remoción sencilla')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('TempoCem ID')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- TempoCem NE -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-warning">Provisional</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-tempocemne.png') }}"
+                         alt="TempoCem NE" class="product-image mb-3">
+                    <h4 class="product-title">TempoCem NE</h4>
+                    <p class="product-subtitle flex-grow-1">Cemento provisional sin eugenol para máxima compatibilidad</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Sin eugenol</li>
+                            <li>Máxima compatibilidad</li>
+                            <li>No interfiere con adhesivos</li>
+                            <li>Cementación temporal segura</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('TempoCem NE', 'Cemento provisional sin eugenol para máxima compatibilidad', 'Sin eugenol con máxima compatibilidad, no interfiere con adhesivos')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('TempoCem NE')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- TempoCem -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-warning">Provisional</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-tempocem.png') }}"
+                         alt="TempoCem" class="product-image mb-3">
+                    <h4 class="product-title">TempoCem</h4>
+                    <p class="product-subtitle flex-grow-1">Cemento provisional estándar confiable y efectivo</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Cemento estándar</li>
+                            <li>Confiable y efectivo</li>
+                            <li>Fácil manipulación</li>
+                            <li>Precio accesible</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('TempoCem', 'Cemento provisional estándar confiable y efectivo', 'Cemento estándar confiable con fácil manipulación y precio accesible')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('TempoCem')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Sistemas Estéticos Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-palette"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Sistemas Estéticos</h2>
+            <p class="lead text-muted">Productos especializados para restauraciones estéticas con la más alta calidad y durabilidad.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            
+            <!-- Vitique -->
+            <div class="col-lg-6 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-info">Estético</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-vitique.png') }}"
+                         alt="Vitique" class="product-image mb-3">
+                    <h4 class="product-title">Vitique</h4>
+                    <p class="product-subtitle flex-grow-1">Sistema estético avanzado para restauraciones de alta calidad</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Sistema estético completo</li>
+                            <li>Restauraciones de alta calidad</li>
+                            <li>Excelente integración</li>
+                            <li>Resultados predecibles</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Vitique', 'Sistema estético avanzado para restauraciones de alta calidad', 'Sistema estético completo con excelente integración y resultados predecibles')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Vitique')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vitique Silane -->
+            <div class="col-lg-6 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-secondary">Silanizante</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-vitiquesilane.png') }}"
+                         alt="Vitique Silane" class="product-image mb-3">
+                    <h4 class="product-title">Vitique Silane</h4>
+                    <p class="product-subtitle flex-grow-1">Agente silanizante para preparación de superficies cerámicas</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Silanizante especializado</li>
+                            <li>Preparación de cerámicas</li>
+                            <li>Mejora la adhesión</li>
+                            <li>Aplicación sencilla</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Vitique Silane', 'Agente silanizante para preparación de superficies cerámicas', 'Silanizante especializado que mejora la adhesión con aplicación sencilla')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Vitique Silane')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Material de Revestimiento Section -->
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Material de Revestimiento</h2>
+            <p class="lead text-muted">Productos especializados para el revestimiento y protección de preparaciones dentales.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Ionosit Baseliner -->
+            <div class="col-lg-8 slide-in-up">
+                <div class="dmg-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">DMG</span>
+                        <span class="badge bg-info">Revestimiento</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/dmg/dmg-ionosit.png') }}"
+                         alt="Ionosit Baseliner" class="product-image mb-3">
+                    <h4 class="product-title">Ionosit Baseliner</h4>
+                    <p class="product-subtitle flex-grow-1">Material de revestimiento de ionómero de vidrio para protección pulpar</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Características:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Ionómero de vidrio</li>
+                            <li>Protección pulpar</li>
+                            <li>Liberación de flúor</li>
+                            <li>Biocompatibilidad excelente</li>
+                            <li>Fácil aplicación</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Ionosit Baseliner', 'Material de revestimiento de ionómero de vidrio para protección pulpar', 'Ionómero de vidrio con protección pulpar, liberación de flúor y biocompatibilidad excelente')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-dmg" onclick="requestQuote('Ionosit Baseliner')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact CTA -->
+<div class="container mb-5">
+    <div class="bg-primary rounded-4 p-5 text-white text-center fade-in">
+        <h3 class="fw-bold mb-3">¿Interesado en algún producto DMG?</h3>
+        <p class="lead mb-4">Nuestros especialistas en materiales dentales están listos para asesorarte</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="tel:+593987553634" class="btn btn-light btn-lg rounded-pill px-4">
+                <i class="fas fa-phone me-2"></i>+593 98 755 3634
+            </a>
+            <a href="https://wa.me/593987553634" target="_blank" class="btn btn-success btn-lg rounded-pill px-4">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Catálogo
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="modal-overlay" id="productModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalProductName" class="text-primary mb-3"></h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Descripción:</h6>
+                <p id="modalProductDescription" class="text-muted"></p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Características:</h6>
+                <p id="modalProductSpecs" class="text-muted small"></p>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-outline-secondary" onclick="closeModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="requestQuoteFromModal()">
+                <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProduct = '';
+
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-up'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Show product details modal
+function showProductDetails(name, description, specs) {
+    currentProduct = name;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductDescription').textContent = description;
+    document.getElementById('modalProductSpecs').textContent = specs;
+    document.getElementById('productModal').style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('productModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Request quote function
+function requestQuote(productName) {
+    const message = `Hola, me interesa solicitar una cotización para el producto DMG: ${productName}. ¿Podrían enviarme más información sobre especificaciones técnicas, precios y disponibilidad?`;
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Request quote from modal
+function requestQuoteFromModal() {
+    if (currentProduct) {
+        requestQuote(currentProduct);
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+});
+</script>
+
+{% endblock %}

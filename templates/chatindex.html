@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot MyCellProject</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chat-container {
+            width: 400px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+            clear: both;
+        }
+
+        .user-message {
+            background-color: #DCF8C6;
+            align-self: flex-end;
+            text-align: right;
+            float: right;
+        }
+
+        .bot-message {
+            background-color: #ECECEC;
+            align-self: flex-start;
+            text-align: left;
+            float: left;
+        }
+
+        .chat-footer {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-footer input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+
+        .chat-footer button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .chat-footer button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">Chatbot</div>
+    <div class="chat-body" id="chat-body">
+        <div class="message bot-message">¡Hola! ¿En qué puedo ayudarte hoy?</div>
+    </div>
+    <div class="chat-footer">
+        <input type="text" id="user-input" placeholder="Escribe un mensaje...">
+        <button id="send-btn">Enviar</button>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $("#send-btn").click(function() {
+            sendMessage();
+        });
+
+        $("#user-input").keypress(function(e) {
+            if (e.which === 13) {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            let userInput = $("#user-input").val();
+            if (userInput.trim() === "") return;
+
+            $("#chat-body").append('<div class="message user-message">' + userInput + '</div>');
+            $("#user-input").val("");
+
+            $.ajax({
+                url: "/send_message",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ message: userInput }),
+                success: function(response) {
+                    $("#chat-body").append('<div class="message bot-message">' + response.response + '</div>');
+                    $("#chat-body").scrollTop($("#chat-body")[0].scrollHeight);
+                },
+                error: function() {
+                    $("#chat-body").append('<div class="message bot-message">Ocurrió un error. Intenta nuevamente.</div>');
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

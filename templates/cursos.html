@@ -1,0 +1,755 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-left {
+        opacity: 0;
+        transform: translateX(-50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-left.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .slide-in-right {
+        opacity: 0;
+        transform: translateX(50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-right.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .hero-courses {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 30%, #10b981 70%, #059669 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-courses::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="courses" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23courses)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .course-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .course-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+    }
+
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);
+        transition: left 0.4s ease;
+    }
+
+    .course-card:hover::before {
+        left: 0;
+    }
+
+    .course-card.featured {
+        border: 3px solid #10b981;
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+    }
+
+    .course-card.featured::before {
+        background: linear-gradient(90deg, #10b981, #059669, #047857);
+        left: 0;
+    }
+
+    .course-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 10px;
+        transition: transform 0.4s ease;
+    }
+
+    .course-card:hover .course-image {
+        transform: scale(1.05);
+    }
+
+    .instructor-badge {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .duration-badge {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .enroll-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .enroll-btn:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .module-list {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #10b981;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 700px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+
+    .mini-course {
+        background: #e0f2fe;
+        border-left: 4px solid #0288d1;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        border-radius: 8px;
+    }
+
+    .certificate-badge {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-courses text-white py-5 mb-5 position-relative">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <h1 class="display-4 fw-bold mb-4">Cursos y Capacitaciones Profesionales</h1>
+                <p class="lead mb-4">Desarrolla tus habilidades con nuestros cursos especializados en tecnología dental avanzada</p>
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-certificate text-warning me-2"></i>
+                        <span>Certificación Oficial</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-users text-info me-2"></i>
+                        <span>Instructores Expertos</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-hands-on text-success me-2"></i>
+                        <span>Práctica Real</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center fade-in">
+                <i class="fas fa-graduation-cap" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Courses Grid -->
+<div class="container mb-5">
+    <div class="text-center mb-5 slide-in-left">
+        <h2 class="display-5 fw-bold text-primary mb-4">Nuestros Cursos Disponibles</h2>
+        <p class="lead text-muted">Capacítate con los mejores profesionales del sector</p>
+    </div>
+
+    <div class="row g-4">
+        
+        <!-- Curso 1: Radiología Digital -->
+        <div class="col-lg-4 col-md-6 slide-in-left">
+            <div class="course-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="instructor-badge">Dr. Carlos Mendoza</span>
+                    <span class="duration-badge">16 horas</span>
+                </div>
+                
+                <div class="mb-3">
+                    <img src="https://via.placeholder.com/400x200/3b82f6/ffffff?text=Radiología+Digital" 
+                         alt="Radiología Digital" class="course-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Radiología Digital Avanzada</h4>
+                
+                <p class="text-muted mb-3 flex-grow-1">
+                    Domina las técnicas modernas de radiología dental digital, desde la captura hasta el diagnóstico 
+                    con software especializado. Incluye manejo de sensores digitales y procesamiento de imágenes.
+                </p>
+
+                <div class="module-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-list me-2"></i>Módulos:
+                    </h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li><i class="fas fa-check text-success me-2"></i>Fundamentos de radiología digital</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Uso de sensores y software</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Interpretación de imágenes</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Casos clínicos prácticos</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">$180</div>
+                    <span class="certificate-badge">
+                        <i class="fas fa-certificate me-1"></i>Certificado
+                    </span>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showCourseDetails('Radiología Digital Avanzada', 'Dr. Carlos Mendoza', '16 horas', '$180', 'Domina las técnicas modernas de radiología dental digital desde la captura hasta el diagnóstico', 'Fundamentos de radiología digital, Uso de sensores y software, Interpretación de imágenes, Casos clínicos prácticos')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="enroll-btn" onclick="enrollCourse('Radiología Digital Avanzada', '$180')">
+                    <i class="fas fa-user-plus me-2"></i>Inscribirse Ahora
+                </button>
+            </div>
+        </div>
+
+        <!-- Curso 2: Mantenimiento de Equipos -->
+        <div class="col-lg-4 col-md-6 slide-in-right">
+            <div class="course-card rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="instructor-badge">Ing. Roberto Silva</span>
+                    <span class="duration-badge">20 horas</span>
+                </div>
+                
+                <div class="mb-3">
+                    <img src="https://via.placeholder.com/400x200/10b981/ffffff?text=Mantenimiento+Equipos" 
+                         alt="Mantenimiento de Equipos" class="course-image">
+                </div>
+
+                <h4 class="fw-bold text-primary mb-3">Mantenimiento de Equipos Dentales</h4>
+                
+                <p class="text-muted mb-3 flex-grow-1">
+                    Aprende técnicas profesionales de mantenimiento preventivo y correctivo para equipos dentales. 
+                    Maximiza la vida útil de tus inversiones y reduce costos operativos.
+                </p>
+
+                <div class="module-list mb-3">
+                    <h6 class="fw-bold mb-2 text-primary">
+                        <i class="fas fa-list me-2"></i>Módulos:
+                    </h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li><i class="fas fa-check text-success me-2"></i>Mantenimiento preventivo programado</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Diagnóstico de fallas comunes</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Calibración de equipos</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Documentación y registro</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag">$220</div>
+                    <span class="certificate-badge">
+                        <i class="fas fa-certificate me-1"></i>Certificado
+                    </span>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill"
+                            onclick="showCourseDetails('Mantenimiento de Equipos Dentales', 'Ing. Roberto Silva', '20 horas', '$220', 'Técnicas profesionales de mantenimiento preventivo y correctivo para equipos dentales', 'Mantenimiento preventivo programado, Diagnóstico de fallas comunes, Calibración de equipos, Documentación y registro')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="enroll-btn" onclick="enrollCourse('Mantenimiento de Equipos Dentales', '$220')">
+                    <i class="fas fa-user-plus me-2"></i>Inscribirse Ahora
+                </button>
+            </div>
+        </div>
+
+        <!-- Curso 3: Simulación y Prácticas Odontológicas (Destacado) -->
+        <div class="col-lg-4 col-md-6 slide-in-left">
+            <div class="course-card featured rounded-4 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="instructor-badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        Dra. Patricia López
+                    </span>
+                    <span class="duration-badge">32 horas</span>
+                </div>
+                
+                <div class="mb-3">
+                    <img src="https://via.placeholder.com/400x200/10b981/ffffff?text=Simulación+Práctica" 
+                         alt="Simulación Odontológica" class="course-image">
+                </div>
+
+                <h4 class="fw-bold mb-3" style="color: #10b981;">Simulación en Prácticas Odontológicas</h4>
+                
+                <p class="text-muted mb-3 flex-grow-1">
+                    <strong>CURSO ESTRELLA:</strong> Programa integral teórico-práctico con modelos y fantomas Frasaco. 
+                    Desarrolla habilidades clínicas en ambiente controlado antes de atender pacientes reales.
+                </p>
+
+                <div class="module-list mb-3" style="border-left-color: #10b981;">
+                    <h6 class="fw-bold mb-2" style="color: #10b981;">
+                        <i class="fas fa-list me-2"></i>Programa Completo:
+                    </h6>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-primary mb-2">Módulo Teórico (8 horas):</h6>
+                        <ul class="list-unstyled mb-0 small">
+                            <li><i class="fas fa-book text-info me-2"></i>Anatomía dental aplicada</li>
+                            <li><i class="fas fa-book text-info me-2"></i>Protocolos de anestesia</li>
+                            <li><i class="fas fa-book text-info me-2"></i>Técnicas de preparación cavitaria</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-success mb-2">Módulo Práctico (24 horas):</h6>
+                        <div class="mini-course">
+                            <strong>Mini-Curso 1:</strong> Técnicas de Anestesia Dental
+                            <ul class="list-unstyled mt-2 small">
+                                <li><i class="fas fa-syringe text-primary me-2"></i>Práctica en modelos Frasaco</li>
+                                <li><i class="fas fa-syringe text-primary me-2"></i>Anestesia infiltrativa</li>
+                                <li><i class="fas fa-syringe text-primary me-2"></i>Bloqueos nerviosos</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mini-course">
+                            <strong>Mini-Curso 2:</strong> Preparación de Cavidades
+                            <ul class="list-unstyled mt-2 small">
+                                <li><i class="fas fa-tooth text-primary me-2"></i>Uso de fantomas Frasaco</li>
+                                <li><i class="fas fa-tooth text-primary me-2"></i>Cavidades Clase I y II</li>
+                                <li><i class="fas fa-tooth text-primary me-2"></i>Técnicas conservadoras</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mini-course">
+                            <strong>Mini-Curso 3:</strong> Técnicas de Restauración
+                            <ul class="list-unstyled mt-2 small">
+                                <li><i class="fas fa-fill-drip text-primary me-2"></i>Materiales de restauración</li>
+                                <li><i class="fas fa-fill-drip text-primary me-2"></i>Técnicas de composite</li>
+                                <li><i class="fas fa-fill-drip text-primary me-2"></i>Acabado y pulido</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="price-tag" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">$450</div>
+                    <span class="certificate-badge">
+                        <i class="fas fa-certificate me-1"></i>Certificado
+                    </span>
+                    <button class="btn btn-outline-success btn-sm rounded-pill"
+                            onclick="showCourseDetails('Simulación en Prácticas Odontológicas', 'Dra. Patricia López', '32 horas', '$450', 'Programa integral teórico-práctico con modelos y fantomas Frasaco para desarrollar habilidades clínicas', 'Módulo teórico (8h): Anatomía dental, protocolos de anestesia, técnicas cavitarias. Módulo práctico (24h): Anestesia en modelos, preparación de cavidades, técnicas de restauración')">
+                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    </button>
+                </div>
+
+                <button class="enroll-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" 
+                        onclick="enrollCourse('Simulación en Prácticas Odontológicas', '$450')">
+                    <i class="fas fa-star me-2"></i>Curso Estrella - Inscribirse
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Why Choose Our Courses Section -->
+<div class="bg-light py-5 mb-5">
+    <div class="container">
+        <div class="text-center mb-5 fade-in">
+            <h2 class="display-5 fw-bold text-primary mb-4">¿Por qué elegir nuestros cursos?</h2>
+            <p class="lead text-muted">Calidad educativa respaldada por años de experiencia</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3 slide-in-left">
+                <div class="text-center h-100 p-4">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-user-graduate text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Instructores Expertos</h5>
+                    <p class="text-muted">Profesionales con años de experiencia práctica en el sector</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 slide-in-right">
+                <div class="text-center h-100 p-4">
+                    <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-hands-helping text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Práctica Real</h5>
+                    <p class="text-muted">Equipos y modelos de última generación para aprendizaje efectivo</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 slide-in-left">
+                <div class="text-center h-100 p-4">
+                    <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-certificate text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Certificación Oficial</h5>
+                    <p class="text-muted">Certificados reconocidos que avalan tu formación profesional</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 slide-in-right">
+                <div class="text-center h-100 p-4">
+                    <div class="bg-info rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-headset text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Soporte Continuo</h5>
+                    <p class="text-muted">Seguimiento post-curso y resolución de dudas técnicas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact CTA -->
+<div class="container mb-5">
+    <div class="bg-primary rounded-4 p-5 text-white text-center fade-in">
+        <h3 class="fw-bold mb-3">¿Tienes preguntas sobre nuestros cursos?</h3>
+        <p class="lead mb-4">Nuestro equipo académico está listo para ayudarte</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="tel:+593987553634" class="btn btn-light btn-lg rounded-pill px-4">
+                <i class="fas fa-phone me-2"></i>+593 98 755 3634
+            </a>
+            <a href="mailto:proedent@hotmail.com" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <i class="fas fa-envelope me-2"></i>Enviar Email
+            </a>
+            <a href="https://wa.me/593987553634" target="_blank" class="btn btn-success btn-lg rounded-pill px-4">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Course Details Modal -->
+<div class="modal-overlay" id="courseModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalCourseName" class="text-primary mb-3"></h3>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-2">Instructor:</h6>
+                <p id="modalInstructor" class="text-muted"></p>
+                
+                <h6 class="fw-bold text-primary mb-2">Duración:</h6>
+                <p id="modalDuration" class="text-muted"></p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-2">Inversión:</h6>
+                <p id="modalPrice" class="text-success fw-bold fs-4"></p>
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <h6 class="fw-bold text-primary mb-3">Descripción del curso:</h6>
+            <p id="modalDescription" class="text-muted"></p>
+        </div>
+        
+        <div class="mb-4">
+            <h6 class="fw-bold text-primary mb-3">Contenido del programa:</h6>
+            <p id="modalModules" class="text-muted"></p>
+        </div>
+        
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-outline-secondary" onclick="closeModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="enrollFromModal()">
+                <i class="fas fa-user-plus me-2"></i>Inscribirse al Curso
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Enrollment Modal -->
+<div class="modal-overlay" id="enrollModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeEnrollModal()">&times;</span>
+        <h3 class="text-success mb-3">
+            <i class="fas fa-user-plus me-2"></i>Inscripción al Curso
+        </h3>
+        
+        <div class="alert alert-info">
+            <h5 id="selectedCourse" class="mb-2"></h5>
+            <p id="selectedPrice" class="mb-0 fw-bold"></p>
+        </div>
+        
+        <form id="enrollmentForm">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="studentName" class="form-label">Nombre completo *</label>
+                    <input type="text" class="form-control" id="studentName" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="studentEmail" class="form-label">Correo electrónico *</label>
+                    <input type="email" class="form-control" id="studentEmail" required>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="studentPhone" class="form-label">Teléfono *</label>
+                    <input type="tel" class="form-control" id="studentPhone" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="profession" class="form-label">Profesión</label>
+                    <select class="form-control" id="profession">
+                        <option value="odontologo">Odontólogo/a</option>
+                        <option value="estudiante">Estudiante de Odontología</option>
+                        <option value="tecnico">Técnico Dental</option>
+                        <option value="asistente">Asistente Dental</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="experience" class="form-label">Años de experiencia</label>
+                <select class="form-control" id="experience">
+                    <option value="0-1">0-1 años</option>
+                    <option value="2-5">2-5 años</option>
+                    <option value="6-10">6-10 años</option>
+                    <option value="10+">Más de 10 años</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label for="comments" class="form-label">Comentarios adicionales</label>
+                <textarea class="form-control" id="comments" rows="3" placeholder="¿Tienes alguna pregunta específica o requerimiento especial?"></textarea>
+            </div>
+            
+            <div class="d-flex gap-3">
+                <button type="button" class="btn btn-outline-secondary" onclick="closeEnrollModal()">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="submitEnrollment()">
+                    <i class="fas fa-check me-2"></i>Confirmar Inscripción
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentCourse = '';
+let currentPrice = '';
+
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-left, .slide-in-right'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Show course details modal
+function showCourseDetails(name, instructor, duration, price, description, modules) {
+    document.getElementById('modalCourseName').textContent = name;
+    document.getElementById('modalInstructor').textContent = instructor;
+    document.getElementById('modalDuration').textContent = duration;
+    document.getElementById('modalPrice').textContent = price;
+    document.getElementById('modalDescription').textContent = description;
+    document.getElementById('modalModules').textContent = modules;
+    document.getElementById('courseModal').style.display = 'flex';
+    currentCourse = name;
+    currentPrice = price;
+}
+
+// Close course details modal
+function closeModal() {
+    document.getElementById('courseModal').style.display = 'none';
+}
+
+// Enroll in course
+function enrollCourse(courseName, price) {
+    currentCourse = courseName;
+    currentPrice = price;
+    document.getElementById('selectedCourse').textContent = courseName;
+    document.getElementById('selectedPrice').textContent = `Inversión: ${price}`;
+    document.getElementById('enrollModal').style.display = 'flex';
+}
+
+// Enroll from details modal
+function enrollFromModal() {
+    closeModal();
+    enrollCourse(currentCourse, currentPrice);
+}
+
+// Close enrollment modal
+function closeEnrollModal() {
+    document.getElementById('enrollModal').style.display = 'none';
+    // Clear form
+    document.getElementById('enrollmentForm').reset();
+}
+
+// Submit enrollment
+function submitEnrollment() {
+    const name = document.getElementById('studentName').value;
+    const email = document.getElementById('studentEmail').value;
+    const phone = document.getElementById('studentPhone').value;
+    
+    if (!name || !email || !phone) {
+        alert('Por favor complete todos los campos requeridos (*)');
+        return;
+    }
+    
+    // Send WhatsApp message with enrollment details
+    const profession = document.getElementById('profession').value;
+    const experience = document.getElementById('experience').value;
+    const comments = document.getElementById('comments').value;
+    
+    const message = `¡Hola! Me gustaría inscribirme al curso:
+
+📚 CURSO: ${currentCourse}
+💰 INVERSIÓN: ${currentPrice}
+
+👤 DATOS PERSONALES:
+• Nombre: ${name}
+• Email: ${email}
+• Teléfono: ${phone}
+• Profesión: ${profession}
+• Experiencia: ${experience}
+
+${comments ? `💬 COMENTARIOS: ${comments}` : ''}
+
+¿Podrían confirmarme la disponibilidad y próximas fechas de inicio?`;
+
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    
+    closeEnrollModal();
+    
+    // Show success message
+    alert('¡Gracias por tu interés! Te hemos redirigido a WhatsApp para completar tu inscripción.');
+}
+
+// Close modals when clicking outside
+document.addEventListener('click', function(e) {
+    const courseModal = document.getElementById('courseModal');
+    const enrollModal = document.getElementById('enrollModal');
+    
+    if (e.target === courseModal) {
+        closeModal();
+    }
+    if (e.target === enrollModal) {
+        closeEnrollModal();
+    }
+});
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+
+    // Add stagger effect to course cards
+    const courseCards = document.querySelectorAll('.course-card');
+    courseCards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+</script>
+
+{% endblock %}

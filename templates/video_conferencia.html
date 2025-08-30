@@ -1,0 +1,694 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-left {
+        opacity: 0;
+        transform: translateX(-50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-left.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .slide-in-right {
+        opacity: 0;
+        transform: translateX(50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .slide-in-right.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .scale-in {
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .scale-in.visible {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .hero-video {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 30%, #ef4444 70%, #000000 100%);
+        position: relative;
+        overflow: hidden;
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-video::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="video" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="1.5" fill="rgba(255,255,255,0.1)"/><rect x="12" y="12" width="6" height="6" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23video)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .access-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .access-card:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 30px 60px rgba(59, 130, 246, 0.2);
+        transform: translateY(-5px);
+    }
+
+    .access-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #ef4444, #000000);
+    }
+
+    .pin-input {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        text-align: center;
+        letter-spacing: 0.2em;
+        font-weight: 600;
+    }
+
+    .pin-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        background: white;
+    }
+
+    .client-input {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .client-input:focus {
+        outline: none;
+        border-color: #ef4444;
+        box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+        background: white;
+    }
+
+    .access-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .access-btn:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .conference-card {
+        background: linear-gradient(145deg, #1f2937 0%, #111827 100%);
+        border: 2px solid #374151;
+        border-radius: 20px;
+        color: white;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .conference-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #10b981, #3b82f6, #ef4444);
+    }
+
+    .zoom-btn {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .zoom-btn:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .client-info-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border: 2px solid #cbd5e1;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .status-badge {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .feature-card {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .feature-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(59, 130, 246, 0.1);
+    }
+
+    .floating-icon {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+
+    .meeting-controls {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 2rem 0;
+    }
+
+    .control-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 120px;
+    }
+
+    .control-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .security-badge {
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-video text-white mb-5 position-relative">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <h1 class="display-4 fw-bold mb-4">Video Conferencia Profesional</h1>
+                <p class="lead mb-4">Conexión segura y confiable para consultas especializadas en equipamiento dental</p>
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-shield-alt text-warning me-2"></i>
+                        <span>Conexión Segura</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-video text-info me-2"></i>
+                        <span>HD Quality</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-users text-success me-2"></i>
+                        <span>Soporte Técnico</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center fade-in">
+                <i class="fas fa-video floating-icon" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container mb-5">
+    {% if authorized %}
+        <!-- Client Authorized View -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Client Information Card -->
+                <div class="client-info-card slide-in-left">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h3 class="text-primary mb-2">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Bienvenido, {{ client_name }}
+                            </h3>
+                            <p class="text-muted mb-0">Tipo de reunión: {{ meeting_type }}</p>
+                        </div>
+                        <div class="status-badge">
+                            <i class="fas fa-check-circle"></i>
+                            Verificado
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="security-badge">
+                                <i class="fas fa-lock me-1"></i>
+                                Sesión Segura Activa
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                Conectado: {{ moment().format('DD/MM/YYYY HH:mm') }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conference Access Card -->
+                <div class="conference-card p-5 text-center scale-in">
+                    <div class="mb-4">
+                        <i class="fas fa-video text-primary mb-3" style="font-size: 4rem;"></i>
+                        <h2 class="text-white mb-3">Sala de Conferencia Lista</h2>
+                        <p class="text-gray-300 mb-4">Su reunión está programada y el enlace está activo</p>
+                    </div>
+
+                    <!-- Meeting Controls -->
+                    <div class="meeting-controls">
+                        <div class="control-btn">
+                            <i class="fas fa-microphone" style="font-size: 1.5rem;"></i>
+                            <small>Audio</small>
+                        </div>
+                        <div class="control-btn">
+                            <i class="fas fa-video" style="font-size: 1.5rem;"></i>
+                            <small>Video HD</small>
+                        </div>
+                        <div class="control-btn">
+                            <i class="fas fa-desktop" style="font-size: 1.5rem;"></i>
+                            <small>Pantalla</small>
+                        </div>
+                        <div class="control-btn">
+                            <i class="fas fa-comments" style="font-size: 1.5rem;"></i>
+                            <small>Chat</small>
+                        </div>
+                    </div>
+
+                    <!-- Main Zoom Button -->
+                    <div class="mb-4">
+                        <a href="https://us05web.zoom.us/j/9133894091?pwd=dlU5Z1Z5NlNjVlRuZmQvT0ptWjVMZz09"
+                           target="_blank"
+                           class="zoom-btn pulse-animation">
+                            <i class="fab fa-zoom"></i>
+                            Iniciar Video Conferencia
+                        </a>
+                    </div>
+
+                    <!-- Meeting Information -->
+                    <div class="mt-4 p-3 bg-black bg-opacity-20 rounded-3">
+                        <h6 class="text-white mb-2">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Información de la Reunión
+                        </h6>
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <small class="text-gray-300 d-block">ID de Reunión</small>
+                                <strong class="text-white">913 389 4091</strong>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-gray-300 d-block">Código de Acceso</small>
+                                <strong class="text-white">proedent</strong>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-gray-300 d-block">Duración</small>
+                                <strong class="text-white">60 min</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alternative Access -->
+                    <div class="mt-4">
+                        <p class="text-gray-300 small mb-2">¿Problemas para conectar?</p>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a href="tel:+593987553634" class="btn btn-outline-light btn-sm rounded-pill">
+                                <i class="fas fa-phone me-1"></i>
+                                Llamar Soporte
+                            </a>
+                            <a href="https://wa.me/593987553634" target="_blank" class="btn btn-outline-success btn-sm rounded-pill">
+                                <i class="fab fa-whatsapp me-1"></i>
+                                WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Access Form -->
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="access-card p-5 slide-in-right">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-lock text-primary mb-3" style="font-size: 3rem;"></i>
+                        <h2 class="text-primary mb-3">Acceso Seguro</h2>
+                        <p class="text-muted">Ingrese sus credenciales para acceder a la video conferencia</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('video_conferencia') }}" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="pin" class="form-label fw-bold text-primary">
+                                <i class="fas fa-key me-2"></i>
+                                PIN de Acceso
+                            </label>
+                            <input type="password"
+                                   class="form-control pin-input"
+                                   id="pin"
+                                   name="pin"
+                                   placeholder="••••"
+                                   maxlength="4"
+                                   required>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Ingrese el PIN de 4 dígitos proporcionado
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="client_name" class="form-label fw-bold text-danger">
+                                <i class="fas fa-user me-2"></i>
+                                Nombre del Cliente
+                            </label>
+                            <input type="text"
+                                   class="form-control client-input"
+                                   id="client_name"
+                                   name="client_name"
+                                   placeholder="Ingrese su nombre completo"
+                                   required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="meeting_type" class="form-label fw-bold text-dark">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Tipo de Reunión
+                            </label>
+                            <select class="form-control client-input" id="meeting_type" name="meeting_type" required>
+                                <option value="" disabled selected>Seleccione el tipo de reunión</option>
+                                <option value="Demostración de Equipos">Demostración de Equipos</option>
+                                <option value="Capacitación Técnica">Capacitación Técnica</option>
+                                <option value="Soporte Técnico">Soporte Técnico</option>
+                                <option value="Consulta Comercial">Consulta Comercial</option>
+                                <option value="Seguimiento Post-Venta">Seguimiento Post-Venta</option>
+                            </select>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="access-btn w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Acceder a la Conferencia
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Security Information -->
+                    <div class="mt-4 p-3 bg-light rounded-3">
+                        <h6 class="text-primary mb-2">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            Seguridad y Privacidad
+                        </h6>
+                        <ul class="list-unstyled mb-0 small text-muted">
+                            <li><i class="fas fa-check text-success me-2"></i>Conexión encriptada end-to-end</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Sala de espera activada</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Grabación solo con consentimiento</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Acceso controlado por PIN</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Features Section -->
+    <div class="row g-4 mt-5">
+        <div class="col-lg-3 col-md-6 slide-in-left">
+            <div class="feature-card">
+                <i class="fas fa-video text-primary mb-3" style="font-size: 2.5rem;"></i>
+                <h5 class="fw-bold mb-3">Video HD</h5>
+                <p class="text-muted small">Calidad de video en alta definición para demostraciones detalladas de equipos</p>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 slide-in-right">
+            <div class="feature-card">
+                <i class="fas fa-desktop text-danger mb-3" style="font-size: 2.5rem;"></i>
+                <h5 class="fw-bold mb-3">Compartir Pantalla</h5>
+                <p class="text-muted small">Comparta presentaciones, manuales y software en tiempo real</p>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 slide-in-left">
+            <div class="feature-card">
+                <i class="fas fa-headset text-success mb-3" style="font-size: 2.5rem;"></i>
+                <h5 class="fw-bold mb-3">Audio Cristalino</h5>
+                <p class="text-muted small">Audio de alta calidad con cancelación de ruido para comunicación clara</p>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 slide-in-right">
+            <div class="feature-card">
+                <i class="fas fa-shield-alt text-warning mb-3" style="font-size: 2.5rem;"></i>
+                <h5 class="fw-bold mb-3">Seguro</h5>
+                <p class="text-muted small">Conexiones encriptadas y acceso controlado para máxima seguridad</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Support Section -->
+<div class="bg-light py-5 mt-5">
+    <div class="container">
+        <div class="text-center fade-in">
+            <h3 class="fw-bold text-primary mb-4">¿Necesita Ayuda Técnica?</h3>
+            <p class="lead text-muted mb-4">Nuestro equipo de soporte está disponible durante su sesión</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="tel:+593987553634" class="btn btn-primary btn-lg rounded-pill px-4">
+                    <i class="fas fa-phone me-2"></i>
+                    +593 98 755 3634
+                </a>
+                <a href="https://wa.me/593987553634" target="_blank" class="btn btn-success btn-lg rounded-pill px-4">
+                    <i class="fab fa-whatsapp me-2"></i>
+                    Soporte WhatsApp
+                </a>
+                <a href="mailto:proedent@hotmail.com" class="btn btn-outline-danger btn-lg rounded-pill px-4">
+                    <i class="fas fa-envelope me-2"></i>
+                    Email Técnico
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-left, .slide-in-right, .scale-in'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Form validation
+function setupFormValidation() {
+    const forms = document.querySelectorAll('.needs-validation');
+    forms.forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    });
+}
+
+// PIN input formatting
+function setupPinInput() {
+    const pinInput = document.getElementById('pin');
+    if (pinInput) {
+        pinInput.addEventListener('input', function(e) {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+            // Limit to 4 digits
+            if (this.value.length > 4) {
+                this.value = this.value.slice(0, 4);
+            }
+        });
+
+        pinInput.addEventListener('keypress', function(e) {
+            // Only allow numbers
+            if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+    }
+}
+
+// Meeting controls animation
+function setupMeetingControls() {
+    const controls = document.querySelectorAll('.control-btn');
+    controls.forEach((control, index) => {
+        control.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px) scale(1.05)';
+        });
+
+        control.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-2px) scale(1)';
+        });
+
+        // Stagger animation
+        control.style.animationDelay = `${index * 0.1}s`;
+    });
+}
+
+// Auto-focus on PIN input
+function setupAutoFocus() {
+    const pinInput = document.getElementById('pin');
+    if (pinInput) {
+        setTimeout(() => {
+            pinInput.focus();
+        }, 500);
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+    setupFormValidation();
+    setupPinInput();
+    setupMeetingControls();
+    setupAutoFocus();
+
+    // Add entrance animation delay to cards
+    const cards = document.querySelectorAll('.feature-card, .access-card, .conference-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+
+// Handle Zoom link click
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('zoom-btn')) {
+        // Add some feedback
+        e.target.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            e.target.style.transform = '';
+        }, 150);
+    }
+});
+</script>
+
+{% endblock %}

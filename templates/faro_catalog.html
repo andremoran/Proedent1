@@ -1,0 +1,824 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .slide-in-up {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .slide-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .faro-product-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .faro-product-card:hover {
+        border-color: #f59e0b;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(245, 158, 11, 0.15);
+    }
+
+    .faro-product-card.featured {
+        border: 3px solid #10b981;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .faro-product-card.new {
+        border: 3px solid #ef4444;
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+    }
+
+    .faro-product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #f59e0b, #10b981, #3b82f6);
+        transition: left 0.4s ease;
+    }
+
+    .faro-product-card:hover::before {
+        left: 0;
+    }
+
+    .faro-product-card.featured::before {
+        background: linear-gradient(90deg, #10b981, #059669, #047857);
+        left: 0;
+    }
+
+    .faro-product-card.new::before {
+        background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c);
+        left: 0;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
+        border-radius: 10px;
+        transition: transform 0.4s ease;
+        background: #f8fafc;
+        padding: 15px;
+    }
+
+    .faro-product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .hero-faro {
+        background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+                    url('{{ url_for('static', filename='images/faro-hero-bg.jpg') }}');
+        min-height: 70vh;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-faro::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="faro" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="30" cy="30" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23faro)"/></svg>');
+        opacity: 0.4;
+    }
+
+    .product-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #f59e0b;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-style: italic;
+        margin-bottom: 1rem;
+    }
+
+    .quote-btn-faro {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .quote-btn-faro:hover {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .faro-logo {
+        font-size: 3rem;
+        font-weight: 900;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 0.1em;
+    }
+
+    .specs-list {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #f59e0b;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .category-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #f59e0b, #10b981);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+    }
+
+    .new-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #ef4444;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        z-index: 10;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-faro {
+            min-height: 60vh;
+        }
+
+        .faro-logo {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-faro text-white py-5 mb-5 position-relative">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 fade-in">
+                <a href="{{ url_for('catalogo') }}" class="back-btn mb-4">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Catálogo
+                </a>
+                <div class="faro-logo mb-4">FARO</div>
+                <h1 class="display-5 fw-bold mb-4">Catálogo Completo de Productos</h1>
+                <p class="lead mb-4">Descubre la línea completa de iluminación LED profesional FARO, tecnología italiana de vanguardia para consultas médicas y dentales</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        <span>Iluminación LED</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-user-md text-info me-2"></i>
+                        <span>Uso Médico</span>
+                    </div>
+                    <div class="d-flex align-items-center bg-black bg-opacity-20 px-3 py-2 rounded-pill">
+                        <i class="fas fa-tooth text-success me-2"></i>
+                        <span>Uso Dental</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center fade-in">
+                <i class="fas fa-lightbulb" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Iluminación LED Section -->
+<div class="container mb-5">
+    <div class="category-section fade-in">
+        <div class="text-center mb-4">
+            <div class="category-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <h2 class="display-6 fw-bold text-primary mb-3">Iluminación LED</h2>
+            <p class="lead text-muted">Sistemas de iluminación LED profesional de última generación para consultas médicas y dentales, ofreciendo luz de calidad superior y eficiencia energética.</p>
+        </div>
+
+        <div class="row g-4">
+            
+            <!-- Lámpara Quirúrgica y Dental B75 (NEW) -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card new rounded-4 p-4 d-flex flex-column">
+                    <div class="new-badge">NEW</div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-danger">NUEVO</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-b75.png') }}"
+                         alt="Lámpara Quirúrgica y Dental B75" class="product-image mb-3" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display: none; height: 220px; background: #f0f0f0; border-radius: 10px; align-items: center; justify-content: center; color: #999;">
+                        <i class="fas fa-lightbulb" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4 class="product-title" style="color: #ef4444;">Lámpara Quirúrgica y Dental B75</h4>
+                    <p class="product-subtitle flex-grow-1">Nueva lámpara quirúrgica LED de última generación para procedimientos médicos y dentales</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Tecnología LED avanzada</li>
+                            <li>Iluminación quirúrgica profesional</li>
+                            <li>Control de intensidad variable</li>
+                            <li>Diseño ergonómico</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">Consultar precio</div>
+                        <button class="btn btn-outline-danger btn-sm rounded-pill"
+                                onclick="showProductDetails('Lámpara Quirúrgica y Dental B75', 'Nueva lámpara quirúrgica LED de última generación para procedimientos médicos y dentales', 'Tecnología LED avanzada con iluminación quirúrgica profesional y control de intensidad variable')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Lámpara Quirúrgica y Dental B75')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <i class="fas fa-star me-2"></i>Producto Nuevo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lámpara Led Dental Eva -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card featured rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-success">DESTACADO</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-eva.png') }}"
+                         alt="Lámpara Led Dental Eva" class="product-image mb-3">
+                    <h4 class="product-title" style="color: #10b981;">Lámpara Led Dental Eva</h4>
+                    <p class="product-subtitle flex-grow-1">Lámpara LED dental de alto rendimiento con tecnología avanzada de iluminación</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>LED de alta eficiencia</li>
+                            <li>Brazo articulado flexible</li>
+                            <li>Control táctil intuitivo</li>
+                            <li>Luz fría sin calor</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">Consultar precio</div>
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showProductDetails('Lámpara Led Dental Eva', 'Lámpara LED dental de alto rendimiento con tecnología avanzada de iluminación', 'LED de alta eficiencia con brazo articulado flexible y control táctil intuitivo')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Lámpara Led Dental Eva')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <i class="fas fa-star me-2"></i>Producto Destacado
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lámpara Led Dental Eva Cam -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-info">LED Dental</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-evacam.png') }}"
+                         alt="Lámpara Led Dental Eva Cam" class="product-image mb-3">
+                    <h4 class="product-title">Lámpara Led Dental Eva Cam</h4>
+                    <p class="product-subtitle flex-grow-1">Lámpara LED dental Eva con cámara integrada para documentación</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Cámara intraoral integrada</li>
+                            <li>Documentación digital</li>
+                            <li>Iluminación LED premium</li>
+                            <li>Sistema de captura HD</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Lámpara Led Dental Eva Cam', 'Lámpara LED dental Eva con cámara integrada para documentación', 'Cámara intraoral integrada con documentación digital e iluminación LED premium')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Lámpara Led Dental Eva Cam')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lámpara Led Dental Maia -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-info">LED Dental</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-maia.png') }}"
+                         alt="Lámpara Led Dental Maia" class="product-image mb-3">
+                    <h4 class="product-title">Lámpara Led Dental Maia</h4>
+                    <p class="product-subtitle flex-grow-1">Lámpara LED dental compacta con excelente relación calidad-precio</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Diseño compacto</li>
+                            <li>Fácil instalación</li>
+                            <li>LED de larga duración</li>
+                            <li>Control sencillo</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Lámpara Led Dental Maia', 'Lámpara LED dental compacta con excelente relación calidad-precio', 'Diseño compacto con fácil instalación y LED de larga duración')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Lámpara Led Dental Maia')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lámpara Led Médicas MP3020 -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-primary">LED Médica</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-mp3020.png') }}"
+                         alt="Lámpara Led Médicas MP3020" class="product-image mb-3">
+                    <h4 class="product-title">Lámpara Led Médicas MP3020</h4>
+                    <p class="product-subtitle flex-grow-1">Lámpara LED médica de alto rendimiento para procedimientos quirúrgicos</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Iluminación quirúrgica</li>
+                            <li>Control preciso de intensidad</li>
+                            <li>Brazo de posicionamiento</li>
+                            <li>Certificación médica</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Lámpara Led Médicas MP3020', 'Lámpara LED médica de alto rendimiento para procedimientos quirúrgicos', 'Iluminación quirúrgica con control preciso de intensidad y certificación médica')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Lámpara Led Médicas MP3020')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Plafón Led Siderea Sunlight -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-secondary">Plafón LED</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-siderasunlight.png') }}"
+                         alt="Plafón Led Siderea Sunlight" class="product-image mb-3">
+                    <h4 class="product-title">Plafón Led Siderea Sunlight</h4>
+                    <p class="product-subtitle flex-grow-1">Plafón LED de techo con tecnología de luz natural</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Simulación de luz natural</li>
+                            <li>Instalación empotrada</li>
+                            <li>Control de temperatura de color</li>
+                            <li>Distribución uniforme</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Plafón Led Siderea Sunlight', 'Plafón LED de techo con tecnología de luz natural', 'Simulación de luz natural con instalación empotrada y control de temperatura de color')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Plafón Led Siderea Sunlight')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Plafón Led Siderea BKL -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-secondary">Plafón LED</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-siderabkl.png') }}"
+                         alt="Plafón Led Siderea BKL" class="product-image mb-3">
+                    <h4 class="product-title">Plafón Led Siderea BKL</h4>
+                    <p class="product-subtitle flex-grow-1">Plafón LED profesional con tecnología BKL de alta eficiencia</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Tecnología BKL avanzada</li>
+                            <li>Alta eficiencia energética</li>
+                            <li>Larga vida útil</li>
+                            <li>Instalación profesional</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Plafón Led Siderea BKL', 'Plafón LED profesional con tecnología BKL de alta eficiencia', 'Tecnología BKL avanzada con alta eficiencia energética y larga vida útil')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Plafón Led Siderea BKL')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Plafón Led Ziva -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-secondary">Plafón LED</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-ziva.png') }}"
+                         alt="Plafón Led Ziva" class="product-image mb-3">
+                    <h4 class="product-title">Plafón Led Ziva</h4>
+                    <p class="product-subtitle flex-grow-1">Plafón LED versátil para iluminación general de consultas</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Diseño moderno</li>
+                            <li>Instalación sencilla</li>
+                            <li>Bajo consumo energético</li>
+                            <li>Mantenimiento mínimo</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Plafón Led Ziva', 'Plafón LED versátil para iluminación general de consultas', 'Diseño moderno con instalación sencilla y bajo consumo energético')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Plafón Led Ziva')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Plafón Led Ziva Slim -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-secondary">Plafón LED</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-zivaslim.png') }}"
+                         alt="Plafón Led Ziva Slim" class="product-image mb-3">
+                    <h4 class="product-title">Plafón Led Ziva Slim</h4>
+                    <p class="product-subtitle flex-grow-1">Plafón LED ultra delgado para espacios con altura limitada</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Perfil ultra delgado</li>
+                            <li>Ideal para techos bajos</li>
+                            <li>Iluminación uniforme</li>
+                            <li>Diseño minimalista</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Plafón Led Ziva Slim', 'Plafón LED ultra delgado para espacios con altura limitada', 'Perfil ultra delgado ideal para techos bajos con iluminación uniforme')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Plafón Led Ziva Slim')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sistema THEIATech -->
+            <div class="col-lg-6 col-xl-4 slide-in-up">
+                <div class="faro-product-card rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-warning">FARO</span>
+                        <span class="badge bg-dark">Sistema</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/faro/faro-sistematheiatech.png') }}"
+                         alt="Sistema THEIATech" class="product-image mb-3">
+                    <h4 class="product-title">Sistema THEIATech</h4>
+                    <p class="product-subtitle flex-grow-1">Sistema de iluminación inteligente con tecnología avanzada</p>
+
+                    <div class="specs-list mb-3">
+                        <h6 class="fw-bold mb-2 text-primary">
+                            <i class="fas fa-cog me-2"></i>Especificaciones:
+                        </h6>
+                        <ul class="mb-0 small text-muted">
+                            <li>Control inteligente</li>
+                            <li>Conectividad avanzada</li>
+                            <li>Gestión automática</li>
+                            <li>Tecnología THEIATech</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="price-tag">Consultar precio</div>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill"
+                                onclick="showProductDetails('Sistema THEIATech', 'Sistema de iluminación inteligente con tecnología avanzada', 'Control inteligente con conectividad avanzada y gestión automática')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="quote-btn-faro" onclick="requestQuote('Sistema THEIATech')">
+                        <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Contact CTA -->
+<div class="container mb-5">
+    <div class="bg-primary rounded-4 p-5 text-white text-center fade-in">
+        <h3 class="fw-bold mb-3">¿Interesado en algún equipo FARO?</h3>
+        <p class="lead mb-4">Nuestros especialistas en iluminación LED están listos para asesorarte</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="tel:+593987553634" class="btn btn-light btn-lg rounded-pill px-4">
+                <i class="fas fa-phone me-2"></i>+593 98 755 3634
+            </a>
+            <a href="https://wa.me/593987553634" target="_blank" class="btn btn-success btn-lg rounded-pill px-4">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Catálogo
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="modal-overlay" id="productModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalProductName" class="text-primary mb-3"></h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Descripción:</h6>
+                <p id="modalProductDescription" class="text-muted"></p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary mb-3">Especificaciones:</h6>
+                <p id="modalProductSpecs" class="text-muted small"></p>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+            <button class="btn btn-outline-secondary" onclick="closeModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="requestQuoteFromModal()">
+                <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProduct = '';
+
+// Animation Observer
+function createObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .slide-in-up'
+    );
+
+    animatedElements.forEach((el) => {
+        observer.observe(el);
+    });
+}
+
+// Show product details modal
+function showProductDetails(name, description, specs) {
+    currentProduct = name;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductDescription').textContent = description;
+    document.getElementById('modalProductSpecs').textContent = specs;
+    document.getElementById('productModal').style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('productModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Request quote function
+function requestQuote(productName) {
+    const message = `Hola, me interesa solicitar una cotización para el equipo FARO: ${productName}. ¿Podrían enviarme más información sobre especificaciones técnicas, precios y disponibilidad?`;
+    const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Request quote from modal
+function requestQuoteFromModal() {
+    if (currentProduct) {
+        requestQuote(currentProduct);
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    createObserver();
+});
+</script>
+
+{% endblock %}
