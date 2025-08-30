@@ -1,3 +1,5 @@
+{% extends "layout.html" %}
+
 {% block content %}
 
 <style>
@@ -96,6 +98,66 @@
         background-repeat: no-repeat;
         background-size: cover;
     }
+
+    /* Nuevo estilo para título de productos estrella */
+    .products-title {
+        background: linear-gradient(45deg, #5B21B6, #ef4444, #1f2937);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        display: inline-block;
+    }
+
+    .products-title::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, #5B21B6, #ef4444, #1f2937);
+        border-radius: 20px;
+        padding: 4px;
+        z-index: -1;
+        opacity: 0.1;
+    }
+
+    /* Estilos para recuadros de servicios */
+    .service-box-purple {
+        background: linear-gradient(135deg, #5B21B6 0%, #4C1D95 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 10px 30px rgba(91, 33, 182, 0.3);
+    }
+
+    .service-box-red {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+    }
+
+    .service-box-black {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 10px 30px rgba(31, 41, 55, 0.3);
+    }
+
+    .service-text-gradient {
+        background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: bold;
+    }
+
+    .service-icon-purple { color: #A855F7; }
+    .service-icon-red { color: #FCA5A5; }
+    .service-icon-orange { color: #FCD34D; }
+    .service-icon-white { color: #ffffff; }
 
     /* Modal styles */
     .modal-overlay {
@@ -206,10 +268,8 @@
     <!-- Sección de Características -->
     <div class="container mx-auto px-4 py-16 bg-white shadow-2xl rounded-lg content-overlay mb-10 scale-in">
         <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold mb-4" style="background: linear-gradient(135deg, #5B21B6 0%, #ef4444 50%, #1f2937 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
-                Nuestros Productos Estrella
-            </h2>
-            <div style="width: 100px; height: 4px; background: linear-gradient(135deg, #5B21B6 0%, #ef4444 50%, #1f2937 100%); margin: 0 auto; border-radius: 2px;"></div>
+            <h2 class="text-5xl font-bold products-title">Nuestros Productos Estrella</h2>
+            <div style="width: 100px; height: 4px; background: linear-gradient(45deg, #5B21B6, #ef4444, #1f2937); margin: 1rem auto; border-radius: 2px;"></div>
         </div>
         <div class="grid md:grid-cols-3 gap-8">
             <!-- Green 21 - VATECH (MORADO) -->
@@ -265,6 +325,7 @@
             </div>
         </div>
 
+
         <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mt-12">
             <a href="{{ url_for('catalogo') }}" class="w-64 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center" style="background: radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%);">
                 <i class="fas fa-clipboard-list mr-2"></i>
@@ -286,72 +347,74 @@
         <h1 class="text-5xl font-bold text-white mb-8" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Nuestros Servicios Especializados</h1>
         <p class="text-xl text-gray-200 mb-12" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Soluciones integrales para el consultorio odontológico moderno</p>
 
+        <!-- Primera fila - Morado -->
         <div class="grid md:grid-cols-2 gap-8 mb-12">
-            <div class="bg-white bg-opacity-90 p-8 rounded-xl shadow-xl slide-in-left">
+            <div class="service-box-purple p-8 rounded-xl shadow-xl slide-in-left">
                 <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-cogs text-4xl mr-3" style="color: #5B21B6;"></i>
-                    <h3 class="text-2xl font-bold" style="color: #5B21B6;">Equipamiento Integral</h3>
+                    <i class="fas fa-cogs service-icon-purple text-4xl mr-3"></i>
+                    <h3 class="text-2xl font-bold service-text-gradient">Equipamiento Integral</h3>
                 </div>
-                <ul class="text-left text-gray-700 space-y-2">
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Tomógrafos dentales de última generación</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Sillones odontológicos ergonómicos</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Sistemas de radiología digital</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Instrumental quirúrgico especializado</li>
+                <ul class="text-left text-gray-200 space-y-2">
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Tomógrafos dentales de última generación</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Sillones odontológicos ergonómicos</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Sistemas de radiología digital</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Instrumental quirúrgico especializado</li>
                 </ul>
             </div>
 
-            <div class="bg-white bg-opacity-90 p-8 rounded-xl shadow-xl slide-in-right">
+            <div class="service-box-purple p-8 rounded-xl shadow-xl slide-in-right">
                 <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-microscope text-red-600 text-4xl mr-3"></i>
-                    <h3 class="text-2xl font-bold text-red-600">Biomateriales Avanzados</h3>
+                    <i class="fas fa-microscope service-icon-purple text-4xl mr-3"></i>
+                    <h3 class="text-2xl font-bold service-text-gradient">Biomateriales Avanzados</h3>
                 </div>
-                <ul class="text-left text-gray-700 space-y-2">
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Composites de última generación</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Materiales de impresión digitales</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Cementos y adhesivos especializados</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Implantes y componentes protésicos</li>
+                <ul class="text-left text-gray-200 space-y-2">
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Composites de última generación</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Materiales de impresión digitales</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Cementos y adhesivos especializados</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Implantes y componentes protésicos</li>
                 </ul>
             </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white bg-opacity-90 p-8 rounded-xl shadow-xl fade-in">
+        <!-- Segunda fila - Rojo -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="service-box-red p-8 rounded-xl shadow-xl fade-in">
                 <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-graduation-cap text-purple-600 text-4xl mr-3"></i>
-                    <h3 class="text-2xl font-bold text-purple-600">Capacitación Profesional</h3>
+                    <i class="fas fa-graduation-cap service-icon-red text-4xl mr-3"></i>
+                    <h3 class="text-2xl font-bold service-text-gradient">Capacitación Profesional</h3>
                 </div>
-                <ul class="text-left text-gray-700 space-y-2">
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Cursos especializados en equipos</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Entrenamiento en nuevas tecnologías</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Certificaciones oficiales</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Soporte técnico continuo</li>
+                <ul class="text-left text-gray-200 space-y-2">
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Cursos especializados en equipos</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Entrenamiento en nuevas tecnologías</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Certificaciones oficiales</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Soporte técnico continuo</li>
                 </ul>
             </div>
 
-            <div class="bg-white bg-opacity-90 p-8 rounded-xl shadow-xl scale-in">
+            <div class="service-box-red p-8 rounded-xl shadow-xl scale-in">
                 <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-tools text-orange-600 text-4xl mr-3"></i>
-                    <h3 class="text-2xl font-bold text-orange-600">Servicio Técnico</h3>
+                    <i class="fas fa-tools service-icon-orange text-4xl mr-3"></i>
+                    <h3 class="text-2xl font-bold service-text-gradient">Servicio Técnico</h3>
                 </div>
-                <ul class="text-left text-gray-700 space-y-2">
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Instalación y puesta en marcha</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Mantenimiento preventivo programado</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Reparaciones especializadas</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Garantía extendida disponible</li>
+                <ul class="text-left text-gray-200 space-y-2">
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Instalación y puesta en marcha</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Mantenimiento preventivo programado</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Reparaciones especializadas</li>
+                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Garantía extendida disponible</li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <!-- Sección Misión y Visión -->
+    <!-- Sección Misión y Visión - Negro -->
     <div id="mision" class="container mx-auto px-4 py-16">
         <div class="grid md:grid-cols-2 gap-12">
-            <div class="bg-white bg-opacity-95 p-8 rounded-xl shadow-xl slide-in-left">
+            <div class="service-box-black p-8 rounded-xl shadow-xl slide-in-left">
                 <div class="text-center mb-6">
-                    <i class="fas fa-bullseye text-5xl mb-4" style="color: #5B21B6;"></i>
-                    <h2 class="text-4xl font-bold gradient-text">Nuestra Misión</h2>
+                    <i class="fas fa-bullseye service-icon-white text-5xl mb-4"></i>
+                    <h2 class="text-4xl font-bold service-text-gradient">Nuestra Misión</h2>
                 </div>
-                <p class="text-lg text-gray-700 leading-relaxed text-justify">
+                <p class="text-lg text-gray-300 leading-relaxed text-justify">
                     Proveer equipos odontológicos de alta calidad y biomateriales avanzados que permitan a los profesionales dentales
                     ofrecer tratamientos de excelencia. Nos comprometemos a ser el socio estratégico que impulse la innovación en cada
                     consultorio, brindando soluciones tecnológicas que mejoren la experiencia tanto del profesional como del paciente,
@@ -359,12 +422,12 @@
                 </p>
             </div>
 
-            <div class="bg-white bg-opacity-95 p-8 rounded-xl shadow-xl slide-in-right">
+            <div class="service-box-black p-8 rounded-xl shadow-xl slide-in-right">
                 <div class="text-center mb-6">
-                    <i class="fas fa-eye text-red-600 text-5xl mb-4"></i>
-                    <h2 class="text-4xl font-bold gradient-text">Nuestra Visión</h2>
+                    <i class="fas fa-eye service-icon-white text-5xl mb-4"></i>
+                    <h2 class="text-4xl font-bold service-text-gradient">Nuestra Visión</h2>
                 </div>
-                <p class="text-lg text-gray-700 leading-relaxed text-justify">
+                <p class="text-lg text-gray-300 leading-relaxed text-justify">
                     Ser la empresa líder en distribución de equipos dentales en Ecuador y expandirnos a nivel regional,
                     reconocida por nuestra excelencia en el servicio, innovación tecnológica y compromiso con la formación profesional.
                     Aspiramos a transformar la práctica odontológica mediante la introducción de tecnologías de vanguardia,
@@ -378,65 +441,65 @@
     <div id="contacto" class="flex justify-center items-center min-h-screen px-4 py-16" style="background: linear-gradient(135deg, #5B21B6 0%, #ef4444 33%, #dc2626 66%, #000000 100%);">
         <div class="p-8 rounded-2xl shadow-2xl max-w-lg w-full border-2 fade-in" style="background: linear-gradient(145deg, #1f2937 0%, #111827 100%); border-color: #5B21B6;">
             <div class="text-center mb-6">
-                <i class="fas fa-calendar-alt text-4xl mb-4" style="color: #A855F7;"></i>
-                <h2 class="text-3xl font-bold text-white mb-2">Solicitar Demostración</h2>
-                <p class="text-lg text-gray-300">¿Listo para conocer nuestros equipos dentales?</p>
+              <i class="fas fa-calendar-alt text-4xl mb-4" style="color: #9CA3AF;"></i>
+              <h2 class="text-3xl font-bold text-white mb-2">Solicitar Demostración</h2>
+              <p class="text-lg text-gray-300">¿Listo para conocer nuestros equipos dentales?</p>
             </div>
 
             <form method="POST" action="{{ url_for('agendar_demo') }}" class="space-y-4">
-                <div class="relative">
-                    <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" name="nombre" placeholder="Su Nombre" required
-                        class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
-                        style="border-color: #374151;"
-                        onfocus="this.style.borderColor='#5B21B6'; this.style.boxShadow='0 0 0 2px rgba(91, 33, 182, 0.3)'"
-                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
-                </div>
+              <div class="relative">
+                <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="nombre" placeholder="Su Nombre" required
+                       class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
+                       style="border-color: #374151;"
+                       onfocus="this.style.borderColor='#6B7280'; this.style.boxShadow='0 0 0 2px rgba(107, 114, 128, 0.3)';"
+                       onblur="this.style.borderColor='#374151'; this.style.boxShadow='none';">
+              </div>
 
-                <div class="relative">
-                    <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input type="email" name="correo" placeholder="Su Correo Electrónico" required
-                        class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
-                        style="border-color: #374151;"
-                        onfocus="this.style.borderColor='#5B21B6'; this.style.boxShadow='0 0 0 2px rgba(91, 33, 182, 0.3)'"
-                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
-                </div>
+              <div class="relative">
+                <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="email" name="correo" placeholder="Su Correo Electrónico" required
+                       class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
+                       style="border-color: #374151;"
+                       onfocus="this.style.borderColor='#6B7280'; this.style.boxShadow='0 0 0 2px rgba(107, 114, 128, 0.3)';"
+                       onblur="this.style.borderColor='#374151'; this.style.boxShadow='none';">
+              </div>
 
-                <div class="relative">
-                    <i class="fas fa-calendar absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input type="date" name="fecha" required
+              <div class="relative">
+                <i class="fas fa-calendar absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="date" name="fecha" required
+                       class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white transition duration-300"
+                       style="border-color: #374151;"
+                       onfocus="this.style.borderColor='#6B7280'; this.style.boxShadow='0 0 0 2px rgba(107, 114, 128, 0.3)';"
+                       onblur="this.style.borderColor='#374151'; this.style.boxShadow='none';">
+              </div>
+
+              <div class="relative">
+                <i class="fas fa-user-tie absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <select name="representante" required
                         class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white transition duration-300"
                         style="border-color: #374151;"
-                        onfocus="this.style.borderColor='#5B21B6'; this.style.boxShadow='0 0 0 2px rgba(91, 33, 182, 0.3)'"
-                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
-                </div>
+                        onfocus="this.style.borderColor='#6B7280'; this.style.boxShadow='0 0 0 2px rgba(107, 114, 128, 0.3)';"
+                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none';">
+                  <option value="" disabled selected>Seleccione un representante/área</option>
+                  <option value="Ing. Carlos Mendoza - Tomógrafos">Ing. Carlos Mendoza - Tomógrafos</option>
+                  <option value="Lic. Ana García - Equipos Dentales">Lic. Ana García - Equipos Dentales</option>
+                  <option value="Tec. Roberto Silva - Sensores Digitales">Tec. Roberto Silva - Sensores Digitales</option>
+                  <option value="Lic. Patricia López - Biomateriales">Lic. Patricia López - Biomateriales</option>
+                </select>
+              </div>
 
-                <div class="relative">
-                    <i class="fas fa-user-tie absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <select name="representante" required
-                        class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white transition duration-300"
-                        style="border-color: #374151;"
-                        onfocus="this.style.borderColor='#5B21B6'; this.style.boxShadow='0 0 0 2px rgba(91, 33, 182, 0.3)'"
-                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
-                        <option value="" disabled selected>Seleccione un representante/área</option>
-                        <option value="Ing. Carlos Mendoza - Tomógrafos">Ing. Carlos Mendoza - Tomógrafos</option>
-                        <option value="Lic. Ana García - Equipos Dentales">Lic. Ana García - Equipos Dentales</option>
-                        <option value="Tec. Roberto Silva - Sensores Digitales">Tec. Roberto Silva - Sensores Digitales</option>
-                        <option value="Lic. Patricia López - Biomateriales">Lic. Patricia López - Biomateriales</option>
-                    </select>
-                </div>
-
-                <button type="submit"
-                    class="w-full text-white font-bold py-3 rounded-lg transform hover:scale-105 transition duration-300"
-                    style="background: radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%);"
-                    onmouseover="this.style.background='radial-gradient(circle, #4C1D95 0%, #3B0764 50%, #2D1B69 100%)'"
-                    onmouseout="this.style.background='radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%)'">
-                    <i class="fas fa-paper-plane mr-2"></i>
-                    Solicitar Demostración
-                </button>
+              <button type="submit"
+                      class="w-full text-white font-bold py-3 rounded-lg transform hover:scale-105 transition duration-300"
+                      style="background: radial-gradient(circle, #9CA3AF 0%, #6B7280 50%, #374151 100%);"
+                      onmouseover="this.style.background='radial-gradient(circle, #A1A1AA 0%, #4B5563 50%, #1F2937 100%)';"
+                      onmouseout="this.style.background='radial-gradient(circle, #9CA3AF 0%, #6B7280 50%, #374151 100%)';">
+                <i class="fas fa-paper-plane mr-2"></i>
+                Solicitar Demostración
+              </button>
             </form>
+          </div>
         </div>
-    </div>
 
 <!-- Modal de Detalles del Producto -->
 <div class="modal-overlay" id="productModal">
