@@ -1,5 +1,3 @@
-{% extends "layout.html" %}
-
 {% block content %}
 
 <style>
@@ -67,12 +65,13 @@
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         border: 2px solid transparent;
         transition: all 0.3s ease;
+        cursor: pointer;
     }
 
     .service-card:hover {
-        border-color: #3b82f6;
+        border-color: #5B21B6;
         transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 20px 40px rgba(91, 33, 182, 0.1);
     }
 
     .floating-animation {
@@ -85,7 +84,7 @@
     }
 
     .gradient-text {
-        background: linear-gradient(135deg, #3b82f6, #1e40af);
+        background: linear-gradient(135deg, #5B21B6, #4C1D95);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -97,6 +96,81 @@
         background-repeat: no-repeat;
         background-size: cover;
     }
+
+    /* Modal styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        max-width: 800px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #f3f4f6;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .close-modal:hover {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .modal-video {
+        width: 100%;
+        height: 300px;
+        border-radius: 10px;
+        margin: 1rem 0;
+    }
+
+    .product-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        z-index: 10;
+        color: white;
+    }
+
+    /* Colores actualizados de marca */
+    .text-primary { color: #5B21B6 !important; }
+    .bg-primary { background-color: #5B21B6 !important; }
+    .text-blue-600 { color: #5B21B6 !important; }
+    .border-blue-600 { border-color: #5B21B6 !important; }
 </style>
 
     <!-- Video Background -->
@@ -131,47 +205,68 @@
 
     <!-- Sección de Características -->
     <div class="container mx-auto px-4 py-16 bg-white shadow-2xl rounded-lg content-overlay mb-10 scale-in">
-        <h2 class="text-4xl font-bold text-center mb-12 gradient-text">Nuestros Productos Estrella</h2>
+        <div class="text-center mb-12">
+            <h2 class="text-5xl font-bold mb-4" style="background: linear-gradient(135deg, #5B21B6 0%, #ef4444 50%, #1f2937 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                Nuestros Productos Estrella
+            </h2>
+            <div style="width: 100px; height: 4px; background: linear-gradient(135deg, #5B21B6 0%, #ef4444 50%, #1f2937 100%); margin: 0 auto; border-radius: 2px;"></div>
+        </div>
         <div class="grid md:grid-cols-3 gap-8">
-            <div class="text-center service-card p-6 rounded-xl slide-in-left">
+            <!-- Green 21 - VATECH (MORADO) -->
+            <div class="text-center service-card p-6 rounded-xl slide-in-left position-relative"
+                 style="border: 3px solid #5B21B6; box-shadow: 0 0 20px rgba(91, 33, 182, 0.2);"
+                 onclick="showProductDetails('Green 21', 'Tomógrafo CBCT de excelencia que eleva el estándar de diagnóstico 3D con tecnología verde avanzada para resultados superiores en cada exploración', 'Tomógrafo CBCT de excelencia con tecnología Green, campo de visión optimizado, alta resolución de imagen, eficiencia energética superior, interfaz intuitiva', 'vatech/green21_demo.mp4')">
                 <div class="mb-6">
-                    <img src="{{ url_for('static', filename='images/Picture2.png') }}"
-                         alt="Tomógrafo"
+                    <span class="badge mb-2" style="background: #5B21B6 !important; color: white;">VATECH</span>
+                    <div class="product-badge" style="background: #5B21B6;">DESTACADO</div>
+                    <img src="{{ url_for('static', filename='images/vatech/v10.png') }}"
+                         alt="Green 21"
                          class="mx-auto h-40 w-40 object-contain rounded-lg shadow-lg hover:scale-110 transition-transform duration-300">
                 </div>
-                <h3 class="text-2xl font-semibold mb-4 text-blue-600">Tomografía Dental 3D</h3>
-                <p class="text-gray-600 mb-4">Tecnología avanzada de imagen 3D para diagnósticos precisos y planificación de tratamientos odontológicos</p>
-                <div class="bg-blue-100 p-3 rounded-lg">
-                    <p class="text-sm text-blue-800 font-semibold">Resolución: 150 micras | Escaneo: 8.9 seg</p>
+                <h3 class="text-2xl font-semibold mb-4" style="color: #5B21B6;">Green 21</h3>
+                <p class="text-gray-600 mb-4">Tomógrafo CBCT de excelencia que eleva el estándar de diagnóstico 3D con tecnología verde avanzada</p>
+                <div style="background: rgba(91, 33, 182, 0.1); padding: 12px; border-radius: 8px;">
+                    <p class="text-sm font-semibold" style="color: #4C1D95;">Tecnología CBCT | Eficiencia energética | Campo de visión optimizado</p>
                 </div>
             </div>
-            <div class="text-center service-card p-6 rounded-xl fade-in">
+
+            <!-- X-MIND prime 3D - ACTEON (ROJO) -->
+            <div class="text-center service-card p-6 rounded-xl fade-in position-relative"
+                 style="border: 3px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);"
+                 onclick="showProductDetails('X-MIND® prime 3D', '¡Es la nueva inteligencia! Siempre dependerá de imágenes de alta calidad y potentes herramientas de imagen para tener éxito en el diagnóstico y la planificación del tratamiento. Sistema revolucionario con IA integrada', 'Tecnología de vanguardia en tomografía 3D con inteligencia artificial, imágenes de alta resolución, interface intuitiva, diagnóstico asistido por IA, planificación de tratamiento optimizada', 'acteon/xmind_demo.mp4')">
                 <div class="mb-6">
-                    <img src="{{ url_for('static', filename='images/Picture4.png') }}"
-                         alt="Sillón Odontológico"
+                    <span class="badge mb-2" style="background: #ef4444 !important; color: white;">ACTEON</span>
+                    <div class="product-badge" style="background: #ef4444;">IA</div>
+                    <img src="{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}"
+                         alt="X-MIND prime 3D"
                          class="mx-auto h-40 w-40 object-contain rounded-lg shadow-lg hover:scale-110 transition-transform duration-300">
                 </div>
-                <h3 class="text-2xl font-semibold mb-4 text-red-600">Equipos Dentales Premium</h3>
-                <p class="text-gray-600 mb-4">Equipamiento de última generación para máximo confort del paciente y eficiencia del profesional</p>
-                <div class="bg-red-100 p-3 rounded-lg">
-                    <p class="text-sm text-red-800 font-semibold">Motor eléctrico | LED integrado | Sistema completo</p>
+                <h3 class="text-2xl font-semibold mb-4" style="color: #ef4444;">X-MIND® prime 3D</h3>
+                <p class="text-gray-600 mb-4">¡Es la nueva inteligencia! Sistema de tomografía 3D con IA integrada para diagnósticos superiores</p>
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px;">
+                    <p class="text-sm font-semibold" style="color: #dc2626;">Inteligencia Artificial | Imagen 3D | Diagnóstico Avanzado</p>
                 </div>
             </div>
-            <div class="text-center service-card p-6 rounded-xl slide-in-right">
+
+            <!-- Cursos y Capacitación (Color Negro) -->
+            <div class="text-center service-card p-6 rounded-xl slide-in-right position-relative"
+                 style="border: 3px solid #1f2937; box-shadow: 0 0 20px rgba(31, 41, 55, 0.2);"
+                 onclick="redirectToCourses()">
                 <div class="mb-6">
-                    <img src="{{ url_for('static', filename='images/Picture3.png') }}"
-                         alt="Sensor X-Line"
-                         class="mx-auto h-40 w-40 object-contain rounded-lg shadow-lg hover:scale-110 transition-transform duration-300">
+                    <span class="badge mb-2" style="background: #1f2937 !important; color: white;">PROEDENT</span>
+                    <div class="product-badge" style="background: #1f2937;">EDUCACIÓN</div>
+                    <i class="fas fa-graduation-cap mx-auto" style="font-size: 8rem; color: #1f2937; height: 160px; display: flex; align-items: center; justify-content: center;"></i>
                 </div>
-                <h3 class="text-2xl font-semibold mb-4 text-green-600">Sensores Digitales</h3>
-                <p class="text-gray-600 mb-4">Radiografía digital instantánea con sensores X-Line de alta resolución y mínima radiación</p>
-                <div class="bg-green-100 p-3 rounded-lg">
-                    <p class="text-sm text-green-800 font-semibold">20 lp/mm | USB | Compatible universal</p>
+                <h3 class="text-2xl font-semibold mb-4" style="color: #1f2937;">Cursos y Capacitación</h3>
+                <p class="text-gray-600 mb-4">Programas especializados de formación profesional con certificación oficial</p>
+                <div style="background: rgba(31, 41, 55, 0.1); padding: 12px; border-radius: 8px;">
+                    <p class="text-sm font-semibold" style="color: #374151;">Certificación oficial | Instructores expertos | Modalidades flexibles</p>
                 </div>
             </div>
         </div>
+
         <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mt-12">
-            <a href="{{ url_for('catalogo') }}" class="w-64 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center" style="background: radial-gradient(circle, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%);">
+            <a href="{{ url_for('catalogo') }}" class="w-64 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center" style="background: radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%);">
                 <i class="fas fa-clipboard-list mr-2"></i>
                 Ver Catálogo Completo
             </a>
@@ -194,8 +289,8 @@
         <div class="grid md:grid-cols-2 gap-8 mb-12">
             <div class="bg-white bg-opacity-90 p-8 rounded-xl shadow-xl slide-in-left">
                 <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-cogs text-blue-600 text-4xl mr-3"></i>
-                    <h3 class="text-2xl font-bold text-blue-600">Equipamiento Integral</h3>
+                    <i class="fas fa-cogs text-4xl mr-3" style="color: #5B21B6;"></i>
+                    <h3 class="text-2xl font-bold" style="color: #5B21B6;">Equipamiento Integral</h3>
                 </div>
                 <ul class="text-left text-gray-700 space-y-2">
                     <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Tomógrafos dentales de última generación</li>
@@ -253,7 +348,7 @@
         <div class="grid md:grid-cols-2 gap-12">
             <div class="bg-white bg-opacity-95 p-8 rounded-xl shadow-xl slide-in-left">
                 <div class="text-center mb-6">
-                    <i class="fas fa-bullseye text-blue-600 text-5xl mb-4"></i>
+                    <i class="fas fa-bullseye text-5xl mb-4" style="color: #5B21B6;"></i>
                     <h2 class="text-4xl font-bold gradient-text">Nuestra Misión</h2>
                 </div>
                 <p class="text-lg text-gray-700 leading-relaxed text-justify">
@@ -280,10 +375,10 @@
     </div>
 
     <!-- Sección Agendar Demostración -->
-    <div id="contacto" class="flex justify-center items-center min-h-screen px-4 py-16" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 33%, #dc2626 66%, #000000 100%);">
-        <div class="p-8 rounded-2xl shadow-2xl max-w-lg w-full border-2 fade-in" style="background: linear-gradient(145deg, #1f2937 0%, #111827 100%); border-color: #3b82f6;">
+    <div id="contacto" class="flex justify-center items-center min-h-screen px-4 py-16" style="background: linear-gradient(135deg, #5B21B6 0%, #ef4444 33%, #dc2626 66%, #000000 100%);">
+        <div class="p-8 rounded-2xl shadow-2xl max-w-lg w-full border-2 fade-in" style="background: linear-gradient(145deg, #1f2937 0%, #111827 100%); border-color: #5B21B6;">
             <div class="text-center mb-6">
-                <i class="fas fa-calendar-alt text-blue-400 text-4xl mb-4"></i>
+                <i class="fas fa-calendar-alt text-4xl mb-4" style="color: #A855F7;"></i>
                 <h2 class="text-3xl font-bold text-white mb-2">Solicitar Demostración</h2>
                 <p class="text-lg text-gray-300">¿Listo para conocer nuestros equipos dentales?</p>
             </div>
@@ -294,7 +389,7 @@
                     <input type="text" name="nombre" placeholder="Su Nombre" required
                         class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
                         style="border-color: #374151;"
-                        onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'"
+                        onfocus="this.style.borderColor='#5B21B6'; this.style.boxShadow='0 0 0 2px rgba(91, 33, 182, 0.3)'"
                         onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
                 </div>
 
@@ -303,7 +398,7 @@
                     <input type="email" name="correo" placeholder="Su Correo Electrónico" required
                         class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
                         style="border-color: #374151;"
-                        onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'"
+                        onfocus="this.style.borderColor='#5B21B6'; this.style.boxShadow='0 0 0 2px rgba(91, 33, 182, 0.3)'"
                         onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
                 </div>
 
@@ -312,7 +407,7 @@
                     <input type="date" name="fecha" required
                         class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white transition duration-300"
                         style="border-color: #374151;"
-                        onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'"
+                        onfocus="this.style.borderColor='#5B21B6'; this.style.boxShadow='0 0 0 2px rgba(91, 33, 182, 0.3)'"
                         onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
                 </div>
 
@@ -321,7 +416,7 @@
                     <select name="representante" required
                         class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white transition duration-300"
                         style="border-color: #374151;"
-                        onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'"
+                        onfocus="this.style.borderColor='#5B21B6'; this.style.boxShadow='0 0 0 2px rgba(91, 33, 182, 0.3)'"
                         onblur="this.style.borderColor='#374151'; this.style.boxShadow='none'">
                         <option value="" disabled selected>Seleccione un representante/área</option>
                         <option value="Ing. Carlos Mendoza - Tomógrafos">Ing. Carlos Mendoza - Tomógrafos</option>
@@ -333,9 +428,9 @@
 
                 <button type="submit"
                     class="w-full text-white font-bold py-3 rounded-lg transform hover:scale-105 transition duration-300"
-                    style="background: radial-gradient(circle, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%);"
-                    onmouseover="this.style.background='radial-gradient(circle, #2563eb 0%, #1d4ed8 50%, #1e3a8a 100%)'"
-                    onmouseout="this.style.background='radial-gradient(circle, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%)'">
+                    style="background: radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%);"
+                    onmouseover="this.style.background='radial-gradient(circle, #4C1D95 0%, #3B0764 50%, #2D1B69 100%)'"
+                    onmouseout="this.style.background='radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%)'">
                     <i class="fas fa-paper-plane mr-2"></i>
                     Solicitar Demostración
                 </button>
@@ -343,7 +438,42 @@
         </div>
     </div>
 
+<!-- Modal de Detalles del Producto -->
+<div class="modal-overlay" id="productModal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal()">&times;</button>
+        <h3 id="modalProductName" style="color: #5B21B6; font-size: 2rem; font-weight: bold; margin-bottom: 1rem;"></h3>
+
+        <!-- Video container -->
+        <div id="videoContainer" style="margin-bottom: 1.5rem;">
+            <video id="modalVideo" class="modal-video" controls style="display: none;">
+                <source id="videoSource" src="" type="video/mp4">
+                Tu navegador no soporta la reproducción de video.
+            </video>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+            <div>
+                <h6 style="color: #5B21B6; font-weight: bold; margin-bottom: 0.75rem; font-size: 1.1rem;">Descripción:</h6>
+                <p id="modalProductDescription" style="color: #4b5563; line-height: 1.6; font-size: 1rem;"></p>
+            </div>
+            <div>
+                <h6 style="color: #5B21B6; font-weight: bold; margin-bottom: 0.75rem; font-size: 1.1rem;">Especificaciones:</h6>
+                <p id="modalProductSpecs" style="color: #6b7280; font-size: 0.95rem; line-height: 1.6;"></p>
+            </div>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: center;">
+            <button onclick="closeModal()" style="padding: 0.75rem 1.5rem; background: #f3f4f6; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Cerrar</button>
+            <button onclick="requestQuoteFromModal()" style="padding: 0.75rem 2rem; background: #5B21B6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                <i class="fas fa-calculator" style="margin-right: 0.5rem;"></i>Solicitar Cotización
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
+let currentProduct = '';
+
 // Función para observar elementos y aplicar animaciones
 function createObserver() {
     const observer = new IntersectionObserver((entries) => {
@@ -369,6 +499,63 @@ function createObserver() {
         observer.observe(el);
     });
 }
+
+// Mostrar detalles del producto con soporte para video
+function showProductDetails(name, description, specs, videoUrl = null) {
+    currentProduct = name;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductDescription').textContent = description;
+    document.getElementById('modalProductSpecs').textContent = specs;
+
+    // Manejar el video si existe
+    const video = document.getElementById('modalVideo');
+    const videoSource = document.getElementById('videoSource');
+
+    if (videoUrl) {
+        videoSource.src = `{{ url_for('static', filename='videos/') }}${videoUrl}`;
+        video.style.display = 'block';
+        video.load(); // Recargar el video con la nueva fuente
+    } else {
+        video.style.display = 'none';
+    }
+
+    document.getElementById('productModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+}
+
+// Cerrar modal
+function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restaurar scroll del body
+
+    // Pausar video si está reproduciéndose
+    const video = document.getElementById('modalVideo');
+    video.pause();
+}
+
+// Solicitar cotización desde modal
+function requestQuoteFromModal() {
+    if (currentProduct) {
+        const message = `Hola, me interesa solicitar una cotización para: ${currentProduct}. ¿Podrían enviarme más información?`;
+        const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+}
+
+// Cerrar modal al hacer click fuera
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('productModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
 
 // Inicializar el observer cuando la página carga
 document.addEventListener('DOMContentLoaded', function() {
