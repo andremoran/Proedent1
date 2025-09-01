@@ -387,7 +387,6 @@ def catalogo():
                            current_category=category_filter)
 
 
-
 @app.route("/vatech_catalog")
 def vatech_catalog():
     return render_template("vatech_catalog.html")
@@ -436,20 +435,9 @@ def cursos():
     return render_template("cursos.html", courses=courses_db.values())
 
 
-@app.route("/visor_imagenes")
-def visor_imagenes():
-    return render_template("visor_imagenes.html")
-
-
-@app.route("/analisis_histologico")
-def analisis_histologico():
-    return render_template("analisis_histologico.html")
-
 @app.route("/chatindex")
 def chatindex():
     return render_template("chatindex.html")
-
-
 
 
 @app.route("/video_conferencia", methods=["GET", "POST"])

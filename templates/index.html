@@ -99,7 +99,6 @@
         background-size: cover;
     }
 
-    /* Nuevo estilo para título de productos estrella */
     .products-title {
         background: linear-gradient(45deg, #5B21B6, #ef4444, #1f2937);
         -webkit-background-clip: text;
@@ -124,7 +123,6 @@
         opacity: 0.1;
     }
 
-    /* Estilos para recuadros de servicios */
     .service-box-purple {
         background: linear-gradient(135deg, #5B21B6 0%, #4C1D95 100%);
         color: white;
@@ -159,7 +157,6 @@
     .service-icon-orange { color: #FCD34D; }
     .service-icon-white { color: #ffffff; }
 
-    /* Modal styles */
     .modal-overlay {
         position: fixed;
         top: 0;
@@ -228,206 +225,391 @@
         color: white;
     }
 
-    /* Colores actualizados de marca */
     .text-primary { color: #5B21B6 !important; }
     .bg-primary { background-color: #5B21B6 !important; }
     .text-blue-600 { color: #5B21B6 !important; }
     .border-blue-600 { border-color: #5B21B6 !important; }
+
+    /* ESTILOS RESPONSIVOS PARA MÓVIL */
+    @media (max-width: 768px) {
+        /* Video de fondo optimizado para móvil */
+        .video-container {
+            display: none; /* Ocultar video en móvil para mejor rendimiento */
+        }
+
+        body {
+            background: linear-gradient(135deg, #5B21B6 0%, #ef4444 50%, #1f2937 100%);
+            background-attachment: fixed;
+        }
+
+        /* Hero section móvil */
+        .hero-mobile {
+            padding: 40px 15px !important;
+            text-align: center;
+        }
+
+        .hero-mobile img {
+            height: 60px !important;
+            margin-bottom: 20px;
+        }
+
+        .hero-mobile .hero-title {
+            font-size: 1.8rem !important;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero-mobile .hero-subtitle {
+            font-size: 1rem !important;
+            margin-bottom: 20px;
+        }
+
+        /* Grid de productos para móvil */
+        .products-grid-mobile {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .service-card {
+            padding: 20px !important;
+            margin-bottom: 15px;
+        }
+
+        .service-card img {
+            height: 120px !important;
+            width: 120px !important;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem !important;
+        }
+
+        .service-card p {
+            font-size: 0.9rem !important;
+        }
+
+        /* Botones responsivos */
+        .buttons-mobile {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .buttons-mobile a {
+            width: 100% !important;
+            padding: 15px 20px !important;
+            font-size: 1rem !important;
+            text-align: center;
+        }
+
+        /* Servicios en móvil */
+        .services-grid-mobile {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .service-box-purple,
+        .service-box-red,
+        .service-box-black {
+            padding: 25px !important;
+            margin-bottom: 20px;
+        }
+
+        .service-box-purple h3,
+        .service-box-red h3,
+        .service-box-black h3 {
+            font-size: 1.3rem !important;
+        }
+
+        /* Títulos responsivos */
+        .products-title {
+            font-size: 2rem !important;
+            line-height: 1.2;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title-mobile {
+            font-size: 2.2rem !important;
+            line-height: 1.2;
+            margin-bottom: 15px;
+        }
+
+        /* Modal responsive */
+        .modal-content {
+            padding: 1.5rem !important;
+            margin: 10px;
+            max-height: 85vh;
+        }
+
+        .modal-video {
+            height: 200px !important;
+        }
+
+        /* Formulario responsivo */
+        .form-mobile {
+            padding: 25px !important;
+            margin: 20px 10px;
+        }
+
+        .form-mobile h2 {
+            font-size: 1.8rem !important;
+        }
+
+        .form-mobile input,
+        .form-mobile select {
+            padding: 15px 12px !important;
+            font-size: 1rem !important;
+        }
+
+        .form-mobile button {
+            padding: 15px 25px !important;
+            font-size: 1.1rem !important;
+        }
+
+        /* Parallax deshabilitado en móvil */
+        .parallax-bg {
+            background-attachment: scroll;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-mobile .hero-title {
+            font-size: 1.5rem !important;
+        }
+
+        .products-title {
+            font-size: 1.8rem !important;
+        }
+
+        .section-title-mobile {
+            font-size: 2rem !important;
+        }
+
+        .service-card img {
+            height: 100px !important;
+            width: 100px !important;
+        }
+    }
 </style>
 
-    <!-- Video Background -->
-    <div class="video-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;">
-        <video
-            id="bgVideo"
-            autoplay
-            muted
-            loop
-            playsinline
-            webkit-playsinline
-            class="video-background"
-            style="width: 100%; height: 100%; object-fit: cover;"
-        >
-            <source src="{{ url_for('static', filename='videos/bgD.mp4') }}" type="video/mp4">
-        </video>
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4);"></div>
+<!-- Video Background (solo desktop) -->
+<div class="video-container d-none d-md-block" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;">
+    <video
+        id="bgVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline
+        class="video-background"
+        style="width: 100%; height: 100%; object-fit: cover;"
+    >
+        <source src="{{ url_for('static', filename='videos/bgD.mp4') }}" type="video/mp4">
+    </video>
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4);"></div>
+</div>
+
+<!-- Sección Hero -->
+<div class="container-fluid hero-mobile px-4 py-5 text-center fade-in">
+    <img src="{{ url_for('static', filename='images/logo2.png') }}"
+         alt="PROEDENT"
+         class="mx-auto mb-4 floating-animation"
+         style="height: 80px;">
+    <p class="hero-title mb-4 font-weight-bold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-size: 2.2rem;">
+        Distribuidora de equipos y biomateriales dentales
+    </p>
+    <p class="hero-subtitle text-light mb-4" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8); font-size: 1.1rem;">
+        Innovación y calidad al servicio de la odontología moderna
+    </p>
+</div>
+
+<!-- Sección de Productos Estrella -->
+<div class="container-fluid px-3 py-4 bg-white shadow-lg rounded content-overlay mb-4 scale-in">
+    <div class="text-center mb-4">
+        <h2 class="products-title">Nuestros Productos Estrella</h2>
+        <div style="width: 100px; height: 4px; background: linear-gradient(45deg, #5B21B6, #ef4444, #1f2937); margin: 1rem auto; border-radius: 2px;"></div>
     </div>
 
-    <!-- Sección Hero -->
-    <div class="container mx-auto px-4 py-20 text-center fade-in">
-        <img src="{{ url_for('static', filename='images/logo2.png') }}"
-             alt="PROEDENT"
-             class="mx-auto mb-6 h-24 w-auto floating-animation">
-        <p class="text-3xl mb-8 font-serif text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-            Distribuidora de equipos y biomateriales dentales
-        </p>
-        <p class="text-xl text-gray-200 mb-8" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-            Innovación y calidad al servicio de la odontología moderna
-        </p>
-    </div>
-
-    <!-- Sección de Características -->
-    <div class="container mx-auto px-4 py-16 bg-white shadow-2xl rounded-lg content-overlay mb-10 scale-in">
-        <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold products-title">Nuestros Productos Estrella</h2>
-            <div style="width: 100px; height: 4px; background: linear-gradient(45deg, #5B21B6, #ef4444, #1f2937); margin: 1rem auto; border-radius: 2px;"></div>
-        </div>
-        <div class="grid md:grid-cols-3 gap-8">
-            <!-- Green 21 - VATECH (MORADO) -->
-            <div class="text-center service-card p-6 rounded-xl slide-in-left position-relative"
+    <!-- Grid responsivo -->
+    <div class="row products-grid-mobile">
+        <!-- Green 21 - VATECH (MORADO) -->
+        <div class="col-12 col-lg-4 mb-4">
+            <div class="text-center service-card p-4 rounded shadow-sm h-100 position-relative"
                  style="border: 3px solid #5B21B6; box-shadow: 0 0 20px rgba(91, 33, 182, 0.2);"
-                 onclick="showProductDetails('Green 21', 'Tomógrafo CBCT de excelencia que eleva el estándar de diagnóstico 3D con tecnología verde avanzada para resultados superiores en cada exploración', 'Tomógrafo CBCT de excelencia con tecnología Green, campo de visión optimizado, alta resolución de imagen, eficiencia energética superior, interfaz intuitiva', 'vatech/green21_demo.mp4')">
-                <div class="mb-6">
+                 onclick="showProductDetails('Green 21', 'Tomógrafo CBCT de excelencia que eleva el estándar de diagnóstico 3D con tecnología verde avanzada para resultados superiores en cada exploración', 'Tomógrafo CBCT de excelencia con tecnología Green, campo de visión optimizado, alta resolución de imagen, eficiencia energética superior, interfaz intuitiva', 'Vatech Green CBCT.mp4')">
+                <div class="mb-3">
                     <span class="badge mb-2" style="background: #5B21B6 !important; color: white;">VATECH</span>
                     <div class="product-badge" style="background: #5B21B6;">DESTACADO</div>
                     <img src="{{ url_for('static', filename='images/vatech/v10.png') }}"
                          alt="Green 21"
-                         class="mx-auto h-40 w-40 object-contain rounded-lg shadow-lg hover:scale-110 transition-transform duration-300">
+                         class="mx-auto d-block rounded shadow-sm"
+                         style="height: 140px; width: 140px; object-fit: contain;">
                 </div>
-                <h3 class="text-2xl font-semibold mb-4" style="color: #5B21B6;">Green 21</h3>
-                <p class="text-gray-600 mb-4">Tomógrafo CBCT de excelencia que eleva el estándar de diagnóstico 3D con tecnología verde avanzada</p>
+                <h3 class="h5 mb-3" style="color: #5B21B6;">Green 21</h3>
+                <p class="text-muted small mb-3">Tomógrafo CBCT de excelencia que eleva el estándar de diagnóstico 3D con tecnología verde avanzada</p>
                 <div style="background: rgba(91, 33, 182, 0.1); padding: 12px; border-radius: 8px;">
-                    <p class="text-sm font-semibold" style="color: #4C1D95;">Tecnología CBCT | Eficiencia energética | Campo de visión optimizado</p>
+                    <p class="small mb-0 font-weight-bold" style="color: #4C1D95;">Tecnología CBCT | Eficiencia energética | Campo de visión optimizado</p>
                 </div>
             </div>
+        </div>
 
-            <!-- X-MIND prime 3D - ACTEON (ROJO) -->
-            <div class="text-center service-card p-6 rounded-xl fade-in position-relative"
+        <!-- X-MIND prime 3D - ACTEON (ROJO) -->
+        <div class="col-12 col-lg-4 mb-4">
+            <div class="text-center service-card p-4 rounded shadow-sm h-100 position-relative"
                  style="border: 3px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);"
-                 onclick="showProductDetails('X-MIND® prime 3D', '¡Es la nueva inteligencia! Siempre dependerá de imágenes de alta calidad y potentes herramientas de imagen para tener éxito en el diagnóstico y la planificación del tratamiento. Sistema revolucionario con IA integrada', 'Tecnología de vanguardia en tomografía 3D con inteligencia artificial, imágenes de alta resolución, interface intuitiva, diagnóstico asistido por IA, planificación de tratamiento optimizada', 'acteon/xmind_demo.mp4')">
-                <div class="mb-6">
+                 onclick="showProductDetails('X-MIND® prime 3D', '¡Es la nueva inteligencia! Siempre dependerá de imágenes de alta calidad y potentes herramientas de imagen para tener éxito en el diagnóstico y la planificación del tratamiento. Sistema revolucionario con IA integrada', 'Tecnología de vanguardia en tomografía 3D con inteligencia artificial, imágenes de alta resolución, interface intuitiva, diagnóstico asistido por IA, planificación de tratamiento optimizada', 'ActeonIA.mp4')">
+                <div class="mb-3">
                     <span class="badge mb-2" style="background: #ef4444 !important; color: white;">ACTEON</span>
                     <div class="product-badge" style="background: #ef4444;">IA</div>
                     <img src="{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}"
                          alt="X-MIND prime 3D"
-                         class="mx-auto h-40 w-40 object-contain rounded-lg shadow-lg hover:scale-110 transition-transform duration-300">
+                         class="mx-auto d-block rounded shadow-sm"
+                         style="height: 140px; width: 140px; object-fit: contain;">
                 </div>
-                <h3 class="text-2xl font-semibold mb-4" style="color: #ef4444;">X-MIND® prime 3D</h3>
-                <p class="text-gray-600 mb-4">¡Es la nueva inteligencia! Sistema de tomografía 3D con IA integrada para diagnósticos superiores</p>
+                <h3 class="h5 mb-3" style="color: #ef4444;">X-MIND® prime 3D</h3>
+                <p class="text-muted small mb-3">¡Es la nueva inteligencia! Sistema de tomografía 3D con IA integrada para diagnósticos superiores</p>
                 <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px;">
-                    <p class="text-sm font-semibold" style="color: #dc2626;">Inteligencia Artificial | Imagen 3D | Diagnóstico Avanzado</p>
-                </div>
-            </div>
-
-            <!-- Cursos y Capacitación (Color Negro) -->
-            <div class="text-center service-card p-6 rounded-xl slide-in-right position-relative"
-                 style="border: 3px solid #1f2937; box-shadow: 0 0 20px rgba(31, 41, 55, 0.2);"
-                 onclick="redirectToCourses()">
-                <div class="mb-6">
-                    <span class="badge mb-2" style="background: #1f2937 !important; color: white;">PROEDENT</span>
-                    <div class="product-badge" style="background: #1f2937;">EDUCACIÓN</div>
-                    <i class="fas fa-graduation-cap mx-auto" style="font-size: 8rem; color: #1f2937; height: 160px; display: flex; align-items: center; justify-content: center;"></i>
-                </div>
-                <h3 class="text-2xl font-semibold mb-4" style="color: #1f2937;">Cursos y Capacitación</h3>
-                <p class="text-gray-600 mb-4">Programas especializados de formación profesional con certificación oficial</p>
-                <div style="background: rgba(31, 41, 55, 0.1); padding: 12px; border-radius: 8px;">
-                    <p class="text-sm font-semibold" style="color: #374151;">Certificación oficial | Instructores expertos | Modalidades flexibles</p>
+                    <p class="small mb-0 font-weight-bold" style="color: #dc2626;">Inteligencia Artificial | Imagen 3D | Diagnóstico Avanzado</p>
                 </div>
             </div>
         </div>
 
-
-        <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mt-12">
-            <a href="{{ url_for('catalogo') }}" class="w-64 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center" style="background: radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%);">
-                <i class="fas fa-clipboard-list mr-2"></i>
-                Ver Catálogo Completo
-            </a>
-            <a href="{{ url_for('cursos') }}" class="w-64 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center" style="background: radial-gradient(circle, #ef4444 0%, #dc2626 50%, #991b1b 100%);">
-                <i class="fas fa-graduation-cap mr-2"></i>
-                Cursos y Capacitaciones
-            </a>
-            <a href="#contacto" class="w-64 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 flex items-center justify-center" style="background: radial-gradient(circle, #000 0%, #0a0a0a 50%, #111 100%);">
-                <i class="fas fa-phone mr-2"></i>
-                Solicitar Cotización
-            </a>
+        <!-- Cursos y Capacitación (Color Negro) -->
+        <div class="col-12 col-lg-4 mb-4">
+            <div class="text-center service-card p-4 rounded shadow-sm h-100 position-relative"
+                 style="border: 3px solid #1f2937; box-shadow: 0 0 20px rgba(31, 41, 55, 0.2);"
+                 onclick="window.location.href='{{ url_for('cursos') }}'">
+                <div class="mb-3">
+                    <span class="badge mb-2" style="background: #1f2937 !important; color: white;">PROEDENT</span>
+                    <div class="product-badge" style="background: #1f2937;">EDUCACIÓN</div>
+                    <i class="fas fa-graduation-cap d-block mx-auto" style="font-size: 5rem; color: #1f2937; height: 140px; display: flex; align-items: center; justify-content: center;"></i>
+                </div>
+                <h3 class="h5 mb-3" style="color: #1f2937;">Cursos y Capacitación</h3>
+                <p class="text-muted small mb-3">Programas especializados de formación profesional con certificación oficial</p>
+                <div style="background: rgba(31, 41, 55, 0.1); padding: 12px; border-radius: 8px;">
+                    <p class="small mb-0 font-weight-bold" style="color: #374151;">Certificación oficial | Instructores expertos | Modalidades flexibles</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Sección Servicios -->
-    <div id="servicios" class="container mx-auto px-4 py-16 text-center parallax-bg rotate-in">
-        <h1 class="text-5xl font-bold text-white mb-8" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Nuestros Servicios Especializados</h1>
-        <p class="text-xl text-gray-200 mb-12" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Soluciones integrales para el consultorio odontológico moderno</p>
+    <!-- Botones responsivos -->
+    <div class="buttons-mobile">
+        <a href="{{ url_for('catalogo') }}" class="btn text-white font-weight-bold d-flex align-items-center justify-content-center" style="background: radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%); padding: 15px;">
+            <i class="fas fa-clipboard-list me-2"></i>
+            Ver Catálogo Completo
+        </a>
+        <a href="{{ url_for('cursos') }}" class="btn text-white font-weight-bold d-flex align-items-center justify-content-center" style="background: radial-gradient(circle, #ef4444 0%, #dc2626 50%, #991b1b 100%); padding: 15px;">
+            <i class="fas fa-graduation-cap me-2"></i>
+            Cursos y Capacitaciones
+        </a>
+        <a href="#contacto" class="btn text-white font-weight-bold d-flex align-items-center justify-content-center" style="background: radial-gradient(circle, #000 0%, #0a0a0a 50%, #111 100%); padding: 15px;">
+            <i class="fas fa-phone me-2"></i>
+            Solicitar Cotización
+        </a>
+    </div>
+</div>
 
+<!-- Sección Servicios -->
+<div id="servicios" class="container-fluid px-3 py-4 text-center parallax-bg rotate-in">
+    <h1 class="section-title-mobile text-white mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Nuestros Servicios Especializados</h1>
+    <p class="text-light mb-4" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Soluciones integrales para el consultorio odontológico moderno</p>
+
+    <!-- Grid de servicios para móvil -->
+    <div class="row services-grid-mobile">
         <!-- Primera fila - Morado -->
-        <div class="grid md:grid-cols-2 gap-8 mb-12">
-            <div class="service-box-purple p-8 rounded-xl shadow-xl slide-in-left">
-                <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-cogs service-icon-purple text-4xl mr-3"></i>
-                    <h3 class="text-2xl font-bold service-text-gradient">Equipamiento Integral</h3>
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="service-box-purple p-4 rounded shadow slide-in-left">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <i class="fas fa-cogs service-icon-purple me-2" style="font-size: 2rem;"></i>
+                    <h3 class="h5 mb-0 service-text-gradient">Equipamiento Integral</h3>
                 </div>
-                <ul class="text-left text-gray-200 space-y-2">
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Tomógrafos dentales de última generación</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Sillones odontológicos ergonómicos</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Sistemas de radiología digital</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Instrumental quirúrgico especializado</li>
+                <ul class="list-unstyled text-light small">
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Tomógrafos dentales de última generación</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Sillones odontológicos ergonómicos</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Sistemas de radiología digital</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Instrumental quirúrgico especializado</li>
                 </ul>
             </div>
+        </div>
 
-            <div class="service-box-purple p-8 rounded-xl shadow-xl slide-in-right">
-                <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-microscope service-icon-purple text-4xl mr-3"></i>
-                    <h3 class="text-2xl font-bold service-text-gradient">Biomateriales Avanzados</h3>
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="service-box-purple p-4 rounded shadow slide-in-right">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <i class="fas fa-microscope service-icon-purple me-2" style="font-size: 2rem;"></i>
+                    <h3 class="h5 mb-0 service-text-gradient">Biomateriales Avanzados</h3>
                 </div>
-                <ul class="text-left text-gray-200 space-y-2">
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Composites de última generación</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Materiales de impresión digitales</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Cementos y adhesivos especializados</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Implantes y componentes protésicos</li>
+                <ul class="list-unstyled text-light small">
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Composites de última generación</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Materiales de impresión digitales</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Cementos y adhesivos especializados</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Implantes y componentes protésicos</li>
                 </ul>
             </div>
         </div>
 
         <!-- Segunda fila - Rojo -->
-        <div class="grid md:grid-cols-2 gap-8 mb-12">
-            <div class="service-box-red p-8 rounded-xl shadow-xl fade-in">
-                <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-graduation-cap service-icon-red text-4xl mr-3"></i>
-                    <h3 class="text-2xl font-bold service-text-gradient">Capacitación Profesional</h3>
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="service-box-red p-4 rounded shadow fade-in">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <i class="fas fa-graduation-cap service-icon-red me-2" style="font-size: 2rem;"></i>
+                    <h3 class="h5 mb-0 service-text-gradient">Capacitación Profesional</h3>
                 </div>
-                <ul class="text-left text-gray-200 space-y-2">
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Cursos especializados en equipos</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Entrenamiento en nuevas tecnologías</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Certificaciones oficiales</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Soporte técnico continuo</li>
+                <ul class="list-unstyled text-light small">
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Cursos especializados en equipos</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Entrenamiento en nuevas tecnologías</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Certificaciones oficiales</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Soporte técnico continuo</li>
                 </ul>
             </div>
+        </div>
 
-            <div class="service-box-red p-8 rounded-xl shadow-xl scale-in">
-                <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-tools service-icon-orange text-4xl mr-3"></i>
-                    <h3 class="text-2xl font-bold service-text-gradient">Servicio Técnico</h3>
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="service-box-red p-4 rounded shadow scale-in">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <i class="fas fa-tools service-icon-orange me-2" style="font-size: 2rem;"></i>
+                    <h3 class="h5 mb-0 service-text-gradient">Servicio Técnico</h3>
                 </div>
-                <ul class="text-left text-gray-200 space-y-2">
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Instalación y puesta en marcha</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Mantenimiento preventivo programado</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Reparaciones especializadas</li>
-                    <li><i class="fas fa-check-circle text-green-400 mr-2"></i>Garantía extendida disponible</li>
+                <ul class="list-unstyled text-light small">
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Instalación y puesta en marcha</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Mantenimiento preventivo programado</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Reparaciones especializadas</li>
+                    <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Garantía extendida disponible</li>
                 </ul>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Sección Misión y Visión - Negro -->
-    <div id="mision" class="container mx-auto px-4 py-16">
-        <div class="grid md:grid-cols-2 gap-12">
-            <div class="service-box-black p-8 rounded-xl shadow-xl slide-in-left">
-                <div class="text-center mb-6">
-                    <i class="fas fa-bullseye service-icon-white text-5xl mb-4"></i>
-                    <h2 class="text-4xl font-bold service-text-gradient">Nuestra Misión</h2>
+<!-- Sección Misión y Visión - Negro -->
+<div id="mision" class="container-fluid px-3 py-4">
+    <div class="row">
+        <div class="col-12 col-lg-6 mb-4">
+            <div class="service-box-black p-4 rounded shadow slide-in-left">
+                <div class="text-center mb-3">
+                    <i class="fas fa-bullseye service-icon-white mb-3" style="font-size: 3rem;"></i>
+                    <h2 class="h4 service-text-gradient">Nuestra Misión</h2>
                 </div>
-                <p class="text-lg text-gray-300 leading-relaxed text-justify">
+                <p class="text-light small text-justify">
                     Proveer equipos odontológicos de alta calidad y biomateriales avanzados que permitan a los profesionales dentales
                     ofrecer tratamientos de excelencia. Nos comprometemos a ser el socio estratégico que impulse la innovación en cada
                     consultorio, brindando soluciones tecnológicas que mejoren la experiencia tanto del profesional como del paciente,
                     siempre con el respaldo de un servicio técnico especializado y capacitación continua.
                 </p>
             </div>
+        </div>
 
-            <div class="service-box-black p-8 rounded-xl shadow-xl slide-in-right">
-                <div class="text-center mb-6">
-                    <i class="fas fa-eye service-icon-white text-5xl mb-4"></i>
-                    <h2 class="text-4xl font-bold service-text-gradient">Nuestra Visión</h2>
+        <div class="col-12 col-lg-6 mb-4">
+            <div class="service-box-black p-4 rounded shadow slide-in-right">
+                <div class="text-center mb-3">
+                    <i class="fas fa-eye service-icon-white mb-3" style="font-size: 3rem;"></i>
+                    <h2 class="h4 service-text-gradient">Nuestra Visión</h2>
                 </div>
-                <p class="text-lg text-gray-300 leading-relaxed text-justify">
+                <p class="text-light small text-justify">
                     Ser la empresa líder en distribución de equipos dentales en Ecuador y expandirnos a nivel regional,
                     reconocida por nuestra excelencia en el servicio, innovación tecnológica y compromiso con la formación profesional.
                     Aspiramos a transformar la práctica odontológica mediante la introducción de tecnologías de vanguardia,
@@ -436,99 +618,88 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Sección Agendar Demostración -->
-    <div id="contacto" class="flex justify-center items-center min-h-screen px-4 py-16" style="background: linear-gradient(135deg, #5B21B6 0%, #ef4444 33%, #dc2626 66%, #000000 100%);">
-        <div class="p-8 rounded-2xl shadow-2xl max-w-lg w-full border-2 fade-in" style="background: linear-gradient(145deg, #1f2937 0%, #111827 100%); border-color: #5B21B6;">
-            <div class="text-center mb-6">
-              <i class="fas fa-calendar-alt text-4xl mb-4" style="color: #9CA3AF;"></i>
-              <h2 class="text-3xl font-bold text-white mb-2">Solicitar Demostración</h2>
-              <p class="text-lg text-gray-300">¿Listo para conocer nuestros equipos dentales?</p>
-            </div>
-
-            <form method="POST" action="{{ url_for('agendar_demo') }}" class="space-y-4">
-              <div class="relative">
-                <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <input type="text" name="nombre" placeholder="Su Nombre" required
-                       class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
-                       style="border-color: #374151;"
-                       onfocus="this.style.borderColor='#6B7280'; this.style.boxShadow='0 0 0 2px rgba(107, 114, 128, 0.3)';"
-                       onblur="this.style.borderColor='#374151'; this.style.boxShadow='none';">
-              </div>
-
-              <div class="relative">
-                <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <input type="email" name="correo" placeholder="Su Correo Electrónico" required
-                       class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white placeholder-gray-400 transition duration-300"
-                       style="border-color: #374151;"
-                       onfocus="this.style.borderColor='#6B7280'; this.style.boxShadow='0 0 0 2px rgba(107, 114, 128, 0.3)';"
-                       onblur="this.style.borderColor='#374151'; this.style.boxShadow='none';">
-              </div>
-
-              <div class="relative">
-                <i class="fas fa-calendar absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <input type="date" name="fecha" required
-                       class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white transition duration-300"
-                       style="border-color: #374151;"
-                       onfocus="this.style.borderColor='#6B7280'; this.style.boxShadow='0 0 0 2px rgba(107, 114, 128, 0.3)';"
-                       onblur="this.style.borderColor='#374151'; this.style.boxShadow='none';">
-              </div>
-
-              <div class="relative">
-                <i class="fas fa-user-tie absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <select name="representante" required
-                        class="w-full pl-10 pr-4 py-3 border rounded-lg outline-none bg-gray-800 text-white transition duration-300"
-                        style="border-color: #374151;"
-                        onfocus="this.style.borderColor='#6B7280'; this.style.boxShadow='0 0 0 2px rgba(107, 114, 128, 0.3)';"
-                        onblur="this.style.borderColor='#374151'; this.style.boxShadow='none';">
-                  <option value="" disabled selected>Seleccione un representante/área</option>
-                  <option value="Ing. Carlos Mendoza - Tomógrafos">Ing. Carlos Mendoza - Tomógrafos</option>
-                  <option value="Lic. Ana García - Equipos Dentales">Lic. Ana García - Equipos Dentales</option>
-                  <option value="Tec. Roberto Silva - Sensores Digitales">Tec. Roberto Silva - Sensores Digitales</option>
-                  <option value="Lic. Patricia López - Biomateriales">Lic. Patricia López - Biomateriales</option>
-                </select>
-              </div>
-
-              <button type="submit"
-                      class="w-full text-white font-bold py-3 rounded-lg transform hover:scale-105 transition duration-300"
-                      style="background: radial-gradient(circle, #9CA3AF 0%, #6B7280 50%, #374151 100%);"
-                      onmouseover="this.style.background='radial-gradient(circle, #A1A1AA 0%, #4B5563 50%, #1F2937 100%)';"
-                      onmouseout="this.style.background='radial-gradient(circle, #9CA3AF 0%, #6B7280 50%, #374151 100%)';">
-                <i class="fas fa-paper-plane mr-2"></i>
-                Solicitar Demostración
-              </button>
-            </form>
-          </div>
+<!-- Sección Agendar Demostración -->
+<div id="contacto" class="d-flex justify-content-center align-items-center min-vh-50 px-3 py-4" style="background: linear-gradient(135deg, #5B21B6 0%, #ef4444 33%, #dc2626 66%, #000000 100%);">
+    <div class="form-mobile rounded shadow-lg w-100" style="max-width: 500px; background: linear-gradient(145deg, #1f2937 0%, #111827 100%); border: 2px solid #5B21B6;">
+        <div class="text-center mb-4">
+          <i class="fas fa-calendar-alt mb-3" style="font-size: 2.5rem; color: #9CA3AF;"></i>
+          <h2 class="h4 text-white mb-2">Solicitar Demostración</h2>
+          <p class="text-light">¿Listo para conocer nuestros equipos dentales?</p>
         </div>
+
+        <form method="POST" action="{{ url_for('agendar_demo') }}" class="space-y-3">
+          <div class="mb-3 position-relative">
+            <i class="fas fa-user position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
+            <input type="text" name="nombre" placeholder="Su Nombre" required
+                   class="form-control bg-dark text-white border-secondary"
+                   style="padding-left: 45px; padding: 15px 15px 15px 45px;">
+          </div>
+
+          <div class="mb-3 position-relative">
+            <i class="fas fa-envelope position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
+            <input type="email" name="correo" placeholder="Su Correo Electrónico" required
+                   class="form-control bg-dark text-white border-secondary"
+                   style="padding-left: 45px; padding: 15px 15px 15px 45px;">
+          </div>
+
+          <div class="mb-3 position-relative">
+            <i class="fas fa-calendar position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
+            <input type="date" name="fecha" required
+                   class="form-control bg-dark text-white border-secondary"
+                   style="padding-left: 45px; padding: 15px 15px 15px 45px;">
+          </div>
+
+          <div class="mb-3 position-relative">
+            <i class="fas fa-user-tie position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
+            <select name="representante" required
+                    class="form-select bg-dark text-white border-secondary"
+                    style="padding-left: 45px; padding: 15px 15px 15px 45px;">
+              <option value="" disabled selected>Seleccione un representante/área</option>
+              <option value="Ing. Carlos Mendoza - Tomógrafos">Ing. Carlos Mendoza - Tomógrafos</option>
+              <option value="Lic. Ana García - Equipos Dentales">Lic. Ana García - Equipos Dentales</option>
+              <option value="Tec. Roberto Silva - Sensores Digitales">Tec. Roberto Silva - Sensores Digitales</option>
+              <option value="Lic. Patricia López - Biomateriales">Lic. Patricia López - Biomateriales</option>
+            </select>
+          </div>
+
+          <button type="submit"
+                  class="btn w-100 text-white font-weight-bold"
+                  style="background: radial-gradient(circle, #9CA3AF 0%, #6B7280 50%, #374151 100%); padding: 15px;">
+            <i class="fas fa-paper-plane me-2"></i>
+            Solicitar Demostración
+          </button>
+        </form>
+      </div>
+    </div>
 
 <!-- Modal de Detalles del Producto -->
 <div class="modal-overlay" id="productModal">
     <div class="modal-content">
         <button class="close-modal" onclick="closeModal()">&times;</button>
-        <h3 id="modalProductName" style="color: #5B21B6; font-size: 2rem; font-weight: bold; margin-bottom: 1rem;"></h3>
+        <h3 id="modalProductName" class="h4 mb-3" style="color: #5B21B6;"></h3>
 
         <!-- Video container -->
-        <div id="videoContainer" style="margin-bottom: 1.5rem;">
+        <div id="videoContainer" class="mb-3">
             <video id="modalVideo" class="modal-video" controls style="display: none;">
                 <source id="videoSource" src="" type="video/mp4">
                 Tu navegador no soporta la reproducción de video.
             </video>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
-            <div>
-                <h6 style="color: #5B21B6; font-weight: bold; margin-bottom: 0.75rem; font-size: 1.1rem;">Descripción:</h6>
-                <p id="modalProductDescription" style="color: #4b5563; line-height: 1.6; font-size: 1rem;"></p>
-            </div>
-            <div>
-                <h6 style="color: #5B21B6; font-weight: bold; margin-bottom: 0.75rem; font-size: 1.1rem;">Especificaciones:</h6>
-                <p id="modalProductSpecs" style="color: #6b7280; font-size: 0.95rem; line-height: 1.6;"></p>
-            </div>
+        <div>
+            <h6 style="color: #5B21B6; font-weight: bold; margin-bottom: 0.75rem;">Descripción:</h6>
+            <p id="modalProductDescription" class="text-muted mb-3"></p>
+
+            <h6 style="color: #5B21B6; font-weight: bold; margin-bottom: 0.75rem;">Especificaciones:</h6>
+            <p id="modalProductSpecs" class="text-muted mb-4"></p>
         </div>
-        <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: center;">
-            <button onclick="closeModal()" style="padding: 0.75rem 1.5rem; background: #f3f4f6; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Cerrar</button>
-            <button onclick="requestQuoteFromModal()" style="padding: 0.75rem 2rem; background: #5B21B6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                <i class="fas fa-calculator" style="margin-right: 0.5rem;"></i>Solicitar Cotización
+
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+            <button onclick="closeModal()" class="btn btn-secondary">Cerrar</button>
+            <button onclick="requestQuoteFromModal()" class="btn text-white" style="background: #5B21B6;">
+                <i class="fas fa-calculator me-1"></i>Solicitar Cotización
             </button>
         </div>
     </div>
@@ -544,7 +715,6 @@ function createObserver() {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
             } else {
-                // Opcional: remover la clase para repetir la animación
                 entry.target.classList.remove('visible');
             }
         });
@@ -553,7 +723,6 @@ function createObserver() {
         rootMargin: '0px 0px -50px 0px'
     });
 
-    // Observar todos los elementos con clases de animación
     const animatedElements = document.querySelectorAll(
         '.fade-in, .slide-in-left, .slide-in-right, .scale-in, .rotate-in'
     );
@@ -570,28 +739,26 @@ function showProductDetails(name, description, specs, videoUrl = null) {
     document.getElementById('modalProductDescription').textContent = description;
     document.getElementById('modalProductSpecs').textContent = specs;
 
-    // Manejar el video si existe
     const video = document.getElementById('modalVideo');
     const videoSource = document.getElementById('videoSource');
 
     if (videoUrl) {
         videoSource.src = `{{ url_for('static', filename='videos/') }}${videoUrl}`;
         video.style.display = 'block';
-        video.load(); // Recargar el video con la nueva fuente
+        video.load();
     } else {
         video.style.display = 'none';
     }
 
     document.getElementById('productModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+    document.body.style.overflow = 'hidden';
 }
 
 // Cerrar modal
 function closeModal() {
     document.getElementById('productModal').style.display = 'none';
-    document.body.style.overflow = 'auto'; // Restaurar scroll del body
+    document.body.style.overflow = 'auto';
 
-    // Pausar video si está reproduciéndose
     const video = document.getElementById('modalVideo');
     video.pause();
 }
@@ -620,25 +787,29 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Inicializar el observer cuando la página carga
+// Inicializar cuando carga la página
 document.addEventListener('DOMContentLoaded', function() {
     createObserver();
 
-    // Efecto parallax suave para el fondo
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const parallax = document.querySelector('.parallax-bg');
-        if (parallax) {
-            const speed = scrolled * 0.5;
-            parallax.style.backgroundPosition = `center ${speed}px`;
-        }
-    });
+    // Efecto parallax solo para desktop
+    if (window.innerWidth > 768) {
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.parallax-bg');
+            if (parallax) {
+                const speed = scrolled * 0.5;
+                parallax.style.backgroundPosition = `center ${speed}px`;
+            }
+        });
+    }
 
-    // Animación adicional para las cards de servicios
+    // Animación para las cards de servicios
     const serviceCards = document.querySelectorAll('.service-card');
-    serviceCards.forEach((card, index) => {
+    serviceCards.forEach((card) => {
         card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-10px) scale(1.02)';
+            if (window.innerWidth > 768) {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            }
         });
 
         card.addEventListener('mouseleave', function() {
