@@ -83,10 +83,13 @@
         background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
                     url('{{ url_for('static', filename='images/fra-hero-bg.png') }}');
         min-height: 70vh;
-        position: relative;
+        position: absolute;
         overflow: hidden;
         display: flex;
         align-items: center;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
     }
 
     .hero-frasaco::before {
@@ -100,14 +103,6 @@
         opacity: 0.4;
     }
 
-    @media (max-width: 576px) {
-      .hero-frasaco {
-        min-height: auto;               /* en vez de 60–70vh */
-        padding-block: 16px;            /* menos padding vertical */
-        margin-bottom: 1rem !important; /* reduce el gran mb-5 */
-        align-items: flex-start;        /* deja de centrar verticalmente */
-      }
-    }
 
     .product-title {
         font-size: 1.25rem;
