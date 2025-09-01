@@ -440,7 +440,7 @@
         <div class="col-12 col-lg-4 mb-4">
             <div class="text-center service-card p-4 rounded shadow-sm h-100 position-relative"
                  style="border: 3px solid #5B21B6; box-shadow: 0 0 20px rgba(91, 33, 182, 0.2);"
-                 onclick="showProductDetails('Green 21', 'Tomógrafo CBCT de excelencia que eleva el estándar de diagnóstico 3D con tecnología verde avanzada para resultados superiores en cada exploración', 'Tomógrafo CBCT de excelencia con tecnología Green, campo de visión optimizado, alta resolución de imagen, eficiencia energética superior, interfaz intuitiva', 'Vatech Green CBCT.mp4')">
+                 onclick="showProductDetails('Vatech Green X21', 'La revolución en diagnóstico 3D con precisión y versatilidad total. Una plataforma de diagnóstico 6-en-1 diseñada para elevar el estándar de calidad en la práctica odontológica y maxilofacial moderna.', 'Versatilidad clínica absoluta: 6 modalidades en una unidad (CBCT Dental, Tomografía ENT, Escaneo 3D, Radiografía panorámica, Cefalometría digital, Escaneo facial 3D) • Cobertura FOV personalizable: 4×4 cm hasta 21×19 cm • Máxima resolución: Voxel mínimo de 50 μm • Smart Focus (FOV 12×9 cm): 5 estudios automáticos • Tecnología Green de baja dosis • Escaneos completos en 7-18 segundos', 'Vatech Green CBCT.mp4')">
                 <div class="mb-3">
                     <span class="badge mb-2" style="background: #5B21B6 !important; color: white;">VATECH</span>
                     <div class="product-badge" style="background: #5B21B6;">DESTACADO</div>
@@ -461,7 +461,7 @@
         <div class="col-12 col-lg-4 mb-4">
             <div class="text-center service-card p-4 rounded shadow-sm h-100 position-relative"
                  style="border: 3px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);"
-                 onclick="showProductDetails('X-MIND® prime 3D', '¡Es la nueva inteligencia! Siempre dependerá de imágenes de alta calidad y potentes herramientas de imagen para tener éxito en el diagnóstico y la planificación del tratamiento. Sistema revolucionario con IA integrada', 'Tecnología de vanguardia en tomografía 3D con inteligencia artificial, imágenes de alta resolución, interface intuitiva, diagnóstico asistido por IA, planificación de tratamiento optimizada', 'ActeonIA.mp4')">
+                 onclick="showProductDetails('X-MIND® optima 3D', 'Compacto, potente y potenciado con Inteligencia Artificial. El equilibrio perfecto entre innovación, diseño compacto y poder diagnóstico, concebido para adaptarse a cualquier entorno clínico.', 'Diseño Zero Footprint: CBCT más compacto del mercado • Calidad diagnóstica superior: Detector digital última generación, rango kV hasta 90 kV • Flexibilidad FOV: 5×5 cm hasta 17×12 cm • Integración IA total: Segmentación automática, optimización implantes, detección estructuras anatómicas • Flujo digital continuo: Acteon Imaging Suite 5.4 • Interfaz intuitiva con soporte técnico especializado', 'ActeonIA.mp4')">
                 <div class="mb-3">
                     <span class="badge mb-2" style="background: #ef4444 !important; color: white;">ACTEON</span>
                     <div class="product-badge" style="background: #ef4444;">IA</div>
@@ -690,10 +690,10 @@
 
         <div>
             <h6 style="color: #5B21B6; font-weight: bold; margin-bottom: 0.75rem;">Descripción:</h6>
-            <p id="modalProductDescription" class="text-muted mb-3"></p>
+            <p id="modalProductDescription" class="text-muted mb-3" style="line-height: 1.6;"></p>
 
-            <h6 style="color: #5B21B6; font-weight: bold; margin-bottom: 0.75rem;">Especificaciones:</h6>
-            <p id="modalProductSpecs" class="text-muted mb-4"></p>
+            <h6 style="color: #5B21B6; font-weight: bold; margin-bottom: 0.75rem;">Especificaciones Técnicas:</h6>
+            <div id="modalProductSpecs" class="text-muted mb-4" style="line-height: 1.6; background: #f8f9fa; padding: 1rem; border-radius: 8px; border-left: 4px solid #5B21B6;"></div>
         </div>
 
         <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
@@ -737,7 +737,18 @@ function showProductDetails(name, description, specs, videoUrl = null) {
     currentProduct = name;
     document.getElementById('modalProductName').textContent = name;
     document.getElementById('modalProductDescription').textContent = description;
-    document.getElementById('modalProductSpecs').textContent = specs;
+
+    // Formatear las especificaciones para mejor visualización
+    const specsDiv = document.getElementById('modalProductSpecs');
+    if (specs.includes('•')) {
+        // Convertir los bullet points en una lista HTML
+        const specsList = specs.split('•').map(spec => spec.trim()).filter(spec => spec.length > 0);
+        specsDiv.innerHTML = '<ul style="margin: 0; padding-left: 1.5rem;">' +
+            specsList.map(spec => `<li style="margin-bottom: 0.5rem;">${spec}</li>`).join('') +
+            '</ul>';
+    } else {
+        specsDiv.textContent = specs;
+    }
 
     const video = document.getElementById('modalVideo');
     const videoSource = document.getElementById('videoSource');
