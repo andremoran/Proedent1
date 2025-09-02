@@ -430,7 +430,7 @@
 <!-- Sección de Productos Estrella -->
 <div class="container-fluid px-3 py-4 bg-white shadow-lg rounded content-overlay mb-4 scale-in">
     <div class="text-center mb-4">
-        <h2 class="products-title">Nuestros Productos Estrella</h2>
+        <h1 class="products-title" style="font-size:3rem; line-height:1.1; font-weight:800;">Nuestros Productos Estrella</h1>
         <div style="width: 100px; height: 4px; background: linear-gradient(45deg, #5B21B6, #ef4444, #1f2937); margin: 1rem auto; border-radius: 2px;"></div>
     </div>
 
@@ -480,20 +480,24 @@
 
         <!-- Cursos y Capacitación (Color Negro) -->
         <div class="col-12 col-lg-4 mb-4">
+          <a href="{{ url_for('cursos') }}" class="text-decoration-none text-reset d-block">
             <div class="text-center service-card p-4 rounded shadow-sm h-100 position-relative"
-                 style="border: 3px solid #1f2937; box-shadow: 0 0 20px rgba(31, 41, 55, 0.2);"
-                 onclick="window.location.href='{{ url_for('cursos') }}'">
-                <div class="mb-3">
-                    <span class="badge mb-2" style="background: #1f2937 !important; color: white;">PROEDENT</span>
-                    <div class="product-badge" style="background: #1f2937;">EDUCACIÓN</div>
-                    <i class="fas fa-graduation-cap d-block mx-auto" style="font-size: 5rem; color: #1f2937; height: 140px; display: flex; align-items: center; justify-content: center;"></i>
-                </div>
-                <h3 class="h5 mb-3" style="color: #1f2937;">Cursos y Capacitación</h3>
-                <p class="text-muted small mb-3">Programas especializados de formación profesional con certificación oficial</p>
-                <div style="background: rgba(31, 41, 55, 0.1); padding: 12px; border-radius: 8px;">
-                    <p class="small mb-0 font-weight-bold" style="color: #374151;">Certificación oficial | Instructores expertos | Modalidades flexibles</p>
-                </div>
+                 style="border: 3px solid #1f2937; box-shadow: 0 0 20px rgba(31,41,55,0.2); cursor:pointer;">
+              <div class="mb-3">
+                <span class="badge mb-2" style="background:#1f2937!important; color:white;">PROEDENT</span>
+                <div class="product-badge" style="background:#1f2937;">EDUCACIÓN</div>
+                <i class="fas fa-graduation-cap d-block mx-auto"
+                   style="font-size:5rem; color:#1f2937; height:140px; display:flex; align-items:center; justify-content:center;"></i>
+              </div>
+              <h3 class="h5 mb-3" style="color:#1f2937;">Cursos y Capacitación</h3>
+              <p class="text-muted small mb-3">Programas especializados de formación profesional con certificación oficial</p>
+              <div style="background:rgba(31,41,55,0.1); padding:12px; border-radius:8px;">
+                <p class="small mb-0 font-weight-bold" style="color:#374151;">
+                  Certificación oficial | Instructores expertos | Modalidades flexibles
+                </p>
+              </div>
             </div>
+          </a>
         </div>
     </div>
 
