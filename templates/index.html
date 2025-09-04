@@ -628,13 +628,13 @@
     </div>
 </div>
 
-<!-- Sección Agendar Demostración -->
+<!-- Sección Agendar Demostración o Consulta -->
 <div id="contacto" class="d-flex justify-content-center align-items-center min-vh-50 px-3 py-4" style="background: linear-gradient(135deg, #5B21B6 0%, #ef4444 33%, #dc2626 66%, #000000 100%);">
     <div class="form-mobile rounded shadow-lg w-100" style="max-width: 500px; background: linear-gradient(145deg, #1f2937 0%, #111827 100%); border: 2px solid #5B21B6;">
         <div class="text-center mb-4">
           <i class="fas fa-calendar-alt mb-3" style="font-size: 2.5rem; color: #9CA3AF;"></i>
-          <h2 class="h4 text-white mb-2">Solicitar Demostración</h2>
-          <p class="text-light">¿Listo para conocer nuestros equipos dentales?</p>
+          <h2 class="h4 text-white mb-2">Solicitar Demostración o Consulta</h2>
+          <p class="text-light">¿Listo para conocer nuestros equipos dentales o tienes alguna consulta?</p>
         </div>
 
         <form method="POST" action="{{ url_for('agendar_demo') }}" class="space-y-3">
@@ -653,10 +653,19 @@
           </div>
 
           <div class="mb-3 position-relative">
-            <i class="fas fa-calendar position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
-            <input type="date" name="fecha" required
+            <i class="fas fa-phone position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
+            <input type="tel" name="telefono" placeholder="Su Número de Teléfono"
                    class="form-control bg-dark text-white border-secondary"
                    style="padding-left: 45px; padding: 15px 15px 15px 45px;">
+          </div>
+
+          <div class="mb-3 position-relative">
+            <i class="fas fa-calendar position-absolute" style="left: 15px; top: 18px; color: #6b7280;"></i>
+            <input type="date" name="fecha"
+                   class="form-control bg-dark text-white border-secondary"
+                   style="padding-left: 45px; padding: 15px 15px 15px 45px;"
+                   title="Fecha preferida para demostración (opcional)">
+            <small class="text-muted" style="font-size: 0.75rem;">Fecha preferida para demostración (opcional)</small>
           </div>
 
           <div class="mb-3 position-relative">
@@ -665,18 +674,27 @@
                     class="form-select bg-dark text-white border-secondary"
                     style="padding-left: 45px; padding: 15px 15px 15px 45px;">
               <option value="" disabled selected>Seleccione un representante/área</option>
-              <option value="Ing. Carlos Mendoza - Tomógrafos">Ing. Carlos Mendoza - Tomógrafos</option>
-              <option value="Lic. Ana García - Equipos Dentales">Lic. Ana García - Equipos Dentales</option>
-              <option value="Tec. Roberto Silva - Sensores Digitales">Tec. Roberto Silva - Sensores Digitales</option>
-              <option value="Lic. Patricia López - Biomateriales">Lic. Patricia López - Biomateriales</option>
+              <option value="Byron Velasco (Gerente)- Tomografos, RX, Equipos Dentales">Byron Velasco (Gerente)- Tomografos, RX, Equipos Dentales</option>
+              <option value="Mery Nieves - Insumos Dentales">Mery Nieves - Insumos Dentales</option>
             </select>
+          </div>
+
+          <!-- NUEVO CAMPO DE MENSAJE/CONSULTA -->
+          <div class="mb-3 position-relative">
+            <i class="fas fa-comment-alt position-absolute" style="left: 15px; top: 18px; color: #6b7280;"></i>
+            <textarea name="mensaje"
+                      placeholder="Escriba su consulta o mensaje aquí..."
+                      rows="4"
+                      class="form-control bg-dark text-white border-secondary"
+                      style="padding-left: 45px; padding: 15px 15px 15px 45px; resize: vertical; min-height: 100px;"></textarea>
+            <small class="text-muted" style="font-size: 0.75rem;">Describa qué equipo le interesa, sus necesidades específicas o cualquier consulta</small>
           </div>
 
           <button type="submit"
                   class="btn w-100 text-white font-weight-bold"
                   style="background: radial-gradient(circle, #9CA3AF 0%, #6B7280 50%, #374151 100%); padding: 15px;">
             <i class="fas fa-paper-plane me-2"></i>
-            Solicitar Demostración
+            Enviar Solicitud
           </button>
         </form>
       </div>
@@ -786,7 +804,7 @@ function closeModal() {
 function requestQuoteFromModal() {
     if (currentProduct) {
         const message = `Hola, me interesa solicitar una cotización para: ${currentProduct}. ¿Podrían enviarme más información?`;
-        const whatsappUrl = `https://wa.me/593987553634?text=${encodeURIComponent(message)}`;
+        const whatsappUrl = `https://wa.me/593998745641?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
     }
 }
