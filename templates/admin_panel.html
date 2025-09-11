@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel de Lead Magnets</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Bootstrap 5 (opcional, para estilos rápidos) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Panel Admin</a>
+      <div class="d-flex">
+        <a href="{{ url_for('patients') }}" class="btn btn-outline-light me-2">Volver a Patients</a>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-warning">Cerrar sesión</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Tarjetas de métricas -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="text-muted mb-1">Total Leads</h6>
+            <h3 class="m-0">{{ stats.total_leads }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="text-muted mb-1">Secretos</h6>
+            <h3 class="m-0">{{ stats.leads_secretos }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="text-muted mb-1">Errores</h6>
+            <h3 class="m-0">{{ stats.leads_errores }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="text-muted mb-1">Guía RX</h6>
+            <h3 class="m-0">{{ stats.leads_guia_rx }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de Leads -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white">
+        <h5 class="m-0">Leads capturados</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Tipo</th>
+                <th>Intereses</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if leads and leads|length > 0 %}
+                {% for lead in leads %}
+                  <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ lead.nombre }}</td>
+                    <td>{{ lead.email }}</td>
+                    <td>{{ lead.telefono or '-' }}</td>
+                    <td>{{ lead.magnet_type }}</td>
+                    <td>
+                      {% if lead.intereses %}
+                        {{ lead.intereses|join(', ') }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td>{{ lead.created_at }}</td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="7" class="text-center text-muted py-4">Sin leads registrados todavía.</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de Solicitudes/Demostraciones -->
+    <div class="card shadow-sm mb-5">
+      <div class="card-header bg-white">
+        <h5 class="m-0">Solicitudes de demostración / Citas</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Fecha</th>
+                <th>Representante</th>
+                <th>Mensaje</th>
+                <th>Estado</th>
+                <th>Creado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if appointments and appointments|length > 0 %}
+                {% for a in appointments %}
+                  <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ a.nombre }}</td>
+                    <td>{{ a.correo }}</td>
+                    <td>{{ a.telefono or '-' }}</td>
+                    <td>{{ a.fecha or '-' }}</td>
+                    <td>{{ a.representante }}</td>
+                    <td>{{ a.mensaje or '-' }}</td>
+                    <td>{{ a.status }}</td>
+                    <td>{{ a.created_at }}</td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="9" class="text-center text-muted py-4">Sin solicitudes registradas.</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Accesos a Lead Magnets (LM-10) -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-white d-flex align-items-center justify-content-between">
+    <h5 class="m-0">Lead Magnets (LM-10)</h5>
+    <small class="text-muted">Acceso solo administradores</small>
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <a href="{{ url_for('lm_secretos') }}" class="btn btn-primary w-100">
+          <i class="fas fa-lock-open me-2"></i> LM-10 Secretos
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{{ url_for('lm_errores') }}" class="btn btn-danger w-100">
+          <i class="fas fa-bug me-2"></i> LM-10 Errores
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{{ url_for('lm_guia') }}" class="btn btn-success w-100">
+          <i class="fas fa-book me-2"></i> LM-10 Guía Completa
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Bootstrap JS (opcional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

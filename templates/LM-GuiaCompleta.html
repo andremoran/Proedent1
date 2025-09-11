@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía COMPLETA: Requisitos Legales para RX y Tomografía Dental en Ecuador - PROEDENT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #065f46 100%);
+            min-height: 100vh;
+        }
+
+        /* Header with logo */
+        .header-logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .header-logo a {
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .header-logo a:hover {
+            transform: scale(1.05);
+        }
+
+        .header-logo img {
+            height: 60px;
+            width: auto;
+            filter: none;
+        }
+
+        /* Main container */
+        .lead-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(6, 95, 70, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(30, 58, 138, 0.3) 0%, transparent 50%);
+        }
+
+        .lead-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            backdrop-filter: blur(20px);
+            position: relative;
+        }
+
+        /* Header section */
+        .lead-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lead-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,0.03) 2px,
+                rgba(255,255,255,0.03) 4px
+            );
+            animation: shimmer 20s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .lead-header h1 {
+            font-size: 2.6rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .lead-header .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .compliance-box {
+            background: rgba(34, 197, 94, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .compliance-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #86efac;
+        }
+
+        .requirements-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            padding: 12px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+        }
+
+        .requirement-item i {
+            color: #22c55e;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        /* Form section */
+        .lead-form-section {
+            padding: 50px 40px;
+            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .form-header h2 {
+            color: #1e3a8a;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .legal-text {
+            background: #eff6ff;
+            color: #1e3a8a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #3b82f6;
+            font-weight: 600;
+        }
+
+        /* Form styling */
+        .lead-form {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 1rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #d1d5db;
+            border-radius: 12px;
+            padding: 15px 18px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
+            outline: none;
+            transform: translateY(-1px);
+        }
+
+        .interests-section {
+            margin: 25px 0;
+        }
+
+        .interests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .interest-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .interest-option:hover {
+            border-color: #1e3a8a;
+            background: #eff6ff;
+            transform: translateY(-1px);
+        }
+
+        .interest-option input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+            accent-color: #1e3a8a;
+        }
+
+        .interest-option input[type="checkbox"]:checked + span {
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
+            border: none;
+            color: white;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 15px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(30, 58, 138, 0.4);
+        }
+
+        .trust-indicators {
+            margin-top: 25px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .trust-item {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 15px 10px 0;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .trust-item i {
+            color: #10b981;
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* Loading and success states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading .submit-btn::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s ease infinite;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .success-message {
+            display: none;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid #a7f3d0;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-logo {
+                top: 15px;
+                left: 15px;
+            }
+
+            .header-logo img {
+                height: 45px;
+            }
+
+            .lead-header {
+                padding: 30px 20px;
+            }
+
+            .lead-header h1 {
+                font-size: 2rem;
+            }
+
+            .lead-header .subtitle {
+                font-size: 1rem;
+            }
+
+            .lead-form-section {
+                padding: 30px 20px;
+            }
+
+            .lead-form {
+                padding: 25px 20px;
+            }
+
+            .form-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .requirements-preview {
+                grid-template-columns: 1fr;
+            }
+
+            .interests-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Logo -->
+    <div class="header-logo">
+        <a href="https://proedent1.onrender.com" target="_blank">
+            <img src="/static/images/logo.png" alt="PROEDENT - Volver al sitio principal">
+        </a>
+    </div>
+
+    <div class="lead-container">
+        <div class="lead-card">
+            <!-- Header -->
+            <div class="lead-header">
+                <h1><i class="fas fa-gavel"></i> Guía COMPLETA de Cumplimiento Legal</h1>
+                <p class="subtitle">Todos los requisitos para operar RX y Tomografía Dental en Ecuador sin problemas legales</p>
+
+                <div class="compliance-box">
+                    <h3><i class="fas fa-shield-check"></i> Mantén tu clínica 100% legal y operativa</h3>
+                    <div class="requirements-preview">
+                        <div class="requirement-item">
+                            <i class="fas fa-certificate"></i>
+                            <span>Licencias MSP actualizadas</span>
+                        </div>
+                        <div class="requirement-item">
+                            <i class="fas fa-radiation"></i>
+                            <span>Protocolos de radioprotección</span>
+                        </div>
+                        <div class="requirement-item">
+                            <i class="fas fa-user-check"></i>
+                            <span>Certificación personal operativo</span>
+                        </div>
+                        <div class="requirement-item">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Documentación obligatoria</span>
+                        </div>
+                        <div class="requirement-item">
+                            <i class="fas fa-tools"></i>
+                            <span>Calibración y mantenimiento</span>
+                        </div>
+                        <div class="requirement-item">
+                            <i class="fas fa-file-contract"></i>
+                            <span>Formatos y registros oficiales</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-image-container" style="margin-top: 30px; text-align: center; position: relative; z-index: 1;">
+                    <img src="/static/images/lm/lmjpeg1.jpeg" alt="Profesional cumpliendo estándares legales"
+                         style="max-width: 100%; height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                </div>
+
+            </div>
+
+            <!-- Form Section -->
+            <div class="lead-form-section">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Descarga Tu Guía Legal GRATIS</h2>
+                        <p>Todo lo que necesitas saber para cumplir con las normativas ecuatorianas en radiología dental</p>
+                    </div>
+
+                    <div class="legal-text">
+                        <i class="fas fa-balance-scale"></i> <strong>IMPORTANTE:</strong> Operarar sin cumplir estos requisitos puede resultar en multas, clausuras temporales o permanentes. Protege tu inversión.
+                    </div>
+
+                    <form class="lead-form" id="leadForm" action="/lead_magnet_guia_rx" method="POST">
+                        <div class="form-group">
+                            <label for="nombre">Nombre Completo *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required
+                                   placeholder="Dr. Juan Pérez">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico Profesional *</label>
+                            <input type="email" class="form-control" id="email" name="email" required
+                                   placeholder="doctor@miclinica.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefono">WhatsApp (Opcional)</label>
+                            <input type="tel" class="form-control" id="telefono" name="telefono"
+                                   placeholder="+593 99 999 9999">
+                        </div>
+
+                        <div class="interests-section">
+                            <label>¿Qué equipos tienes o planeas adquirir? (Selecciona todos los que apliquen)</label>
+                            <div class="interests-grid">
+                                <label class="interest-option">
+                                    <input type="checkbox" name="intereses" value="RX Intraoral">
+                                    <span>RX Intraoral</span>
+                                </label>
+                                <label class="interest-option">
+                                    <input type="checkbox" name="intereses" value="RX Panorámico">
+                                    <span>RX Panorámico</span>
+                                </label>
+                                <label class="interest-option">
+                                    <input type="checkbox" name="intereses" value="Tomografía 3D">
+                                    <span>Tomografía 3D</span>
+                                </label>
+                                <label class="interest-option">
+                                    <input type="checkbox" name="intereses" value="Cefalométrico">
+                                    <span>Cefalométrico</span>
+                                </label>
+                                <label class="interest-option">
+                                    <input type="checkbox" name="intereses" value="Sensores Digitales">
+                                    <span>Sensores Digitales</span>
+                                </label>
+                                <label class="interest-option">
+                                    <input type="checkbox" name="intereses" value="RX Portátil">
+                                    <span>RX Portátil</span>
+                                </label>
+                                <label class="interest-option">
+                                    <input type="checkbox" name="intereses" value="Planificando Comprar">
+                                    <span>Planificando Comprar</span>
+                                </label>
+                                <label class="interest-option">
+                                    <input type="checkbox" name="intereses" value="Actualizar Equipos">
+                                    <span>Actualizar Equipos</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-download"></i> DESCARGAR GUÍA LEGAL GRATIS
+                        </button>
+
+                        <div class="trust-indicators">
+                            <div class="trust-item">
+                                <i class="fas fa-gavel"></i> Información Legal Actualizada
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-envelope"></i> Sin Spam
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-download"></i> PDF Descargable
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-users"></i> +1,500 Clínicas Cumpliendo
+                            </div>
+                        </div>
+
+                        <div class="success-message" id="successMessage">
+                            <strong><i class="fas fa-check-circle"></i> ¡Tu clínica ahora está protegida legalmente!</strong><br>
+                            La "Guía Completa de Cumplimiento Legal" ha sido enviada a tu correo. ¡Revisa ahora tu bandeja!
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('leadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            // Mostrar estado de carga
+            form.classList.add('loading');
+
+            fetch('/lead_magnet_guia_rx', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar mensaje de éxito
+                    document.getElementById('successMessage').classList.add('show');
+
+                    // Limpiar formulario
+                    form.reset();
+
+                    // Opcional: redirigir después de mostrar éxito
+                    if (data.download_url) {
+                        setTimeout(() => {
+                            window.open(data.download_url, '_blank');
+                        }, 2000);
+                    }
+                } else {
+                    alert('Error: ' + (data.error || 'Hubo un problema. Intente nuevamente.'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error de conexión. Por favor intente nuevamente.');
+            })
+            .finally(() => {
+                form.classList.remove('loading');
+            });
+        });
+
+        // Mejorar UX de checkboxes
+        document.querySelectorAll('.interest-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'INPUT') {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
