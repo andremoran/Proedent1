@@ -63,17 +63,113 @@
         backdrop-filter: blur(10px);
     }
 
-    .service-card {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
+    .product-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
         cursor: pointer;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
     }
 
-    .service-card:hover {
-        border-color: #5B21B6;
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(91, 33, 182, 0.1);
+    .product-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+    }
+
+    .product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444);
+        transition: left 0.4s ease;
+    }
+
+    .product-card:hover::before {
+        left: 0;
+    }
+
+    .product-image-container {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-radius: 15px 15px 0 0;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.4s ease;
+        padding: 20px;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.1);
+    }
+
+    .product-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(16, 185, 129, 0.9) 100%);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: all 0.4s ease;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .product-card:hover .product-overlay {
+        opacity: 1;
+    }
+
+    .category-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 10;
+    }
+
+    .brand-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        z-index: 10;
+        color: white;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        display: inline-block;
+        margin-top: auto;
     }
 
     .floating-animation {
@@ -123,6 +219,236 @@
         opacity: 0.1;
     }
 
+    .brand-carousel {
+        overflow: hidden;
+        position: relative;
+        background: white;
+        padding: 30px 0;
+        margin: 40px 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border-radius: 20px;
+    }
+
+    .brand-track {
+        display: flex;
+        animation: scroll 30s linear infinite;
+        width: calc(200px * 20);
+    }
+
+    .brand-item {
+        min-width: 200px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .brand-item:hover {
+        transform: scale(1.1);
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 15px;
+    }
+
+    .brand-item img {
+        max-height: 50px;
+        max-width: 150px;
+        object-fit: contain;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+    }
+
+    .brand-item:hover img {
+        opacity: 1;
+    }
+
+    @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(calc(-200px * 10)); }
+    }
+
+    .brand-carousel:hover .brand-track {
+        animation-play-state: paused;
+    }
+
+    /* NUEVOS ESTILOS PARA PRODUCTOS PREMIUM */
+    .products-carousel {
+        overflow: hidden;
+        position: relative;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 40px 0;
+        margin: 40px 0;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border-radius: 25px;
+        border: 1px solid rgba(59, 130, 246, 0.1);
+    }
+
+    .products-track {
+        display: flex;
+        animation: productScroll 45s linear infinite;
+        width: calc(380px * 20);
+    }
+
+    .product-premium-card {
+        min-width: 380px;
+        height: 280px;
+        margin: 0 15px;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border: 2px solid transparent;
+    }
+
+    .product-premium-card:hover {
+        transform: translateY(-15px) scale(1.05);
+        box-shadow: 0 25px 50px rgba(59, 130, 246, 0.25);
+        border-color: #3b82f6;
+    }
+
+    .product-image-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: #ffffff;
+        transition: all 0.4s ease;
+    }
+
+    .product-premium-card:hover .product-image-bg {
+        transform: scale(1.1);
+        filter: brightness(0.7);
+    }
+
+    .product-overlay-info {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(16, 185, 129, 0.9) 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 20px;
+        color: white;
+        opacity: 0;
+        transition: all 0.4s ease;
+    }
+
+    .product-premium-card:hover .product-overlay-info {
+        opacity: 1;
+    }
+
+    .product-premium-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .product-brand-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #1f2937;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .product-content {
+        margin-top: auto;
+        text-align: center;
+    }
+
+    .product-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 5px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .product-subtitle {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-bottom: 15px;
+        font-weight: 400;
+    }
+
+    .product-features {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .feature-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .product-price {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 700;
+        display: inline-block;
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    @keyframes productScroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(calc(-380px * 10)); }
+    }
+
+    .products-carousel:hover .products-track {
+        animation-play-state: paused;
+    }
+    /* FIN ESTILOS PRODUCTOS PREMIUM */
+
+    .service-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .service-card:hover {
+        border-color: #5B21B6;
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(91, 33, 182, 0.1);
+    }
+
     .service-box-purple {
         background: linear-gradient(135deg, #5B21B6 0%, #4C1D95 100%);
         color: white;
@@ -151,11 +477,6 @@
         background-clip: text;
         font-weight: bold;
     }
-
-    .service-icon-purple { color: #A855F7; }
-    .service-icon-red { color: #FCA5A5; }
-    .service-icon-orange { color: #FCD34D; }
-    .service-icon-white { color: #ffffff; }
 
     .modal-overlay {
         position: fixed;
@@ -213,28 +534,10 @@
         margin: 1rem 0;
     }
 
-    .product-badge {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        padding: 0.25rem 0.75rem;
-        border-radius: 15px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        z-index: 10;
-        color: white;
-    }
-
-    .text-primary { color: #5B21B6 !important; }
-    .bg-primary { background-color: #5B21B6 !important; }
-    .text-blue-600 { color: #5B21B6 !important; }
-    .border-blue-600 { border-color: #5B21B6 !important; }
-
     /* ESTILOS RESPONSIVOS PARA MÓVIL */
     @media (max-width: 768px) {
-        /* Video de fondo optimizado para móvil */
         .video-container {
-            display: none; /* Ocultar video en móvil para mejor rendimiento */
+            display: none;
         }
 
         body {
@@ -242,7 +545,6 @@
             background-attachment: fixed;
         }
 
-        /* Hero section móvil */
         .hero-mobile {
             padding: 40px 15px !important;
             text-align: center;
@@ -264,32 +566,33 @@
             margin-bottom: 20px;
         }
 
-        /* Grid de productos para móvil */
         .products-grid-mobile {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .service-card {
-            padding: 20px !important;
+        .product-card {
             margin-bottom: 15px;
         }
 
-        .service-card img {
-            height: 120px !important;
-            width: 120px !important;
+        .product-image-container {
+            height: 200px;
         }
 
-        .service-card h3 {
-            font-size: 1.5rem !important;
+        .brand-track {
+            animation-duration: 20s;
         }
 
-        .service-card p {
-            font-size: 0.9rem !important;
+        .brand-item {
+            min-width: 150px;
+            height: 60px;
         }
 
-        /* Botones responsivos */
+        .brand-item img {
+            max-height: 35px;
+        }
+
         .buttons-mobile {
             display: flex;
             flex-direction: column;
@@ -304,7 +607,6 @@
             text-align: center;
         }
 
-        /* Servicios en móvil */
         .services-grid-mobile {
             display: flex;
             flex-direction: column;
@@ -318,13 +620,6 @@
             margin-bottom: 20px;
         }
 
-        .service-box-purple h3,
-        .service-box-red h3,
-        .service-box-black h3 {
-            font-size: 1.3rem !important;
-        }
-
-        /* Títulos responsivos */
         .products-title {
             font-size: 2rem !important;
             line-height: 1.2;
@@ -338,7 +633,6 @@
             margin-bottom: 15px;
         }
 
-        /* Modal responsive */
         .modal-content {
             padding: 1.5rem !important;
             margin: 10px;
@@ -349,30 +643,32 @@
             height: 200px !important;
         }
 
-        /* Formulario responsivo */
         .form-mobile {
             padding: 25px !important;
             margin: 20px 10px;
         }
 
-        .form-mobile h2 {
-            font-size: 1.8rem !important;
-        }
-
-        .form-mobile input,
-        .form-mobile select {
-            padding: 15px 12px !important;
-            font-size: 1rem !important;
-        }
-
-        .form-mobile button {
-            padding: 15px 25px !important;
-            font-size: 1.1rem !important;
-        }
-
-        /* Parallax deshabilitado en móvil */
         .parallax-bg {
             background-attachment: scroll;
+        }
+
+        /* Responsive para productos premium */
+        .products-track {
+            animation-duration: 35s;
+        }
+
+        .product-premium-card {
+            min-width: 320px;
+            height: 240px;
+            margin: 0 10px;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+        }
+
+        .product-overlay-info {
+            padding: 15px;
         }
     }
 
@@ -389,9 +685,27 @@
             font-size: 2rem !important;
         }
 
-        .service-card img {
-            height: 100px !important;
-            width: 100px !important;
+        .product-image-container {
+            height: 180px;
+        }
+
+        /* Responsive productos premium */
+        .product-premium-card {
+            min-width: 280px;
+            height: 220px;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+        }
+
+        .product-features {
+            gap: 5px;
+        }
+
+        .feature-badge {
+            font-size: 0.6rem;
+            padding: 3px 6px;
         }
     }
 </style>
@@ -427,98 +741,311 @@
     </p>
 </div>
 
-<!-- Sección de Productos Estrella -->
+<!-- Sección de Marcas (Carousel) -->
+<div class="container-fluid px-3 py-4">
+    <div class="text-center mb-4 fade-in">
+        <h2 class="products-title" style="font-size: 2.5rem; font-weight: 800;">Nuestras Marcas</h2>
+    </div>
+
+    <div class="brand-carousel">
+        <div class="brand-track">
+            <!-- Duplicamos las marcas para el efecto infinito -->
+            <a href="{{ url_for('vatech_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/vatech-logo.png') }}" alt="Vatech">
+            </a>
+            <a href="{{ url_for('acteon_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/acteon-logo.jpg') }}" alt="Acteon">
+            </a>
+            <div class="brand-item">
+                <img src="{{ url_for('static', filename='images/cattani-logo.png') }}" alt="Cattani">
+            </div>
+            <a href="{{ url_for('dmg_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/DMG-logo.png') }}" alt="DMG">
+            </a>
+            <a href="{{ url_for('euronda_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/euronda-logo.png') }}" alt="Euronda">
+            </a>
+            <a href="{{ url_for('faro_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/far-logo.png') }}" alt="FARO">
+            </a>
+            <a href="{{ url_for('frasaco_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/frasaco-logo.jpg') }}" alt="Frasaco">
+            </a>
+            <div class="brand-item">
+                <img src="{{ url_for('static', filename='images/metabiomed-logo.png') }}" alt="Meta Biomed">
+            </div>
+            <div class="brand-item">
+                <img src="{{ url_for('static', filename='images/micerium-logo.jpg') }}" alt="Micerium">
+            </div>
+            <a href="{{ url_for('nufona_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/nufona-logo.png') }}" alt="NUFONA">
+            </a>
+            <!-- Duplicamos para efecto infinito -->
+            <a href="{{ url_for('vatech_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/vatech-logo.png') }}" alt="Vatech">
+            </a>
+            <a href="{{ url_for('acteon_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/acteon-logo.jpg') }}" alt="Acteon">
+            </a>
+            <div class="brand-item">
+                <img src="{{ url_for('static', filename='images/cattani-logo.png') }}" alt="Cattani">
+            </div>
+            <a href="{{ url_for('dmg_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/DMG-logo.png') }}" alt="DMG">
+            </a>
+            <a href="{{ url_for('euronda_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/euronda-logo.png') }}" alt="Euronda">
+            </a>
+            <a href="{{ url_for('faro_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/far-logo.png') }}" alt="FARO">
+            </a>
+            <a href="{{ url_for('frasaco_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/frasaco-logo.jpg') }}" alt="Frasaco">
+            </a>
+            <div class="brand-item">
+                <img src="{{ url_for('static', filename='images/metabiomed-logo.png') }}" alt="Meta Biomed">
+            </div>
+            <div class="brand-item">
+                <img src="{{ url_for('static', filename='images/micerium-logo.jpg') }}" alt="Micerium">
+            </div>
+            <a href="{{ url_for('nufona_catalog') }}" class="brand-item">
+                <img src="{{ url_for('static', filename='images/nufona-logo.png') }}" alt="NUFONA">
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Sección de Productos Destacados - NUEVO DISEÑO -->
 <div class="container-fluid px-3 py-4 bg-white shadow-lg rounded content-overlay mb-4 scale-in">
     <div class="text-center mb-4">
-        <h1 class="products-title" style="font-size:3rem; line-height:1.1; font-weight:800;">Nuestros Productos Estrella</h1>
+        <h1 class="products-title" style="font-size: 3rem; line-height: 1.1; font-weight: 800;">Productos Destacados</h1>
         <div style="width: 100px; height: 4px; background: linear-gradient(45deg, #5B21B6, #ef4444, #1f2937); margin: 1rem auto; border-radius: 2px;"></div>
+        <p class="text-muted">Equipos de última generación para consultorios modernos</p>
     </div>
 
-    <!-- Grid responsivo -->
-    <div class="row products-grid-mobile">
-        <!-- Green 21 - VATECH (MORADO) -->
-        <div class="col-12 col-lg-4 mb-4">
-            <div class="text-center service-card p-4 rounded shadow-sm h-100 position-relative"
-                 style="border: 3px solid #5B21B6; box-shadow: 0 0 20px rgba(91, 33, 182, 0.2);"
-                 onclick="showProductDetails('Vatech Green X21', 'La revolución en diagnóstico 3D con precisión y versatilidad total. Una plataforma de diagnóstico 6-en-1 diseñada para elevar el estándar de calidad en la práctica odontológica y maxilofacial moderna.', 'Versatilidad clínica absoluta: 6 modalidades en una unidad (CBCT Dental, Tomografía ENT, Escaneo 3D, Radiografía panorámica, Cefalometría digital, Escaneo facial 3D) • Cobertura FOV personalizable: 4×4 cm hasta 21×19 cm • Máxima resolución: Voxel mínimo de 50 μm • Smart Focus (FOV 12×9 cm): 5 estudios automáticos • Tecnología Green de baja dosis • Escaneos completos en 7-18 segundos', 'Vatech Green CBCT.mp4')">
-                <div class="mb-3">
-                    <span class="badge mb-2" style="background: #5B21B6 !important; color: white;">VATECH</span>
-                    <div class="product-badge" style="background: #5B21B6;">DESTACADO</div>
-                    <img src="{{ url_for('static', filename='images/vatech/v10.png') }}"
-                         alt="Green 21"
-                         class="mx-auto d-block rounded shadow-sm"
-                         style="height: 140px; width: 140px; object-fit: contain;">
-                </div>
-                <h3 class="h5 mb-3" style="color: #5B21B6;">Green 21</h3>
-                <p class="text-muted small mb-3">Tomógrafo CBCT de excelencia que eleva el estándar de diagnóstico 3D con tecnología verde avanzada</p>
-                <div style="background: rgba(91, 33, 182, 0.1); padding: 12px; border-radius: 8px;">
-                    <p class="small mb-0 font-weight-bold" style="color: #4C1D95;">Tecnología CBCT | Eficiencia energética | Campo de visión optimizado</p>
+    <!-- Carousel de Productos Premium -->
+    <div class="products-carousel">
+        <div class="products-track">
+
+            <!-- VATECH Green 21 - CBCT Premium -->
+            <div class="product-premium-card"
+                 onclick="showProductDetails('VATECH Green 21', 'Tomógrafo CBCT de excelencia con tecnología verde avanzada. La revolución en diagnóstico 3D con precisión total.', 'Versatilidad clínica absoluta: 6 modalidades en una unidad • FOV personalizable: 4×4 cm hasta 21×19 cm • Resolución: Voxel mínimo de 50 μm • Smart Focus automático • Tecnología Green de baja dosis • Escaneos en 7-18 segundos', 'Vatech Green CBCT.mp4')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v10.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">PREMIUM</div>
+                    <div class="product-brand-badge">VATECH</div>
+                    <div class="product-content">
+                        <h3 class="product-title">Green 21 CBCT</h3>
+                        <p class="product-subtitle">Tomógrafo 3D Premium</p>
+                        <div class="product-features">
+                            <span class="feature-badge">6 en 1</span>
+                            <span class="feature-badge">FOV 21×19cm</span>
+                            <span class="feature-badge">7-18 seg</span>
+                        </div>
+                        <div class="product-price">Desde $85,000</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- X-MIND prime 3D - ACTEON (ROJO) -->
-        <div class="col-12 col-lg-4 mb-4">
-            <div class="text-center service-card p-4 rounded shadow-sm h-100 position-relative"
-                 style="border: 3px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);"
-                 onclick="showProductDetails('X-MIND® optima 3D', 'Compacto, potente y potenciado con Inteligencia Artificial. El equilibrio perfecto entre innovación, diseño compacto y poder diagnóstico, concebido para adaptarse a cualquier entorno clínico.', 'Diseño Zero Footprint: CBCT más compacto del mercado • Calidad diagnóstica superior: Detector digital última generación, rango kV hasta 90 kV • Flexibilidad FOV: 5×5 cm hasta 17×12 cm • Integración IA total: Segmentación automática, optimización implantes, detección estructuras anatómicas • Flujo digital continuo: Acteon Imaging Suite 5.4 • Interfaz intuitiva con soporte técnico especializado', 'ActeonIA.mp4')">
-                <div class="mb-3">
-                    <span class="badge mb-2" style="background: #ef4444 !important; color: white;">ACTEON</span>
-                    <div class="product-badge" style="background: #ef4444;">IA</div>
-                    <img src="{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}"
-                         alt="X-MIND prime 3D"
-                         class="mx-auto d-block rounded shadow-sm"
-                         style="height: 140px; width: 140px; object-fit: contain;">
-                </div>
-                <h3 class="h5 mb-3" style="color: #ef4444;">X-MIND® prime 3D</h3>
-                <p class="text-muted small mb-3">¡Es la nueva inteligencia! Sistema de tomografía 3D con IA integrada para diagnósticos superiores</p>
-                <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px;">
-                    <p class="small mb-0 font-weight-bold" style="color: #dc2626;">Inteligencia Artificial | Imagen 3D | Diagnóstico Avanzado</p>
+            <!-- VATECH PaX-i3D Green -->
+            <div class="product-premium-card"
+                 onclick="showProductDetails('VATECH PaX-i3D Green', 'El nuevo entorno digital 3D con tecnología verde avanzada', 'Entorno digital 3D con tecnología verde avanzada • Múltiples modalidades de imagen • Alta resolución • Baja dosis de radiación')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v12.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">DESTACADO</div>
+                    <div class="product-brand-badge">VATECH</div>
+                    <div class="product-content">
+                        <h3 class="product-title">PaX-i3D Green</h3>
+                        <p class="product-subtitle">Sistema 3D Ecológico</p>
+                        <div class="product-features">
+                            <span class="feature-badge">3D+2D</span>
+                            <span class="feature-badge">Green Tech</span>
+                            <span class="feature-badge">Multi FOV</span>
+                        </div>
+                        <div class="product-price">Desde $65,000</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Cursos y Capacitación (Color Negro) - CAMBIO AQUÍ -->
-        <div class="col-12 col-lg-4 mb-4">
-          <a href="{{ url_for('cursos') }}" class="text-decoration-none text-reset d-block">
-            <div class="text-center service-card p-4 rounded shadow-sm h-100 position-relative"
-                 style="border: 3px solid #1f2937; box-shadow: 0 0 20px rgba(31,41,55,0.2); cursor:pointer;">
-              <div class="mb-3">
-                <span class="badge mb-2" style="background:#1f2937!important; color:white;">PROEDENT</span>
-                <div class="product-badge" style="background:#1f2937;">EDUCACIÓN</div>
-                <!-- REEMPLAZAR el ícono con la imagen -->
-                <img src="{{ url_for('static', filename='images/frasaco/fra-cabezaP63.png') }}"
-                     alt="Simulación Odontológica"
-                     class="mx-auto d-block rounded shadow-sm"
-                     style="height: 140px; width: 140px; object-fit: contain;">
-              </div>
-              <h3 class="h5 mb-3" style="color:#1f2937;">Cursos y Capacitación</h3>
-              <p class="text-muted small mb-3">Programas especializados de formación profesional con certificación oficial</p>
-              <div style="background:rgba(31,41,55,0.1); padding:12px; border-radius:8px;">
-                <p class="small mb-0 font-weight-bold" style="color:#374151;">
-                  Certificación oficial | Instructores expertos | Modalidades flexibles
-                </p>
-              </div>
+            <!-- ACTEON X-MIND prime 3D -->
+            <div class="product-premium-card"
+                 onclick="showProductDetails('ACTEON X-MIND prime 3D', 'La nueva inteligencia en diagnóstico 3D con imágenes de alta calidad', 'Tecnología de vanguardia en tomografía 3D con imágenes de alta resolución e interface intuitiva')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">NUEVO</div>
+                    <div class="product-brand-badge">ACTEON</div>
+                    <div class="product-content">
+                        <h3 class="product-title">X-MIND prime 3D</h3>
+                        <p class="product-subtitle">Inteligencia 3D</p>
+                        <div class="product-features">
+                            <span class="feature-badge">IA</span>
+                            <span class="feature-badge">HD</span>
+                            <span class="feature-badge">Intuitivo</span>
+                        </div>
+                        <div class="product-price">Desde $72,000</div>
+                    </div>
+                </div>
             </div>
-          </a>
-        </div>
 
+            <!-- VATECH EzRay Air Portable -->
+            <div class="product-premium-card"
+                 onclick="showProductDetails('VATECH EzRay Air Portable', 'Equipo de rayos X portátil con tecnología inalámbrica avanzada', 'Lightweight, Portable Innovation con tecnología inalámbrica')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v3.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">PORTÁTIL</div>
+                    <div class="product-brand-badge">VATECH</div>
+                    <div class="product-content">
+                        <h3 class="product-title">EzRay Air Portable</h3>
+                        <p class="product-subtitle">RX Portátil</p>
+                        <div class="product-features">
+                            <span class="feature-badge">Inalámbrico</span>
+                            <span class="feature-badge">Portátil</span>
+                            <span class="feature-badge">Ligero</span>
+                        </div>
+                        <div class="product-price">Desde $25,000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VATECH PaX-i Plus -->
+            <div class="product-premium-card"
+                 onclick="showProductDetails('VATECH PaX-i Plus', 'Sistema panorámico premium con calidad de imagen superior', 'Premium Panoramic Image Quality con tecnología avanzada')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v9.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">PREMIUM</div>
+                    <div class="product-brand-badge">VATECH</div>
+                    <div class="product-content">
+                        <h3 class="product-title">PaX-i Plus</h3>
+                        <p class="product-subtitle">Panorámico Premium</p>
+                        <div class="product-features">
+                            <span class="feature-badge">HD</span>
+                            <span class="feature-badge">Plus</span>
+                            <span class="feature-badge">Premium</span>
+                        </div>
+                        <div class="product-price">Desde $35,000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NUFONA X1 Preferred -->
+            <div class="product-premium-card"
+                 onclick="showProductDetails('NUFONA X1 Preferred', 'Unidad dental premium con características avanzadas y ergonomía superior', 'Control táctil avanzado, sillón ergonómico premium, sistema de aspiración dual, iluminación LED integrada')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/nufona/nu-x1preferred.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">DESTACADO</div>
+                    <div class="product-brand-badge">NUFONA</div>
+                    <div class="product-content">
+                        <h3 class="product-title">X1 Preferred</h3>
+                        <p class="product-subtitle">Unidad Dental Premium</p>
+                        <div class="product-features">
+                            <span class="feature-badge">Táctil</span>
+                            <span class="feature-badge">LED</span>
+                            <span class="feature-badge">Dual</span>
+                        </div>
+                        <div class="product-price">Desde $45,000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EURONDA EXL -->
+            <div class="product-premium-card"
+                 onclick="showProductDetails('EURONDA EXL', 'Autoclave premium con tecnología de excelencia para consultas exigentes', 'Tecnología premium con mayor capacidad y eficiencia energética')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/euronda/eu-exl.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">EXCELENCIA</div>
+                    <div class="product-brand-badge">EURONDA</div>
+                    <div class="product-content">
+                        <h3 class="product-title">EXL Autoclave</h3>
+                        <p class="product-subtitle">Esterilización Premium</p>
+                        <div class="product-features">
+                            <span class="feature-badge">Clase B</span>
+                            <span class="feature-badge">Premium</span>
+                            <span class="feature-badge">Eficiente</span>
+                        </div>
+                        <div class="product-price">Desde $15,000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FARO Lámpara B75 -->
+            <div class="product-premium-card"
+                 onclick="showProductDetails('FARO Lámpara B75', 'Nueva lámpara quirúrgica LED de última generación para procedimientos médicos y dentales', 'Tecnología LED avanzada con iluminación quirúrgica profesional y control de intensidad variable')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/faro/faro-b75.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">NUEVO</div>
+                    <div class="product-brand-badge">FARO</div>
+                    <div class="product-content">
+                        <h3 class="product-title">Lámpara B75</h3>
+                        <p class="product-subtitle">LED Quirúrgico</p>
+                        <div class="product-features">
+                            <span class="feature-badge">LED</span>
+                            <span class="feature-badge">Quirúrgico</span>
+                            <span class="feature-badge">Variable</span>
+                        </div>
+                        <div class="product-price">Desde $8,500</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Duplicar productos para efecto infinito -->
+            <div class="product-premium-card"
+                 onclick="showProductDetails('VATECH Green 21', 'Tomógrafo CBCT de excelencia con tecnología verde avanzada', 'Versatilidad clínica absoluta con 6 modalidades en una unidad')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v10.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">PREMIUM</div>
+                    <div class="product-brand-badge">VATECH</div>
+                    <div class="product-content">
+                        <h3 class="product-title">Green 21 CBCT</h3>
+                        <p class="product-subtitle">Tomógrafo 3D Premium</p>
+                        <div class="product-features">
+                            <span class="feature-badge">6 en 1</span>
+                            <span class="feature-badge">FOV 21×19cm</span>
+                            <span class="feature-badge">7-18 seg</span>
+                        </div>
+                        <div class="product-price">Desde $85,000</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-premium-card"
+                 onclick="showProductDetails('ACTEON X-MIND prime 3D', 'La nueva inteligencia en diagnóstico 3D', 'Tecnología de vanguardia en tomografía 3D')">
+                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}');"></div>
+                <div class="product-overlay-info">
+                    <div class="product-premium-badge">NUEVO</div>
+                    <div class="product-brand-badge">ACTEON</div>
+                    <div class="product-content">
+                        <h3 class="product-title">X-MIND prime 3D</h3>
+                        <p class="product-subtitle">Inteligencia 3D</p>
+                        <div class="product-features">
+                            <span class="feature-badge">IA</span>
+                            <span class="feature-badge">HD</span>
+                            <span class="feature-badge">Intuitivo</span>
+                        </div>
+                        <div class="product-price">Desde $72,000</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <!-- Botones responsivos -->
-    <div class="buttons-mobile">
-        <a href="{{ url_for('catalogo') }}" class="btn text-white font-weight-bold d-flex align-items-center justify-content-center" style="background: radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%); padding: 15px;">
-            <i class="fas fa-clipboard-list me-2"></i>
-            Ver Catálogo Completo
-        </a>
-        <a href="{{ url_for('cursos') }}" class="btn text-white font-weight-bold d-flex align-items-center justify-content-center" style="background: radial-gradient(circle, #ef4444 0%, #dc2626 50%, #991b1b 100%); padding: 15px;">
-            <i class="fas fa-graduation-cap me-2"></i>
-            Cursos y Capacitaciones
-        </a>
-        <a href="#contacto" class="btn text-white font-weight-bold d-flex align-items-center justify-content-center" style="background: radial-gradient(circle, #000 0%, #0a0a0a 50%, #111 100%); padding: 15px;">
-            <i class="fas fa-phone me-2"></i>
-            Solicitar Cotización
-        </a>
+    <!-- Botones de acción -->
+    <div class="text-center mt-5">
+        <div class="buttons-mobile">
+            <a href="{{ url_for('catalogo') }}" class="btn text-white font-weight-bold d-flex align-items-center justify-content-center" style="background: radial-gradient(circle, #5B21B6 0%, #4C1D95 50%, #3B0764 100%); padding: 15px;">
+                <i class="fas fa-clipboard-list me-2"></i>
+                Ver Catálogo Completo
+            </a>
+            <a href="{{ url_for('cursos') }}" class="btn text-white font-weight-bold d-flex align-items-center justify-content-center" style="background: radial-gradient(circle, #ef4444 0%, #dc2626 50%, #991b1b 100%); padding: 15px;">
+                <i class="fas fa-graduation-cap me-2"></i>
+                Cursos y Capacitaciones
+            </a>
+            <a href="#contacto" class="btn text-white font-weight-bold d-flex align-items-center justify-content-center" style="background: radial-gradient(circle, #000 0%, #0a0a0a 50%, #111 100%); padding: 15px;">
+                <i class="fas fa-phone me-2"></i>
+                Solicitar Cotización
+            </a>
+        </div>
     </div>
 </div>
 
@@ -533,7 +1060,7 @@
         <div class="col-12 col-lg-6 mb-3">
             <div class="service-box-purple p-4 rounded shadow slide-in-left">
                 <div class="d-flex align-items-center justify-content-center mb-3">
-                    <i class="fas fa-cogs service-icon-purple me-2" style="font-size: 2rem;"></i>
+                    <i class="fas fa-cogs me-2" style="font-size: 2rem; color: #A855F7;"></i>
                     <h3 class="h5 mb-0 service-text-gradient">Equipamiento Integral</h3>
                 </div>
                 <ul class="list-unstyled text-light small">
@@ -548,7 +1075,7 @@
         <div class="col-12 col-lg-6 mb-3">
             <div class="service-box-purple p-4 rounded shadow slide-in-right">
                 <div class="d-flex align-items-center justify-content-center mb-3">
-                    <i class="fas fa-microscope service-icon-purple me-2" style="font-size: 2rem;"></i>
+                    <i class="fas fa-microscope me-2" style="font-size: 2rem; color: #A855F7;"></i>
                     <h3 class="h5 mb-0 service-text-gradient">Biomateriales Avanzados</h3>
                 </div>
                 <ul class="list-unstyled text-light small">
@@ -564,7 +1091,7 @@
         <div class="col-12 col-lg-6 mb-3">
             <div class="service-box-red p-4 rounded shadow fade-in">
                 <div class="d-flex align-items-center justify-content-center mb-3">
-                    <i class="fas fa-graduation-cap service-icon-red me-2" style="font-size: 2rem;"></i>
+                    <i class="fas fa-graduation-cap me-2" style="font-size: 2rem; color: #FCA5A5;"></i>
                     <h3 class="h5 mb-0 service-text-gradient">Capacitación Profesional</h3>
                 </div>
                 <ul class="list-unstyled text-light small">
@@ -579,7 +1106,7 @@
         <div class="col-12 col-lg-6 mb-3">
             <div class="service-box-red p-4 rounded shadow scale-in">
                 <div class="d-flex align-items-center justify-content-center mb-3">
-                    <i class="fas fa-tools service-icon-orange me-2" style="font-size: 2rem;"></i>
+                    <i class="fas fa-tools me-2" style="font-size: 2rem; color: #FCD34D;"></i>
                     <h3 class="h5 mb-0 service-text-gradient">Servicio Técnico</h3>
                 </div>
                 <ul class="list-unstyled text-light small">
@@ -599,7 +1126,7 @@
         <div class="col-12 col-lg-6 mb-4">
             <div class="service-box-black p-4 rounded shadow slide-in-left">
                 <div class="text-center mb-3">
-                    <i class="fas fa-bullseye service-icon-white mb-3" style="font-size: 3rem;"></i>
+                    <i class="fas fa-bullseye mb-3" style="font-size: 3rem; color: #ffffff;"></i>
                     <h2 class="h4 service-text-gradient">Nuestra Misión</h2>
                 </div>
                 <p class="text-light small text-justify">
@@ -614,7 +1141,7 @@
         <div class="col-12 col-lg-6 mb-4">
             <div class="service-box-black p-4 rounded shadow slide-in-right">
                 <div class="text-center mb-3">
-                    <i class="fas fa-eye service-icon-white mb-3" style="font-size: 3rem;"></i>
+                    <i class="fas fa-eye mb-3" style="font-size: 3rem; color: #ffffff;"></i>
                     <h2 class="h4 service-text-gradient">Nuestra Visión</h2>
                 </div>
                 <p class="text-light small text-justify">
@@ -679,7 +1206,6 @@
             </select>
           </div>
 
-          <!-- NUEVO CAMPO DE MENSAJE/CONSULTA -->
           <div class="mb-3 position-relative">
             <i class="fas fa-comment-alt position-absolute" style="left: 15px; top: 18px; color: #6b7280;"></i>
             <textarea name="mensaje"
@@ -840,9 +1366,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Animación para las cards de servicios
-    const serviceCards = document.querySelectorAll('.service-card');
-    serviceCards.forEach((card) => {
+    // Animación para las cards de productos
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+
         card.addEventListener('mouseenter', function() {
             if (window.innerWidth > 768) {
                 this.style.transform = 'translateY(-10px) scale(1.02)';
