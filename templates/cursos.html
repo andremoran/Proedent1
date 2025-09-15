@@ -37,7 +37,7 @@
     }
 
     .hero-courses {
-        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 30%, #10b981 70%, #059669 100%);
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 30%, #ef4444 70%, #000000 100%);
         position: relative;
         overflow: hidden;
     }
@@ -253,191 +253,95 @@
     </div>
 
     <div class="row g-4">
-        
-        <!-- Curso 1: Radiología Digital -->
-        <div class="col-lg-4 col-md-6 slide-in-left">
-            <div class="course-card rounded-4 p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between mb-3">
-                    <span class="instructor-badge">Dr. Carlos Mendoza</span>
-                    <span class="duration-badge">16 horas</span>
-                </div>
-                
-                <div class="mb-3">
-                    <img src="https://via.placeholder.com/400x200/3b82f6/ffffff?text=Radiología+Digital" 
-                         alt="Radiología Digital" class="course-image">
-                </div>
-
-                <h4 class="fw-bold text-primary mb-3">Radiología Digital Avanzada</h4>
-                
-                <p class="text-muted mb-3 flex-grow-1">
-                    Domina las técnicas modernas de radiología dental digital, desde la captura hasta el diagnóstico 
-                    con software especializado. Incluye manejo de sensores digitales y procesamiento de imágenes.
-                </p>
-
-                <div class="module-list mb-3">
-                    <h6 class="fw-bold mb-2 text-primary">
-                        <i class="fas fa-list me-2"></i>Módulos:
-                    </h6>
-                    <ul class="list-unstyled mb-0 small">
-                        <li><i class="fas fa-check text-success me-2"></i>Fundamentos de radiología digital</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Uso de sensores y software</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Interpretación de imágenes</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Casos clínicos prácticos</li>
-                    </ul>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="price-tag">$180</div>
-                    <span class="certificate-badge">
-                        <i class="fas fa-certificate me-1"></i>Certificado
-                    </span>
-                    <button class="btn btn-outline-primary btn-sm rounded-pill"
-                            onclick="showCourseDetails('Radiología Digital Avanzada', 'Dr. Carlos Mendoza', '16 horas', '$180', 'Domina las técnicas modernas de radiología dental digital desde la captura hasta el diagnóstico', 'Fundamentos de radiología digital, Uso de sensores y software, Interpretación de imágenes, Casos clínicos prácticos')">
-                        <i class="fas fa-info-circle me-1"></i>Detalles
-                    </button>
-                </div>
-
-                <button class="enroll-btn" onclick="enrollCourse('Radiología Digital Avanzada', '$180')">
-                    <i class="fas fa-user-plus me-2"></i>Inscribirse Ahora
-                </button>
-            </div>
-        </div>
-
-        <!-- Curso 2: Mantenimiento de Equipos -->
-        <div class="col-lg-4 col-md-6 slide-in-right">
-            <div class="course-card rounded-4 p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between mb-3">
-                    <span class="instructor-badge">Ing. Roberto Silva</span>
-                    <span class="duration-badge">20 horas</span>
-                </div>
-                
-                <div class="mb-3">
-                    <img src="https://via.placeholder.com/400x200/10b981/ffffff?text=Mantenimiento+Equipos" 
-                         alt="Mantenimiento de Equipos" class="course-image">
-                </div>
-
-                <h4 class="fw-bold text-primary mb-3">Mantenimiento de Equipos Dentales</h4>
-                
-                <p class="text-muted mb-3 flex-grow-1">
-                    Aprende técnicas profesionales de mantenimiento preventivo y correctivo para equipos dentales. 
-                    Maximiza la vida útil de tus inversiones y reduce costos operativos.
-                </p>
-
-                <div class="module-list mb-3">
-                    <h6 class="fw-bold mb-2 text-primary">
-                        <i class="fas fa-list me-2"></i>Módulos:
-                    </h6>
-                    <ul class="list-unstyled mb-0 small">
-                        <li><i class="fas fa-check text-success me-2"></i>Mantenimiento preventivo programado</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Diagnóstico de fallas comunes</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Calibración de equipos</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Documentación y registro</li>
-                    </ul>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="price-tag">$220</div>
-                    <span class="certificate-badge">
-                        <i class="fas fa-certificate me-1"></i>Certificado
-                    </span>
-                    <button class="btn btn-outline-primary btn-sm rounded-pill"
-                            onclick="showCourseDetails('Mantenimiento de Equipos Dentales', 'Ing. Roberto Silva', '20 horas', '$220', 'Técnicas profesionales de mantenimiento preventivo y correctivo para equipos dentales', 'Mantenimiento preventivo programado, Diagnóstico de fallas comunes, Calibración de equipos, Documentación y registro')">
-                        <i class="fas fa-info-circle me-1"></i>Detalles
-                    </button>
-                </div>
-
-                <button class="enroll-btn" onclick="enrollCourse('Mantenimiento de Equipos Dentales', '$220')">
-                    <i class="fas fa-user-plus me-2"></i>Inscribirse Ahora
-                </button>
-            </div>
-        </div>
-
-        <!-- Curso 3: Simulación y Prácticas Odontológicas (Destacado) -->
-        <div class="col-lg-4 col-md-6 slide-in-left">
-            <div class="course-card featured rounded-4 p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between mb-3">
-                    <span class="instructor-badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                        Dra. Patricia López
-                    </span>
-                    <span class="duration-badge">32 horas</span>
-                </div>
-
-                <div class="mb-3">
-                    <!-- REEMPLAZAR la imagen placeholder con la imagen de Frasaco -->
-                    <img src="{{ url_for('static', filename='images/frasaco/fra-cabezaP63.png') }}"
-                         alt="Simulación Odontológica" class="course-image">
-                </div>
-
-                <h4 class="fw-bold mb-3" style="color: #10b981;">Simulación en Prácticas Odontológicas</h4>
-
-                <p class="text-muted mb-3 flex-grow-1">
-                    <strong>CURSO ESTRELLA:</strong> Programa integral teórico-práctico con modelos y fantomas Frasaco.
-                    Desarrolla habilidades clínicas en ambiente controlado antes de atender pacientes reales.
-                </p>
-
-                <div class="module-list mb-3" style="border-left-color: #10b981;">
-                    <h6 class="fw-bold mb-2" style="color: #10b981;">
-                        <i class="fas fa-list me-2"></i>Programa Completo:
-                    </h6>
-                    
-                    <div class="mb-3">
-                        <h6 class="text-primary mb-2">Módulo Teórico (8 horas):</h6>
-                        <ul class="list-unstyled mb-0 small">
-                            <li><i class="fas fa-book text-info me-2"></i>Anatomía dental aplicada</li>
-                            <li><i class="fas fa-book text-info me-2"></i>Protocolos de anestesia</li>
-                            <li><i class="fas fa-book text-info me-2"></i>Técnicas de preparación cavitaria</li>
-                        </ul>
+         <div class="row g-4 justify-content-center">
+            <!-- Curso Único: Simulación y Prácticas Odontológicas (Destacado) -->
+            <div class="col-lg-6 col-md-8 slide-in-left">
+                <div class="course-card featured rounded-4 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="instructor-badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            Dra. Patricia López
+                        </span>
+                        <span class="duration-badge">32 horas</span>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <h6 class="text-success mb-2">Módulo Práctico (24 horas):</h6>
-                        <div class="mini-course">
-                            <strong>Mini-Curso 1:</strong> Técnicas de Anestesia Dental
-                            <ul class="list-unstyled mt-2 small">
-                                <li><i class="fas fa-syringe text-primary me-2"></i>Práctica en modelos Frasaco</li>
-                                <li><i class="fas fa-syringe text-primary me-2"></i>Anestesia infiltrativa</li>
-                                <li><i class="fas fa-syringe text-primary me-2"></i>Bloqueos nerviosos</li>
+                        <img src="{{ url_for('static', filename='images/frasaco/fra-cabezaP63.png') }}"
+                             alt="Simulación Odontológica" class="course-image">
+                    </div>
+
+                    <h4 class="fw-bold mb-3" style="color: #10b981;">Simulación en Prácticas Odontológicas</h4>
+
+                    <p class="text-muted mb-3 flex-grow-1">
+                        <strong>CURSO ESTRELLA:</strong> Programa integral teórico-práctico con modelos y fantomas Frasaco.
+                        Desarrolla habilidades clínicas en ambiente controlado antes de atender pacientes reales.
+                    </p>
+
+                    <div class="module-list mb-3" style="border-left-color: #10b981;">
+                        <h6 class="fw-bold mb-2" style="color: #10b981;">
+                            <i class="fas fa-list me-2"></i>Programa Completo:
+                        </h6>
+
+                        <div class="mb-3">
+                            <h6 class="text-primary mb-2">Módulo Teórico (8 horas):</h6>
+                            <ul class="list-unstyled mb-0 small">
+                                <li><i class="fas fa-book text-info me-2"></i>Anatomía dental aplicada</li>
+                                <li><i class="fas fa-book text-info me-2"></i>Protocolos de anestesia</li>
+                                <li><i class="fas fa-book text-info me-2"></i>Técnicas de preparación cavitaria</li>
                             </ul>
                         </div>
-                        
-                        <div class="mini-course">
-                            <strong>Mini-Curso 2:</strong> Preparación de Cavidades
-                            <ul class="list-unstyled mt-2 small">
-                                <li><i class="fas fa-tooth text-primary me-2"></i>Uso de fantomas Frasaco</li>
-                                <li><i class="fas fa-tooth text-primary me-2"></i>Cavidades Clase I y II</li>
-                                <li><i class="fas fa-tooth text-primary me-2"></i>Técnicas conservadoras</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="mini-course">
-                            <strong>Mini-Curso 3:</strong> Técnicas de Restauración
-                            <ul class="list-unstyled mt-2 small">
-                                <li><i class="fas fa-fill-drip text-primary me-2"></i>Materiales de restauración</li>
-                                <li><i class="fas fa-fill-drip text-primary me-2"></i>Técnicas de composite</li>
-                                <li><i class="fas fa-fill-drip text-primary me-2"></i>Acabado y pulido</li>
-                            </ul>
+
+                        <div class="mb-3">
+                            <h6 class="text-success mb-2">Módulo Práctico (24 horas):</h6>
+                            <div class="mini-course">
+                                <strong>Mini-Curso 1:</strong> Técnicas de Anestesia Dental
+                                <ul class="list-unstyled mt-2 small">
+                                    <li><i class="fas fa-syringe text-primary me-2"></i>Práctica en modelos Frasaco</li>
+                                    <li><i class="fas fa-syringe text-primary me-2"></i>Anestesia infiltrativa</li>
+                                    <li><i class="fas fa-syringe text-primary me-2"></i>Bloqueos nerviosos</li>
+                                </ul>
+                            </div>
+
+                            <div class="mini-course">
+                                <strong>Mini-Curso 2:</strong> Preparación de Cavidades
+                                <ul class="list-unstyled mt-2 small">
+                                    <li><i class="fas fa-tooth text-primary me-2"></i>Uso de fantomas Frasaco</li>
+                                    <li><i class="fas fa-tooth text-primary me-2"></i>Cavidades Clase I y II</li>
+                                    <li><i class="fas fa-tooth text-primary me-2"></i>Técnicas conservadoras</li>
+                                </ul>
+                            </div>
+
+                            <div class="mini-course">
+                                <strong>Mini-Curso 3:</strong> Técnicas de Restauración
+                                <ul class="list-unstyled mt-2 small">
+                                    <li><i class="fas fa-fill-drip text-primary me-2"></i>Materiales de restauración</li>
+                                    <li><i class="fas fa-fill-drip text-primary me-2"></i>Técnicas de composite</li>
+                                    <li><i class="fas fa-fill-drip text-primary me-2"></i>Acabado y pulido</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="price-tag" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">$450</div>
-                    <span class="certificate-badge">
-                        <i class="fas fa-certificate me-1"></i>Certificado
-                    </span>
-                    <button class="btn btn-outline-success btn-sm rounded-pill"
-                            onclick="showCourseDetails('Simulación en Prácticas Odontológicas', 'Dra. Patricia López', '32 horas', '$450', 'Programa integral teórico-práctico con modelos y fantomas Frasaco para desarrollar habilidades clínicas', 'Módulo teórico (8h): Anatomía dental, protocolos de anestesia, técnicas cavitarias. Módulo práctico (24h): Anestesia en modelos, preparación de cavidades, técnicas de restauración')">
-                        <i class="fas fa-info-circle me-1"></i>Detalles
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="text-muted">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Próximamente</strong>
+                        </div>
+                        <span class="certificate-badge">
+                            <i class="fas fa-certificate me-1"></i>Certificado
+                        </span>
+                        <button class="btn btn-outline-success btn-sm rounded-pill"
+                                onclick="showCourseDetails('Simulación en Prácticas Odontológicas', 'Dra. Patricia López', '32 horas', 'Por definir', 'Programa integral teórico-práctico con modelos y fantomas Frasaco para desarrollar habilidades clínicas', 'Módulo teórico (8h): Anatomía dental, protocolos de anestesia, técnicas cavitarias. Módulo práctico (24h): Anestesia en modelos, preparación de cavidades, técnicas de restauración')">
+                            <i class="fas fa-info-circle me-1"></i>Detalles
+                        </button>
+                    </div>
+
+                    <button class="enroll-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);"
+                            onclick="enrollCourse('Simulación en Prácticas Odontológicas', 'Por definir')">
+                        <i class="fas fa-star me-2"></i>Curso Estrella - Más Información
                     </button>
                 </div>
-
-                <button class="enroll-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" 
-                        onclick="enrollCourse('Simulación en Prácticas Odontológicas', '$450')">
-                    <i class="fas fa-star me-2"></i>Curso Estrella - Inscribirse
-                </button>
             </div>
         </div>
-
     </div>
 </div>
 
