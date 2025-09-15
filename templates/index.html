@@ -273,7 +273,7 @@
         animation-play-state: paused;
     }
 
-    /* NUEVOS ESTILOS PARA PRODUCTOS PREMIUM */
+    /* ESTILOS PARA PRODUCTOS PREMIUM CON MOVIMIENTO SUAVE */
     .products-carousel {
         overflow: hidden;
         position: relative;
@@ -288,7 +288,8 @@
     .products-track {
         display: flex;
         animation: productScroll 45s linear infinite;
-        width: calc(380px * 20);
+        width: calc(410px * 20);
+        will-change: transform;
     }
 
     .product-premium-card {
@@ -302,6 +303,7 @@
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         border: 2px solid transparent;
+        flex-shrink: 0;
     }
 
     .product-premium-card:hover {
@@ -428,12 +430,67 @@
 
     @keyframes productScroll {
         0% { transform: translateX(0); }
-        100% { transform: translateX(calc(-380px * 10)); }
+        100% { transform: translateX(calc(-410px * 10)); }
     }
 
     .products-carousel:hover .products-track {
         animation-play-state: paused;
     }
+
+    /* FLECHAS MEJORADAS CON MOVIMIENTO SUAVE DE PRODUCTO A PRODUCTO */
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #5B21B6;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        z-index: 15;
+        opacity: 0.8;
+        user-select: none;
+        border: 2px solid rgba(91, 33, 182, 0.1);
+    }
+
+    .products-carousel:hover .carousel-nav {
+        opacity: 1;
+    }
+
+    .carousel-nav:hover {
+        background: #5B21B6;
+        color: white;
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: 0 6px 20px rgba(91, 33, 182, 0.3);
+        border-color: #5B21B6;
+    }
+
+    .carousel-nav:active {
+        transform: translateY(-50%) scale(0.95);
+        transition: transform 0.1s ease;
+    }
+
+    .carousel-nav-left {
+        left: 20px;
+    }
+
+    .carousel-nav-right {
+        right: 20px;
+    }
+
+    /* Transición suave para el carrusel */
+    .products-track.smooth-transition {
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
     /* FIN ESTILOS PRODUCTOS PREMIUM */
 
     .service-card {
@@ -655,6 +712,7 @@
         /* Responsive para productos premium */
         .products-track {
             animation-duration: 35s;
+            width: calc(340px * 20);
         }
 
         .product-premium-card {
@@ -669,6 +727,26 @@
 
         .product-overlay-info {
             padding: 15px;
+        }
+
+        .carousel-nav {
+            opacity: 1;
+            width: 45px;
+            height: 45px;
+            font-size: 1rem;
+        }
+
+        .carousel-nav-left {
+            left: 15px;
+        }
+
+        .carousel-nav-right {
+            right: 15px;
+        }
+
+        @keyframes productScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-340px * 10)); }
         }
     }
 
@@ -690,6 +768,10 @@
         }
 
         /* Responsive productos premium */
+        .products-track {
+            width: calc(300px * 20);
+        }
+
         .product-premium-card {
             min-width: 280px;
             height: 220px;
@@ -706,6 +788,25 @@
         .feature-badge {
             font-size: 0.6rem;
             padding: 3px 6px;
+        }
+
+        .carousel-nav {
+            width: 40px;
+            height: 40px;
+            font-size: 0.9rem;
+        }
+
+        .carousel-nav-left {
+            left: 10px;
+        }
+
+        .carousel-nav-right {
+            right: 10px;
+        }
+
+        @keyframes productScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-300px * 10)); }
         }
     }
 </style>
@@ -824,211 +925,219 @@
         <p class="text-muted">Equipos de última generación para consultorios modernos</p>
     </div>
 
-    <!-- Carousel de Productos Premium -->
-    <div class="products-carousel">
-        <div class="products-track">
+<!-- Carousel de Productos Premium -->
+<div class="products-carousel" style="position: relative;">
+    <!-- Flechas de navegación -->
+    <button class="carousel-nav carousel-nav-left" onclick="moveCarousel('left')">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="carousel-nav carousel-nav-right" onclick="moveCarousel('right')">
+        <i class="fas fa-chevron-right"></i>
+    </button>
 
-            <!-- VATECH Green 21 - CBCT Premium -->
-            <div class="product-premium-card"
-                 onclick="showProductDetails('VATECH Green 21', 'Tomógrafo CBCT de excelencia con tecnología verde avanzada. La revolución en diagnóstico 3D con precisión total.', 'Versatilidad clínica absoluta: 6 modalidades en una unidad • FOV personalizable: 4×4 cm hasta 21×19 cm • Resolución: Voxel mínimo de 50 μm • Smart Focus automático • Tecnología Green de baja dosis • Escaneos en 7-18 segundos', 'Vatech Green CBCT.mp4')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v10.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">PREMIUM</div>
-                    <div class="product-brand-badge">VATECH</div>
-                    <div class="product-content">
-                        <h3 class="product-title">Green 21 CBCT</h3>
-                        <p class="product-subtitle">Tomógrafo 3D Premium</p>
-                        <div class="product-features">
-                            <span class="feature-badge">6 en 1</span>
-                            <span class="feature-badge">FOV 21×19cm</span>
-                            <span class="feature-badge">7-18 seg</span>
-                        </div>
-                        <div class="product-price">Desde $85,000</div>
+    <div class="products-track" id="productsTrack">
+
+        <!-- VATECH Green 21 - CBCT Premium -->
+        <div class="product-premium-card"
+             onclick="showProductDetails('VATECH Green 21', 'Tomógrafo CBCT de excelencia con tecnología verde avanzada. La revolución en diagnóstico 3D con precisión total.', 'Versatilidad clínica absoluta: 6 modalidades en una unidad • FOV personalizable: 4×4 cm hasta 21×19 cm • Resolución: Voxel mínimo de 50 μm • Smart Focus automático • Tecnología Green de baja dosis • Escaneos en 7-18 segundos', 'Vatech Green CBCT.mp4')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v10.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">PREMIUM</div>
+                <div class="product-brand-badge">VATECH</div>
+                <div class="product-content">
+                    <h3 class="product-title">Green 21 CBCT</h3>
+                    <p class="product-subtitle">Tomógrafo 3D Premium</p>
+                    <div class="product-features">
+                        <span class="feature-badge">6 en 1</span>
+                        <span class="feature-badge">FOV 21×19cm</span>
+                        <span class="feature-badge">7-18 seg</span>
                     </div>
+                    <div class="product-price">Desde $85,000</div>
                 </div>
             </div>
-
-            <!-- VATECH PaX-i3D Green -->
-            <div class="product-premium-card"
-                 onclick="showProductDetails('VATECH PaX-i3D Green', 'El nuevo entorno digital 3D con tecnología verde avanzada', 'Entorno digital 3D con tecnología verde avanzada • Múltiples modalidades de imagen • Alta resolución • Baja dosis de radiación')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v12.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">DESTACADO</div>
-                    <div class="product-brand-badge">VATECH</div>
-                    <div class="product-content">
-                        <h3 class="product-title">PaX-i3D Green</h3>
-                        <p class="product-subtitle">Sistema 3D Ecológico</p>
-                        <div class="product-features">
-                            <span class="feature-badge">3D+2D</span>
-                            <span class="feature-badge">Green Tech</span>
-                            <span class="feature-badge">Multi FOV</span>
-                        </div>
-                        <div class="product-price">Desde $65,000</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ACTEON X-MIND prime 3D -->
-            <div class="product-premium-card"
-                 onclick="showProductDetails('ACTEON X-MIND prime 3D', 'La nueva inteligencia en diagnóstico 3D con imágenes de alta calidad', 'Tecnología de vanguardia en tomografía 3D con imágenes de alta resolución e interface intuitiva')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">NUEVO</div>
-                    <div class="product-brand-badge">ACTEON</div>
-                    <div class="product-content">
-                        <h3 class="product-title">X-MIND prime 3D</h3>
-                        <p class="product-subtitle">Inteligencia 3D</p>
-                        <div class="product-features">
-                            <span class="feature-badge">IA</span>
-                            <span class="feature-badge">HD</span>
-                            <span class="feature-badge">Intuitivo</span>
-                        </div>
-                        <div class="product-price">Desde $72,000</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VATECH EzRay Air Portable -->
-            <div class="product-premium-card"
-                 onclick="showProductDetails('VATECH EzRay Air Portable', 'Equipo de rayos X portátil con tecnología inalámbrica avanzada', 'Lightweight, Portable Innovation con tecnología inalámbrica')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v3.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">PORTÁTIL</div>
-                    <div class="product-brand-badge">VATECH</div>
-                    <div class="product-content">
-                        <h3 class="product-title">EzRay Air Portable</h3>
-                        <p class="product-subtitle">RX Portátil</p>
-                        <div class="product-features">
-                            <span class="feature-badge">Inalámbrico</span>
-                            <span class="feature-badge">Portátil</span>
-                            <span class="feature-badge">Ligero</span>
-                        </div>
-                        <div class="product-price">Desde $25,000</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VATECH PaX-i Plus -->
-            <div class="product-premium-card"
-                 onclick="showProductDetails('VATECH PaX-i Plus', 'Sistema panorámico premium con calidad de imagen superior', 'Premium Panoramic Image Quality con tecnología avanzada')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v9.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">PREMIUM</div>
-                    <div class="product-brand-badge">VATECH</div>
-                    <div class="product-content">
-                        <h3 class="product-title">PaX-i Plus</h3>
-                        <p class="product-subtitle">Panorámico Premium</p>
-                        <div class="product-features">
-                            <span class="feature-badge">HD</span>
-                            <span class="feature-badge">Plus</span>
-                            <span class="feature-badge">Premium</span>
-                        </div>
-                        <div class="product-price">Desde $35,000</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- NUFONA X1 Preferred -->
-            <div class="product-premium-card"
-                 onclick="showProductDetails('NUFONA X1 Preferred', 'Unidad dental premium con características avanzadas y ergonomía superior', 'Control táctil avanzado, sillón ergonómico premium, sistema de aspiración dual, iluminación LED integrada')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/nufona/nu-x1preferred.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">DESTACADO</div>
-                    <div class="product-brand-badge">NUFONA</div>
-                    <div class="product-content">
-                        <h3 class="product-title">X1 Preferred</h3>
-                        <p class="product-subtitle">Unidad Dental Premium</p>
-                        <div class="product-features">
-                            <span class="feature-badge">Táctil</span>
-                            <span class="feature-badge">LED</span>
-                            <span class="feature-badge">Dual</span>
-                        </div>
-                        <div class="product-price">Desde $45,000</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- EURONDA EXL -->
-            <div class="product-premium-card"
-                 onclick="showProductDetails('EURONDA EXL', 'Autoclave premium con tecnología de excelencia para consultas exigentes', 'Tecnología premium con mayor capacidad y eficiencia energética')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/euronda/eu-exl.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">EXCELENCIA</div>
-                    <div class="product-brand-badge">EURONDA</div>
-                    <div class="product-content">
-                        <h3 class="product-title">EXL Autoclave</h3>
-                        <p class="product-subtitle">Esterilización Premium</p>
-                        <div class="product-features">
-                            <span class="feature-badge">Clase B</span>
-                            <span class="feature-badge">Premium</span>
-                            <span class="feature-badge">Eficiente</span>
-                        </div>
-                        <div class="product-price">Desde $15,000</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FARO Lámpara B75 -->
-            <div class="product-premium-card"
-                 onclick="showProductDetails('FARO Lámpara B75', 'Nueva lámpara quirúrgica LED de última generación para procedimientos médicos y dentales', 'Tecnología LED avanzada con iluminación quirúrgica profesional y control de intensidad variable')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/faro/faro-b75.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">NUEVO</div>
-                    <div class="product-brand-badge">FARO</div>
-                    <div class="product-content">
-                        <h3 class="product-title">Lámpara B75</h3>
-                        <p class="product-subtitle">LED Quirúrgico</p>
-                        <div class="product-features">
-                            <span class="feature-badge">LED</span>
-                            <span class="feature-badge">Quirúrgico</span>
-                            <span class="feature-badge">Variable</span>
-                        </div>
-                        <div class="product-price">Desde $8,500</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Duplicar productos para efecto infinito -->
-            <div class="product-premium-card"
-                 onclick="showProductDetails('VATECH Green 21', 'Tomógrafo CBCT de excelencia con tecnología verde avanzada', 'Versatilidad clínica absoluta con 6 modalidades en una unidad')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v10.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">PREMIUM</div>
-                    <div class="product-brand-badge">VATECH</div>
-                    <div class="product-content">
-                        <h3 class="product-title">Green 21 CBCT</h3>
-                        <p class="product-subtitle">Tomógrafo 3D Premium</p>
-                        <div class="product-features">
-                            <span class="feature-badge">6 en 1</span>
-                            <span class="feature-badge">FOV 21×19cm</span>
-                            <span class="feature-badge">7-18 seg</span>
-                        </div>
-                        <div class="product-price">Desde $85,000</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-premium-card"
-                 onclick="showProductDetails('ACTEON X-MIND prime 3D', 'La nueva inteligencia en diagnóstico 3D', 'Tecnología de vanguardia en tomografía 3D')">
-                <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}');"></div>
-                <div class="product-overlay-info">
-                    <div class="product-premium-badge">NUEVO</div>
-                    <div class="product-brand-badge">ACTEON</div>
-                    <div class="product-content">
-                        <h3 class="product-title">X-MIND prime 3D</h3>
-                        <p class="product-subtitle">Inteligencia 3D</p>
-                        <div class="product-features">
-                            <span class="feature-badge">IA</span>
-                            <span class="feature-badge">HD</span>
-                            <span class="feature-badge">Intuitivo</span>
-                        </div>
-                        <div class="product-price">Desde $72,000</div>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+        <!-- VATECH PaX-i3D Green -->
+        <div class="product-premium-card"
+             onclick="showProductDetails('VATECH PaX-i3D Green', 'El nuevo entorno digital 3D con tecnología verde avanzada', 'Entorno digital 3D con tecnología verde avanzada • Múltiples modalidades de imagen • Alta resolución • Baja dosis de radiación')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v12.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">DESTACADO</div>
+                <div class="product-brand-badge">VATECH</div>
+                <div class="product-content">
+                    <h3 class="product-title">PaX-i3D Green</h3>
+                    <p class="product-subtitle">Sistema 3D Ecológico</p>
+                    <div class="product-features">
+                        <span class="feature-badge">3D+2D</span>
+                        <span class="feature-badge">Green Tech</span>
+                        <span class="feature-badge">Multi FOV</span>
+                    </div>
+                    <div class="product-price">Desde $65,000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTEON X-MIND prime 3D -->
+        <div class="product-premium-card"
+             onclick="showProductDetails('ACTEON X-MIND prime 3D', 'La nueva inteligencia en diagnóstico 3D con imágenes de alta calidad', 'Tecnología de vanguardia en tomografía 3D con imágenes de alta resolución e interface intuitiva')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">NUEVO</div>
+                <div class="product-brand-badge">ACTEON</div>
+                <div class="product-content">
+                    <h3 class="product-title">X-MIND prime 3D</h3>
+                    <p class="product-subtitle">Inteligencia 3D</p>
+                    <div class="product-features">
+                        <span class="feature-badge">IA</span>
+                        <span class="feature-badge">HD</span>
+                        <span class="feature-badge">Intuitivo</span>
+                    </div>
+                    <div class="product-price">Desde $72,000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VATECH EzRay Air Portable -->
+        <div class="product-premium-card"
+             onclick="showProductDetails('VATECH EzRay Air Portable', 'Equipo de rayos X portátil con tecnología inalámbrica avanzada', 'Lightweight, Portable Innovation con tecnología inalámbrica')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v3.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">PORTÁTIL</div>
+                <div class="product-brand-badge">VATECH</div>
+                <div class="product-content">
+                    <h3 class="product-title">EzRay Air Portable</h3>
+                    <p class="product-subtitle">RX Portátil</p>
+                    <div class="product-features">
+                        <span class="feature-badge">Inalámbrico</span>
+                        <span class="feature-badge">Portátil</span>
+                        <span class="feature-badge">Ligero</span>
+                    </div>
+                    <div class="product-price">Desde $25,000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VATECH PaX-i Plus -->
+        <div class="product-premium-card"
+             onclick="showProductDetails('VATECH PaX-i Plus', 'Sistema panorámico premium con calidad de imagen superior', 'Premium Panoramic Image Quality con tecnología avanzada')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v9.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">PREMIUM</div>
+                <div class="product-brand-badge">VATECH</div>
+                <div class="product-content">
+                    <h3 class="product-title">PaX-i Plus</h3>
+                    <p class="product-subtitle">Panorámico Premium</p>
+                    <div class="product-features">
+                        <span class="feature-badge">HD</span>
+                        <span class="feature-badge">Plus</span>
+                        <span class="feature-badge">Premium</span>
+                    </div>
+                    <div class="product-price">Desde $35,000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NUFONA X1 Preferred -->
+        <div class="product-premium-card"
+             onclick="showProductDetails('NUFONA X1 Preferred', 'Unidad dental premium con características avanzadas y ergonomía superior', 'Control táctil avanzado, sillón ergonómico premium, sistema de aspiración dual, iluminación LED integrada')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/nufona/nu-x1preferred.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">DESTACADO</div>
+                <div class="product-brand-badge">NUFONA</div>
+                <div class="product-content">
+                    <h3 class="product-title">X1 Preferred</h3>
+                    <p class="product-subtitle">Unidad Dental Premium</p>
+                    <div class="product-features">
+                        <span class="feature-badge">Táctil</span>
+                        <span class="feature-badge">LED</span>
+                        <span class="feature-badge">Dual</span>
+                    </div>
+                    <div class="product-price">Desde $45,000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EURONDA EXL -->
+        <div class="product-premium-card"
+             onclick="showProductDetails('EURONDA EXL', 'Autoclave premium con tecnología de excelencia para consultas exigentes', 'Tecnología premium con mayor capacidad y eficiencia energética')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/euronda/eu-exl.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">EXCELENCIA</div>
+                <div class="product-brand-badge">EURONDA</div>
+                <div class="product-content">
+                    <h3 class="product-title">EXL Autoclave</h3>
+                    <p class="product-subtitle">Esterilización Premium</p>
+                    <div class="product-features">
+                        <span class="feature-badge">Clase B</span>
+                        <span class="feature-badge">Premium</span>
+                        <span class="feature-badge">Eficiente</span>
+                    </div>
+                    <div class="product-price">Desde $15,000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FARO Lámpara B75 -->
+        <div class="product-premium-card"
+             onclick="showProductDetails('FARO Lámpara B75', 'Nueva lámpara quirúrgica LED de última generación para procedimientos médicos y dentales', 'Tecnología LED avanzada con iluminación quirúrgica profesional y control de intensidad variable')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/faro/faro-b75.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">NUEVO</div>
+                <div class="product-brand-badge">FARO</div>
+                <div class="product-content">
+                    <h3 class="product-title">Lámpara B75</h3>
+                    <p class="product-subtitle">LED Quirúrgico</p>
+                    <div class="product-features">
+                        <span class="feature-badge">LED</span>
+                        <span class="feature-badge">Quirúrgico</span>
+                        <span class="feature-badge">Variable</span>
+                    </div>
+                    <div class="product-price">Desde $8,500</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Duplicar productos para efecto infinito -->
+        <div class="product-premium-card"
+             onclick="showProductDetails('VATECH Green 21', 'Tomógrafo CBCT de excelencia con tecnología verde avanzada', 'Versatilidad clínica absoluta con 6 modalidades en una unidad')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/vatech/v10.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">PREMIUM</div>
+                <div class="product-brand-badge">VATECH</div>
+                <div class="product-content">
+                    <h3 class="product-title">Green 21 CBCT</h3>
+                    <p class="product-subtitle">Tomógrafo 3D Premium</p>
+                    <div class="product-features">
+                        <span class="feature-badge">6 en 1</span>
+                        <span class="feature-badge">FOV 21×19cm</span>
+                        <span class="feature-badge">7-18 seg</span>
+                    </div>
+                    <div class="product-price">Desde $85,000</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-premium-card"
+             onclick="showProductDetails('ACTEON X-MIND prime 3D', 'La nueva inteligencia en diagnóstico 3D', 'Tecnología de vanguardia en tomografía 3D')">
+            <div class="product-image-bg" style="background-image: url('{{ url_for('static', filename='images/acteon/a-x-mind-prime-3d.png') }}');"></div>
+            <div class="product-overlay-info">
+                <div class="product-premium-badge">NUEVO</div>
+                <div class="product-brand-badge">ACTEON</div>
+                <div class="product-content">
+                    <h3 class="product-title">X-MIND prime 3D</h3>
+                    <p class="product-subtitle">Inteligencia 3D</p>
+                    <div class="product-features">
+                        <span class="feature-badge">IA</span>
+                        <span class="feature-badge">HD</span>
+                        <span class="feature-badge">Intuitivo</span>
+                    </div>
+                    <div class="product-price">Desde $72,000</div>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
 
     <!-- Botones de acción -->
     <div class="text-center mt-5">
@@ -1258,7 +1367,54 @@
 </div>
 
 <script>
+// Variables del carrusel - MOVIMIENTO SUAVE DE PRODUCTO A PRODUCTO
 let currentProduct = '';
+let carouselPosition = 0;
+let isManualControl = false;
+const cardWidth = 410; // Ancho real de cada card (380px + 30px márgenes)
+const totalCards = 8; // Total de productos únicos visibles
+const maxPosition = -(cardWidth * totalCards);
+
+// Función para mover el carrusel SUAVEMENTE producto por producto
+function moveCarousel(direction) {
+    const track = document.getElementById('productsTrack');
+    if (!track) return;
+
+    // Activar control manual
+    isManualControl = true;
+
+    // Detener la animación CSS y añadir clase de transición suave
+    track.style.animation = 'none';
+    track.classList.add('smooth-transition');
+
+    if (direction === 'left') {
+        carouselPosition += cardWidth; // Mover 1 producto hacia atrás
+        if (carouselPosition > 0) {
+            carouselPosition = maxPosition; // Salto al final
+        }
+    } else {
+        carouselPosition -= cardWidth; // Mover 1 producto hacia adelante
+        if (carouselPosition < maxPosition) {
+            carouselPosition = 0; // Volver al inicio
+        }
+    }
+
+    // Aplicar la transformación suave
+    track.style.transform = `translateX(${carouselPosition}px)`;
+
+    console.log('Posición del carrusel:', carouselPosition, 'Dirección:', direction);
+
+    // Reanudar la animación automática después de 5 segundos
+    setTimeout(() => {
+        if (isManualControl) {
+            track.classList.remove('smooth-transition');
+            track.style.transform = '';
+            track.style.animation = 'productScroll 45s linear infinite';
+            carouselPosition = 0;
+            isManualControl = false;
+        }
+    }, 5000);
+}
 
 // Función para observar elementos y aplicar animaciones
 function createObserver() {
@@ -1306,7 +1462,7 @@ function showProductDetails(name, description, specs, videoUrl = null) {
     const videoSource = document.getElementById('videoSource');
 
     if (videoUrl) {
-        videoSource.src = `{{ url_for('static', filename='videos/') }}${videoUrl}`;
+        videoSource.src = `/static/videos/${videoUrl}`;
         video.style.display = 'block';
         video.load();
     } else {
@@ -1323,7 +1479,9 @@ function closeModal() {
     document.body.style.overflow = 'auto';
 
     const video = document.getElementById('modalVideo');
-    video.pause();
+    if (video) {
+        video.pause();
+    }
 }
 
 // Solicitar cotización desde modal
@@ -1335,24 +1493,30 @@ function requestQuoteFromModal() {
     }
 }
 
-// Cerrar modal al hacer click fuera
-document.addEventListener('click', function(e) {
-    const modal = document.getElementById('productModal');
-    if (e.target === modal) {
-        closeModal();
-    }
-});
+// Pausar/reanudar animación en hover
+function setupCarouselHover() {
+    const carousel = document.querySelector('.products-carousel');
+    const track = document.getElementById('productsTrack');
 
-// Cerrar modal con tecla Escape
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeModal();
+    if (carousel && track) {
+        carousel.addEventListener('mouseenter', () => {
+            if (!isManualControl) {
+                track.style.animationPlayState = 'paused';
+            }
+        });
+
+        carousel.addEventListener('mouseleave', () => {
+            if (!isManualControl) {
+                track.style.animationPlayState = 'running';
+            }
+        });
     }
-});
+}
 
 // Inicializar cuando carga la página
 document.addEventListener('DOMContentLoaded', function() {
     createObserver();
+    setupCarouselHover();
 
     // Efecto parallax solo para desktop
     if (window.innerWidth > 768) {
@@ -1381,6 +1545,44 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.transform = 'translateY(0) scale(1)';
         });
     });
+
+    // Debug: Verificar que las flechas estén correctamente vinculadas
+    const leftArrow = document.querySelector('.carousel-nav-left');
+    const rightArrow = document.querySelector('.carousel-nav-right');
+
+    console.log('Flecha izquierda encontrada:', !!leftArrow);
+    console.log('Flecha derecha encontrada:', !!rightArrow);
+
+    if (leftArrow) {
+        leftArrow.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Click en flecha izquierda');
+            moveCarousel('left');
+        });
+    }
+
+    if (rightArrow) {
+        rightArrow.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Click en flecha derecha');
+            moveCarousel('right');
+        });
+    }
+});
+
+// Cerrar modal al hacer click fuera
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('productModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
 });
 
 // Smooth scroll para enlaces internos
