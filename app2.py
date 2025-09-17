@@ -451,14 +451,19 @@ def send_sales_recruitment_email(candidate_data):
 
                 <p style="font-size: 1.1rem; line-height: 1.6;">
                     ¡Perfecto! Hemos recibido tu postulación para unirte a nuestro equipo de vendedores.
-                    Tu guía de estudio con el catálogo completo de equipos CT y RX está adjunta.
+                    Tu guía de estudio con el catálogo completo de equipos CT y RX está adjunta en formato PDF.
                 </p>
+
+                <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #10b981;">
+                    <h3 style="color: #059669; margin-top: 0;">📎 Archivo Adjunto:</h3>
+                    <p style="color: #047857; margin: 0;"><strong>GUIAvendedores.pdf</strong> - Catálogo completo de productos PROEDENT</p>
+                </div>
 
                 <div style="background: #fef3c7; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #f59e0b;">
                     <h3 style="color: #92400e; margin-top: 0;">📋 Próximos Pasos:</h3>
                     <ul style="color: #92400e;">
-                        <li>Estudia el catálogo completo de productos</li>
-                        <li>Prepárate para el cuestionario presencial</li>
+                        <li>Descarga y estudia la guía PDF adjunta</li>
+                        <li>Prepárate para el cuestionario presencial en Quito</li>
                         <li>Tienes 2 oportunidades para aprobar</li>
                         <li>Capacitación opcional disponible por $10</li>
                     </ul>
@@ -487,13 +492,24 @@ def send_sales_recruitment_email(candidate_data):
 
         msg.attach(MIMEText(html_content, 'html'))
 
-        # Aquí podrías adjuntar un PDF con la guía si lo tienes
-        # with open('guia_vendedores.pdf', 'rb') as f:
-        #     attach = MIMEBase('application', 'octet-stream')
-        #     attach.set_payload(f.read())
-        #     encoders.encode_base64(attach)
-        #     attach.add_header('Content-Disposition', 'attachment; filename= "Guia_Estudio_Vendedores_PROEDENT.pdf"')
-        #     msg.attach(attach)
+        # ADJUNTAR EL PDF DE LA GUÍA
+        try:
+            pdf_path = os.path.join('static', 'pdfs', 'GUIAvendedores.pdf')
+            if os.path.exists(pdf_path):
+                with open(pdf_path, 'rb') as f:
+                    attach = MIMEBase('application', 'octet-stream')
+                    attach.set_payload(f.read())
+                    encoders.encode_base64(attach)
+                    attach.add_header(
+                        'Content-Disposition',
+                        'attachment; filename= "GUIA_Vendedores_PROEDENT.pdf"'
+                    )
+                    msg.attach(attach)
+                logger.info("PDF adjuntado exitosamente")
+            else:
+                logger.warning(f"Archivo PDF no encontrado en: {pdf_path}")
+        except Exception as pdf_error:
+            logger.error(f"Error adjuntando PDF: {pdf_error}")
 
         # Enviar email
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
