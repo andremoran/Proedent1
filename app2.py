@@ -39,12 +39,14 @@ products_db = {}  # Nueva base para catálogo de productos
 courses_db = {}  # Nueva base para cursos
 appointments_db = {}  # Para citas de demostración
 leads_db = {}  # NUEVA: Para leads de lead magnets
+sales_recruitment_db = {}
 
 patient_id_counter = 1
 product_id_counter = 1
 course_id_counter = 1
 appointment_id_counter = 1
 lead_id_counter = 1
+sales_recruitment_id_counter = 1
 
 
 # Función para enviar correo de lead magnet
@@ -420,6 +422,192 @@ def send_confirmation_email(client_data):
         logger.error(f"Error enviando confirmación: {e}")
         return False
 
+
+##############################
+
+def send_sales_recruitment_email(candidate_data):
+    """Enviar correo con guía de estudio para vendedores"""
+    try:
+        if not EMAIL_USER or not EMAIL_PASSWORD:
+            logger.error("Credenciales de email no configuradas")
+            return False
+
+        # Crear mensaje de email
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_USER
+        msg['To'] = candidate_data['email']
+        msg['Subject'] = "🎯 Tu Guía de Estudio - Vendedor PROEDENT"
+
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #5B21B6, #ef4444); padding: 30px; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 2rem;">¡Tu Guía de Estudio Está Aquí!</h1>
+                <p style="color: white; margin: 10px 0 0 0; font-size: 1.1rem;">PROEDENT - Equipo de Ventas</p>
+            </div>
+
+            <div style="padding: 30px; background: #f9f9f9;">
+                <h2 style="color: #5B21B6;">Hola {candidate_data['nombre']},</h2>
+
+                <p style="font-size: 1.1rem; line-height: 1.6;">
+                    ¡Perfecto! Hemos recibido tu postulación para unirte a nuestro equipo de vendedores.
+                    Tu guía de estudio con el catálogo completo de equipos CT y RX está adjunta.
+                </p>
+
+                <div style="background: #fef3c7; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                    <h3 style="color: #92400e; margin-top: 0;">📋 Próximos Pasos:</h3>
+                    <ul style="color: #92400e;">
+                        <li>Estudia el catálogo completo de productos</li>
+                        <li>Prepárate para el cuestionario presencial</li>
+                        <li>Tienes 2 oportunidades para aprobar</li>
+                        <li>Capacitación opcional disponible por $10</li>
+                    </ul>
+                </div>
+
+                <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #5B21B6;">
+                    <h3 style="color: #5B21B6; margin-top: 0;">💰 Comisiones:</h3>
+                    <p><strong>10% - 15% por cada venta realizada</strong></p>
+                    <p>Ciudad: {candidate_data.get('ciudad', 'No especificada')}</p>
+                </div>
+
+                <div style="text-align: center; margin: 30px 0;">
+                    <h3 style="color: #5B21B6;">¿Necesitas capacitación adicional?</h3>
+                    <p style="margin: 5px 0;"><strong>📧 Email:</strong> proedentorg@gmail.com</p>
+                    <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/593998745641" style="color: #5B21B6;">+593 99 874 5641</a></p>
+                    <p style="margin: 5px 0;"><strong>💵 Capacitación:</strong> Solo $10 USD</p>
+                </div>
+            </div>
+
+            <div style="background: #333; color: white; text-align: center; padding: 20px;">
+                <p style="margin: 0;">PROEDENT - Tu oportunidad de generar ingresos extraordinarios</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        msg.attach(MIMEText(html_content, 'html'))
+
+        # Aquí podrías adjuntar un PDF con la guía si lo tienes
+        # with open('guia_vendedores.pdf', 'rb') as f:
+        #     attach = MIMEBase('application', 'octet-stream')
+        #     attach.set_payload(f.read())
+        #     encoders.encode_base64(attach)
+        #     attach.add_header('Content-Disposition', 'attachment; filename= "Guia_Estudio_Vendedores_PROEDENT.pdf"')
+        #     msg.attach(attach)
+
+        # Enviar email
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+
+        logger.info(f"Guía de vendedores enviada exitosamente a: {candidate_data['email']}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Error enviando guía de vendedores: {e}")
+        return False
+
+
+def send_sales_candidate_notification_to_proedent(candidate_data):
+    """Enviar notificación de nuevo candidato a vendedor"""
+    try:
+        if not EMAIL_USER or not EMAIL_PASSWORD:
+            return False
+
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_USER
+        msg['To'] = "proedentorg@gmail.com"  # Email principal
+        msg['Cc'] = "proedentventasecuador@gmail.com"  # Email secundario
+        msg['Subject'] = f"🎯 Nuevo Candidato a Vendedor: {candidate_data['nombre']} - {candidate_data.get('ciudad', 'Ecuador')}"
+
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #5B21B6, #ef4444); padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">🎯 Nuevo Candidato a Vendedor</h1>
+                <p style="color: white; margin: 10px 0 0 0;">Solicitud de Unirse al Equipo de Ventas</p>
+            </div>
+
+            <div style="padding: 30px; background: #f9f9f9;">
+                <table style="width: 100%; margin: 20px 0;">
+                    <tr>
+                        <td style="padding: 10px; background: white; border-left: 4px solid #5B21B6; font-weight: bold;">
+                            Nombre Completo:
+                        </td>
+                        <td style="padding: 10px; background: white;">
+                            {candidate_data['nombre']}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; background: #f0f0f0; border-left: 4px solid #ef4444; font-weight: bold;">
+                            Email:
+                        </td>
+                        <td style="padding: 10px; background: #f0f0f0;">
+                            {candidate_data['email']}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; background: white; border-left: 4px solid #5B21B6; font-weight: bold;">
+                            Teléfono/WhatsApp:
+                        </td>
+                        <td style="padding: 10px; background: white;">
+                            {candidate_data['telefono']}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; background: #f0f0f0; border-left: 4px solid #ef4444; font-weight: bold;">
+                            Ciudad:
+                        </td>
+                        <td style="padding: 10px; background: #f0f0f0;">
+                            {candidate_data.get('ciudad', 'No especificada')}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; background: white; border-left: 4px solid #5B21B6; font-weight: bold;">
+                            Experiencia:
+                        </td>
+                        <td style="padding: 10px; background: white;">
+                            {candidate_data.get('experiencia_sector', 'No especificada')}
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                    <p style="margin: 0; color: #1565c0;">
+                        <strong>Fecha de postulación:</strong> {datetime.now().strftime('%d/%m/%Y %H:%M')}
+                    </p>
+                </div>
+
+                <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                    <h4 style="color: #856404; margin-top: 0;">⚡ Acciones Requeridas:</h4>
+                    <ul style="color: #856404; margin: 0;">
+                        <li>Contactar al candidato para coordinar cuestionario presencial</li>
+                        <li>Verificar si requiere capacitación de $10</li>
+                        <li>Programar evaluación en oficinas de Quito</li>
+                    </ul>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+        msg.attach(MIMEText(html_content, 'html'))
+
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+
+        return True
+
+    except Exception as e:
+        logger.error(f"Error enviando notificación de candidato: {e}")
+        return False
+
+##############################
 
 # Datos iniciales del catálogo
 def initialize_catalog():
@@ -809,6 +997,57 @@ def lead_magnet_guia_rx():
         logger.error(f"Error en lead_magnet_guia_rx: {e}")
         return jsonify({"success": False, "error": "Error interno"}), 500
 
+
+
+@app.route("/sales_recruitment", methods=["GET", "POST"])
+def sales_recruitment():
+    if request.method == "GET":
+        return render_template("LM-Vendedores.html")
+
+    try:
+        nombre = request.form.get("nombre")
+        email = request.form.get("email")
+        telefono = request.form.get("telefono")
+        ciudad = request.form.get("ciudad")
+        experiencia_sector = request.form.get("experiencia_sector", "")
+
+        if not all([nombre, email, telefono, ciudad]):
+            return jsonify({"success": False, "error": "Todos los campos requeridos deben completarse"}), 400
+
+        candidate_data = {
+            'nombre': nombre,
+            'email': email,
+            'telefono': telefono,
+            'ciudad': ciudad,
+            'experiencia_sector': experiencia_sector,
+            'status': 'Pendiente',
+            'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        global sales_recruitment_id_counter
+        sales_recruitment_db[sales_recruitment_id_counter] = candidate_data
+        sales_recruitment_id_counter += 1
+
+        # Enviar emails
+        email_success = send_sales_recruitment_email(candidate_data)
+        send_sales_candidate_notification_to_proedent(candidate_data)
+
+        if email_success:
+            return redirect(url_for('sales_thankyou'))
+        else:
+            return jsonify({"success": False, "error": "Error enviando la guía"}), 500
+
+    except Exception as e:
+        logger.error(f"Error en sales_recruitment: {e}")
+        return jsonify({"success": False, "error": "Error interno"}), 500
+
+
+@app.route("/sales-thankyou")
+def sales_thankyou():
+    """Página de agradecimiento para candidatos a vendedores"""
+    return render_template("thankyouVendedor.html")
+
+
 @app.route("/thankyou")
 def thankyou():
     """Página de agradecimiento después de descargar lead magnet"""
@@ -983,33 +1222,37 @@ def patients():
         return render_template("patients.html", patients=patients_list)
 
 
-# NUEVA: Ruta del panel de administración con protección
 @app.route("/admin_panel")
 def admin_panel():
     if not session.get('admin_logged_in'):
         flash("Acceso denegado. Inicie sesión como administrador.", "danger")
         return redirect(url_for("patients"))
 
-    # Estadísticas de leads
+    # Estadísticas actualizadas
     leads_stats = {
         'total_leads': len(leads_db),
         'leads_secretos': len([l for l in leads_db.values() if l.get('magnet_type') == 'secretos']),
         'leads_errores': len([l for l in leads_db.values() if l.get('magnet_type') == 'errores']),
         'leads_guia_rx': len([l for l in leads_db.values() if l.get('magnet_type') == 'guia_rx']),
-        'total_appointments': len(appointments_db)
+        'total_appointments': len(appointments_db),
+        'total_sales_candidates': len(sales_recruitment_db)  # NUEVA
     }
 
-    # Obtener leads ordenados por fecha
+    # Datos existentes
     all_leads = list(leads_db.values())
     all_leads.sort(key=lambda x: x.get('created_at', ''), reverse=True)
 
-    # Obtener solicitudes de demostración
     all_appointments = list(appointments_db.values())
     all_appointments.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+
+    # NUEVOS: Candidatos a vendedores
+    all_sales_candidates = list(sales_recruitment_db.values())
+    all_sales_candidates.sort(key=lambda x: x.get('created_at', ''), reverse=True)
 
     return render_template("admin_panel.html",
                            leads=all_leads,
                            appointments=all_appointments,
+                           sales_candidates=all_sales_candidates,  # NUEVA
                            stats=leads_stats)
 
 

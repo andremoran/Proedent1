@@ -21,6 +21,16 @@
   <div class="container">
     <!-- Tarjetas de métricas -->
     <div class="row g-3 mb-4">
+
+      <div class="col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="text-muted mb-1">Candidatos Vendedores</h6>
+            <h3 class="m-0">{{ stats.total_sales_candidates }}</h3>
+          </div>
+        </div>
+      </div>
+
       <div class="col-md-3">
         <div class="card shadow-sm">
           <div class="card-body">
@@ -152,6 +162,69 @@
     </div>
   </div>
 
+
+<!-- Agregar nueva tabla después de las existentes -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-white">
+    <h5 class="m-0">Candidatos a Vendedores</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Ciudad</th>
+            <th>Experiencia</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if sales_candidates and sales_candidates|length > 0 %}
+            {% for candidate in sales_candidates %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ candidate.nombre }}</td>
+                <td>{{ candidate.email }}</td>
+                <td>{{ candidate.telefono }}</td>
+                <td>{{ candidate.ciudad }}</td>
+                <td>{{ candidate.experiencia_sector[:50] + '...' if candidate.experiencia_sector|length > 50 else candidate.experiencia_sector or '-' }}</td>
+                <td>
+                  <span class="badge bg-{{ 'success' if candidate.status == 'Aprobado' else 'warning' if candidate.status == 'Pendiente' else 'danger' }}">
+                    {{ candidate.status }}
+                  </span>
+                </td>
+                <td>{{ candidate.created_at }}</td>
+                <td>
+                  <a href="https://wa.me/{{ candidate.telefono.replace('+', '').replace(' ', '') }}?text=Hola%20{{ candidate.nombre }},%20te%20contactamos%20desde%20PROEDENT%20sobre%20tu%20postulación%20para%20vendedor"
+                     target="_blank" class="btn btn-success btn-sm">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="9" class="text-center text-muted py-4">Sin candidatos registrados todavía.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Agregar en la sección de Lead Magnets -->
+<div class="col-md-3">
+  <a href="{{ url_for('sales_recruitment') }}" class="btn btn-warning w-100">
+    <i class="fas fa-users me-2"></i> Reclutamiento Vendedores
+  </a>
+</div>
 
   <!-- Accesos a Lead Magnets (LM-10) -->
 <div class="card shadow-sm mb-4">

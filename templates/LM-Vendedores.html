@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Únete al Equipo PROEDENT - Vendedores de Equipos Dentales</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+        }
+
+        /* Header with logo */
+        .header-logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .header-logo a {
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .header-logo a:hover {
+            transform: scale(1.05);
+        }
+
+        .header-logo img {
+            height: 60px;
+            width: auto;
+            filter: none;
+        }
+
+        /* Main container */
+        .lead-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(91, 33, 182, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(239, 68, 68, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.3) 0%, transparent 50%);
+        }
+
+        .lead-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            backdrop-filter: blur(20px);
+            position: relative;
+        }
+
+        /* Header section */
+        .lead-header {
+            background: linear-gradient(135deg, #5B21B6 0%, #ef4444 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lead-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,0.03) 2px,
+                rgba(255,255,255,0.03) 4px
+            );
+            animation: shimmer 20s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .lead-header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .lead-header .subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero image container */
+        .hero-image-container {
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .commission-highlight {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1f2937;
+            padding: 35px;
+            border-radius: 20px;
+            margin: 30px 0;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .commission-highlight h2 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .commission-highlight p {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .commission-detail {
+            font-size: 1.1rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        /* Form section */
+        .lead-form-section {
+            padding: 50px 40px;
+            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .form-header h2 {
+            color: #5B21B6;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .requirements-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .requirements-box h3 {
+            color: #0369a1;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .requirement-highlight {
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            border-left: 5px solid #0ea5e9;
+        }
+
+        .requirement-highlight h4 {
+            color: #0c4a6e;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .skill-item {
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0f2fe;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            border-color: #38bdf8;
+            transform: translateY(-3px);
+        }
+
+        .skill-item i {
+            font-size: 2rem;
+            color: #0ea5e9;
+            margin-bottom: 10px;
+        }
+
+        .skill-item h5 {
+            color: #0c4a6e;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .urgency-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+            color: #92400e;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #f59e0b;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .urgency-box i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        /* Form styling */
+        .lead-form {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e5e7eb;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 1.1rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #d1d5db;
+            border-radius: 12px;
+            padding: 15px 18px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #5B21B6;
+            box-shadow: 0 0 0 0.2rem rgba(91, 33, 182, 0.25);
+            outline: none;
+            transform: translateY(-1px);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #5B21B6 0%, #ef4444 100%);
+            border: none;
+            color: white;
+            padding: 20px 50px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border-radius: 15px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(91, 33, 182, 0.4);
+        }
+
+        .trust-indicators {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 25px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .trust-item {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 20px 15px 0;
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .trust-item i {
+            color: #10b981;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading .submit-btn::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            margin: auto;
+            border: 3px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s ease infinite;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Success message */
+        .success-message {
+            display: none;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border: 2px solid #a7f3d0;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-logo {
+                top: 15px;
+                left: 15px;
+            }
+
+            .header-logo img {
+                height: 45px;
+            }
+
+            .lead-header {
+                padding: 30px 20px;
+            }
+
+            .lead-header h1 {
+                font-size: 2.2rem;
+            }
+
+            .commission-highlight h2 {
+                font-size: 2.8rem;
+            }
+
+            .lead-form-section {
+                padding: 30px 20px;
+            }
+
+            .lead-form {
+                padding: 25px 20px;
+            }
+
+            .form-header h2 {
+                font-size: 2rem;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Logo -->
+    <div class="header-logo">
+        <a href="https://proedent1.onrender.com" target="_blank">
+            <img src="/static/images/logo.png" alt="PROEDENT - Volver al sitio principal">
+        </a>
+    </div>
+
+    <div class="lead-container">
+        <div class="lead-card">
+            <!-- Header -->
+            <div class="lead-header">
+                <h1>ÚNETE AL EQUIPO PROEDENT</h1>
+                <p class="subtitle">Conviértete en Vendedor de Equipos Dentales de Última Generación</p>
+
+                <!-- Hero Image -->
+                <div class="hero-image-container">
+                    <img src="/static/images/lm/publivendedores.png" alt="Equipo de Vendedores PROEDENT">
+                </div>
+
+                <div class="commission-highlight">
+                    <h2>10% - 15%</h2>
+                    <p>DE COMISIÓN POR VENTA</p>
+                    <div class="commission-detail">¡Ingresos ilimitados basados en tu rendimiento!</div>
+                </div>
+            </div>
+
+            <!-- Form Section -->
+            <div class="lead-form-section">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Descarga tu Guía de Estudio GRATIS</h2>
+                        <p>Obtén acceso inmediato al catálogo de productos y prepárate para el cuestionario</p>
+                    </div>
+
+                    <div class="requirements-box">
+                        <h3>ÚNICO REQUISITO: Aprobar el Cuestionario</h3>
+                        <div class="requirement-highlight">
+                            <h4>¡Así de simple!</h4>
+                            <p>Estudia nuestra guía gratuita, presenta el cuestionario presencial en nuestras oficinas y comienza a vender equipos de alta tecnología con excelentes comisiones.</p>
+                        </div>
+
+                        <div class="skills-grid">
+                            <div class="skill-item">
+                                <i class="fas fa-comments"></i>
+                                <h5>Excelente Comunicación</h5>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-target"></i>
+                                <h5>Orientado a Resultados</h5>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-handshake"></i>
+                                <h5>Habilidades de Negociación</h5>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-route"></i>
+                                <h5>Disponibilidad para Viajar</h5>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-graduation-cap"></i>
+                                <h5>Capacidad de Aprendizaje</h5>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-trophy"></i>
+                                <h5>Mentalidad Ganadora</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="urgency-box">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>VACANTES LIMITADAS:</strong> Solo seleccionamos 5 vendedores para nuestro equipo elite
+                    </div>
+
+                    <form class="lead-form" id="salesForm" action="/sales_recruitment" method="POST">
+                        <div class="form-group">
+                            <label for="nombre">Nombre Completo *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required
+                                   placeholder="Juan Carlos Pérez">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico *</label>
+                            <input type="email" class="form-control" id="email" name="email" required
+                                   placeholder="juan.perez@email.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefono">Teléfono/WhatsApp *</label>
+                            <input type="tel" class="form-control" id="telefono" name="telefono" required
+                                   placeholder="+593 99 999 9999">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ciudad">Ciudad de Residencia *</label>
+                            <select class="form-select" id="ciudad" name="ciudad" required>
+                                <option value="">Selecciona tu ciudad</option>
+                                <option value="Quito">Quito</option>
+                                <option value="Guayaquil">Guayaquil</option>
+                                <option value="Cuenca">Cuenca</option>
+                                <option value="Ambato">Ambato</option>
+                                <option value="Riobamba">Riobamba</option>
+                                <option value="Manta">Manta</option>
+                                <option value="Portoviejo">Portoviejo</option>
+                                <option value="Loja">Loja</option>
+                                <option value="Machala">Machala</option>
+                                <option value="Santo Domingo">Santo Domingo</option>
+                                <option value="Ibarra">Ibarra</option>
+                                <option value="Otra">Otra ciudad</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="experiencia_sector">¿Has trabajado en ventas médicas, dentales o ventas en general? (Opcional)</label>
+                            <textarea class="form-control" id="experiencia_sector" name="experiencia_sector" rows="4"
+                                     placeholder="Cuéntanos brevemente sobre tu experiencia en ventas del sector médico, dental o cualquier área de ventas..."></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-download"></i> DESCARGAR GUÍA DE ESTUDIO GRATIS
+                        </button>
+
+                        <div class="trust-indicators">
+                            <div class="trust-item">
+                                <i class="fas fa-shield-alt"></i> 100% Confidencial
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-file-pdf"></i> Guía Gratuita
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-calendar-check"></i> 2 Oportunidades
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-money-bill-wave"></i> Altas Comisiones
+                            </div>
+                        </div>
+
+                        <div class="success-message" id="successMessage">
+                            <strong><i class="fas fa-check-circle"></i> ¡Perfecto!</strong><br>
+                            Tu guía de estudio ha sido enviada a tu correo electrónico.
+                            Revisa tu bandeja de entrada y prepárate para el cuestionario.
+                        </div>
+                    </form>
+
+                    <div style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 15px; border-left: 5px solid #3b82f6;">
+                        <p style="margin: 0; color: #1e40af; font-weight: 600; font-size: 1.1rem;">
+                            <i class="fas fa-lightbulb"></i>
+                            <strong>Próximo paso:</strong> Estudia la guía PDF con el catálogo completo de equipos CT y RX, luego presenta tu cuestionario presencial en Quito para unirte a nuestro equipo de ventas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('salesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            // Mostrar estado de carga
+            form.classList.add('loading');
+
+            // Simular envío (reemplazar con endpoint real)
+            setTimeout(() => {
+                // Redirigir a página de agradecimiento
+                window.location.href = '/sales-thankyou';
+            }, 2000);
+
+            /* Código real para backend:
+            fetch('/sales_recruitment', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/sales-thankyou';
+                } else {
+                    alert('Error: ' + (data.error || 'Hubo un problema. Intente nuevamente.'));
+                    form.classList.remove('loading');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error de conexión. Por favor intente nuevamente.');
+                form.classList.remove('loading');
+            });
+            */
+        });
+    </script>
+</body>
+</html>
