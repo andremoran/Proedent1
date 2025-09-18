@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 import pandas as pd
 import pickle
 import os
+import json
 from datetime import datetime
 import random
 from io import BytesIO
@@ -21,33 +22,100 @@ import logging
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "clave-secreta-para-flash"  # Clave para mensajes flash
+app.secret_key = "clave-secreta-para-flash"
 
 # Configuración de Email
 SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
 SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
-EMAIL_USER = os.getenv('EMAIL_USER')  # proedentventasecuador@gmail.com
-EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')  # password de aplicación
+EMAIL_USER = os.getenv('EMAIL_USER')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Bases de datos en memoria
-patients_db = {}  # Mantener para clientes/pacientes odontológicos
-products_db = {}  # Nueva base para catálogo de productos
-courses_db = {}  # Nueva base para cursos
-appointments_db = {}  # Para citas de demostración
-leads_db = {}  # NUEVA: Para leads de lead magnets
-sales_recruitment_db = {}
+# SISTEMA DE PERSISTENCIA CON JSON
+DATA_DIR = 'data'
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
 
-patient_id_counter = 1
-product_id_counter = 1
-course_id_counter = 1
-appointment_id_counter = 1
-lead_id_counter = 1
-sales_recruitment_id_counter = 1
+# Archivos de datos
+LEADS_FILE = os.path.join(DATA_DIR, 'leads.json')
+APPOINTMENTS_FILE = os.path.join(DATA_DIR, 'appointments.json')
+SALES_CANDIDATES_FILE = os.path.join(DATA_DIR, 'sales_candidates.json')
+PATIENTS_FILE = os.path.join(DATA_DIR, 'patients.json')
+PRODUCTS_FILE = os.path.join(DATA_DIR, 'products.json')
+COURSES_FILE = os.path.join(DATA_DIR, 'courses.json')
+COUNTERS_FILE = os.path.join(DATA_DIR, 'counters.json')
 
+def load_json_data(filename, default_data=None):
+    """Cargar datos desde archivo JSON"""
+    if default_data is None:
+        default_data = {}
+    try:
+        if os.path.exists(filename):
+            with open(filename, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        else:
+            return default_data
+    except Exception as e:
+        logger.error(f"Error cargando {filename}: {e}")
+        return default_data
+
+def save_json_data(data, filename):
+    """Guardar datos a archivo JSON"""
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        logger.error(f"Error guardando {filename}: {e}")
+        return False
+
+def load_counters():
+    """Cargar contadores desde archivo"""
+    default_counters = {
+        'patient_id_counter': 1,
+        'product_id_counter': 22,
+        'course_id_counter': 3,
+        'appointment_id_counter': 1,
+        'lead_id_counter': 1,
+        'sales_recruitment_id_counter': 1
+    }
+    return load_json_data(COUNTERS_FILE, default_counters)
+
+def save_counters(counters):
+    """Guardar contadores a archivo"""
+    return save_json_data(counters, COUNTERS_FILE)
+
+def get_next_id(counter_type):
+    """Obtener el siguiente ID y actualizar contadores"""
+    global counters
+    if counter_type in counters:
+        current_id = counters[counter_type]
+        counters[counter_type] += 1
+        save_counters(counters)
+        return current_id
+    return 1
+
+# Cargar todos los datos al iniciar
+print("Cargando datos persistentes...")
+patients_db = load_json_data(PATIENTS_FILE, {})
+products_db = load_json_data(PRODUCTS_FILE, {})
+courses_db = load_json_data(COURSES_FILE, {})
+appointments_db = load_json_data(APPOINTMENTS_FILE, {})
+leads_db = load_json_data(LEADS_FILE, {})
+sales_recruitment_db = load_json_data(SALES_CANDIDATES_FILE, {})
+
+# Cargar contadores
+counters = load_counters()
+
+print(f"Datos cargados exitosamente:")
+print(f"  - Leads: {len(leads_db)}")
+print(f"  - Citas: {len(appointments_db)}")
+print(f"  - Candidatos vendedores: {len(sales_recruitment_db)}")
+print(f"  - Pacientes: {len(patients_db)}")
+print(f"  - Productos: {len(products_db)}")
 
 # Función para enviar correo de lead magnet
 def send_lead_magnet_email(lead_data, magnet_type, interests):
@@ -57,7 +125,6 @@ def send_lead_magnet_email(lead_data, magnet_type, interests):
             logger.error("Credenciales de email no configuradas")
             return False
 
-        # Mapeo de tipos de lead magnet
         magnet_info = {
             'secretos': {
                 'subject': '🔥 Los 10 Secretos de las Mejores Clínicas Dentales',
@@ -74,8 +141,6 @@ def send_lead_magnet_email(lead_data, magnet_type, interests):
         }
 
         info = magnet_info.get(magnet_type, magnet_info['secretos'])
-
-        # Crear mensaje de email
         msg = MIMEMultipart()
         msg['From'] = EMAIL_USER
         msg['To'] = lead_data['email']
@@ -105,7 +170,7 @@ def send_lead_magnet_email(lead_data, magnet_type, interests):
                 </div>
 
                 <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                    <h3 style="color: #2e7d32; margin-top: 0;">📎 Contenido Exclusivo</h3>
+                    <h3 style="color: #2e7d32; margin-top: 0;">🔎 Contenido Exclusivo</h3>
                     <p style="margin: 0;">
                         Este contenido normalmente cuesta $200+ en consultoría especializada.
                         Es tuyo completamente GRATIS.
@@ -129,7 +194,6 @@ def send_lead_magnet_email(lead_data, magnet_type, interests):
 
         msg.attach(MIMEText(html_content, 'html'))
 
-        # Enviar email
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         server.starttls()
         server.login(EMAIL_USER, EMAIL_PASSWORD)
@@ -142,7 +206,6 @@ def send_lead_magnet_email(lead_data, magnet_type, interests):
     except Exception as e:
         logger.error(f"Error enviando lead magnet: {e}")
         return False
-
 
 def send_lead_notification_to_proedent(lead_data, magnet_type, interests):
     """Enviar notificación de nuevo lead a PROEDENT"""
@@ -239,8 +302,6 @@ def send_lead_notification_to_proedent(lead_data, magnet_type, interests):
         logger.error(f"Error enviando notificación de lead: {e}")
         return False
 
-
-# Función para enviar correo de solicitud de demostración
 def send_demo_request_email(form_data):
     """Enviar correo con solicitud de demostración/consulta"""
     try:
@@ -248,13 +309,11 @@ def send_demo_request_email(form_data):
             logger.error("Credenciales de email no configuradas")
             return False
 
-        # Crear mensaje
         msg = MIMEMultipart()
         msg['From'] = EMAIL_USER
         msg['To'] = "proedentventasecuador@gmail.com"
         msg['Subject'] = f"Nueva Solicitud - {form_data['nombre']}"
 
-        # Crear contenido HTML del email
         html_content = f"""
         <html>
         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -322,16 +381,6 @@ def send_demo_request_email(form_data):
                         <strong>Fecha de solicitud:</strong> {datetime.now().strftime('%d/%m/%Y %H:%M')}
                     </p>
                 </div>
-
-                <div style="text-align: center; margin-top: 30px;">
-                    <p style="color: #666;">
-                        Responde a esta solicitud contactando al cliente lo antes posible.
-                    </p>
-                </div>
-            </div>
-
-            <div style="background: #333; color: white; text-align: center; padding: 15px;">
-                <p style="margin: 0;">PROEDENT - Distribuidora de Equipos Dentales</p>
             </div>
         </body>
         </html>
@@ -339,7 +388,6 @@ def send_demo_request_email(form_data):
 
         msg.attach(MIMEText(html_content, 'html'))
 
-        # Conectar y enviar
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         server.starttls()
         server.login(EMAIL_USER, EMAIL_PASSWORD)
@@ -353,8 +401,6 @@ def send_demo_request_email(form_data):
         logger.error(f"Error enviando correo: {e}")
         return False
 
-
-# Función para enviar correo de confirmación al cliente
 def send_confirmation_email(client_data):
     """Enviar correo de confirmación al cliente"""
     try:
@@ -385,13 +431,6 @@ def send_confirmation_email(client_data):
                     {f"<p><strong>Tu consulta:</strong> {client_data.get('mensaje', 'Sin mensaje')}</p>" if client_data.get('mensaje') else ''}
                 </div>
 
-                <div style="background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                    <p style="margin: 0; color: #2e7d32;">
-                        <strong>¿Qué sigue?</strong><br>
-                        Nuestro equipo se contactará contigo en las próximas 24 horas para coordinar la demostración o resolver tu consulta.
-                    </p>
-                </div>
-
                 <div style="text-align: center; margin: 30px 0;">
                     <p>Si tienes alguna pregunta urgente, puedes contactarnos:</p>
                     <p>
@@ -399,10 +438,6 @@ def send_confirmation_email(client_data):
                         📱 WhatsApp: <a href="https://wa.me/593998745641" style="color: #5B21B6;">+593 99 874 5641</a>
                     </p>
                 </div>
-            </div>
-
-            <div style="background: #333; color: white; text-align: center; padding: 15px;">
-                <p style="margin: 0;">PROEDENT - Innovación y calidad al servicio de la odontología moderna</p>
             </div>
         </body>
         </html>
@@ -422,9 +457,6 @@ def send_confirmation_email(client_data):
         logger.error(f"Error enviando confirmación: {e}")
         return False
 
-
-##############################
-
 def send_sales_recruitment_email(candidate_data):
     """Enviar correo con guía de estudio para vendedores"""
     try:
@@ -432,7 +464,6 @@ def send_sales_recruitment_email(candidate_data):
             logger.error("Credenciales de email no configuradas")
             return False
 
-        # Crear mensaje de email
         msg = MIMEMultipart()
         msg['From'] = EMAIL_USER
         msg['To'] = candidate_data['email']
@@ -455,35 +486,22 @@ def send_sales_recruitment_email(candidate_data):
                 </p>
 
                 <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #10b981;">
-                    <h3 style="color: #059669; margin-top: 0;">📎 Archivo Adjunto:</h3>
+                    <h3 style="color: #059669; margin-top: 0;">🔎 Archivo Adjunto:</h3>
                     <p style="color: #047857; margin: 0;"><strong>GUIAvendedores.pdf</strong> - Catálogo completo de productos PROEDENT</p>
-                </div>
-
-                <div style="background: #fef3c7; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #f59e0b;">
-                    <h3 style="color: #92400e; margin-top: 0;">📋 Próximos Pasos:</h3>
-                    <ul style="color: #92400e;">
-                        <li>Descarga y estudia la guía PDF adjunta</li>
-                        <li>Prepárate para el cuestionario presencial en Quito</li>
-                        <li>Tienes 2 oportunidades para aprobar</li>
-                    </ul>
                 </div>
 
                 <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #5B21B6;">
                     <h3 style="color: #5B21B6; margin-top: 0;">💰 Comisiones:</h3>
-                    <p><strong>Hasta el 15% de comisión por cada venta realizada</strong></p>
+                    <p><strong>10% - 15% por cada venta realizada</strong></p>
                     <p>Ciudad: {candidate_data.get('ciudad', 'No especificada')}</p>
                 </div>
 
                 <div style="text-align: center; margin: 30px 0;">
                     <h3 style="color: #5B21B6;">¿Necesitas capacitación adicional?</h3>
-                    <p style="margin: 5px 0;"><strong>📧 Email:</strong> proedentorg@gmail.com, proedentventasecuador@gmail.com</p>
-                    <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/593998745641" style="color: #5B21B6;">+593 98 755 3634, +593 99 874 5641</a></p>
-                    <p style="margin: 5px 0;"><strong>💵 Capacitación Adicional Opcional:</strong> Solo $10 USD</p>
+                    <p style="margin: 5px 0;"><strong>📧 Email:</strong> proedentorg@gmail.com</p>
+                    <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/593998745641" style="color: #5B21B6;">+593 99 874 5641</a></p>
+                    <p style="margin: 5px 0;"><strong>💵 Capacitación:</strong> Solo $10 USD</p>
                 </div>
-            </div>
-
-            <div style="background: #333; color: white; text-align: center; padding: 20px;">
-                <p style="margin: 0;">PROEDENT - Tu oportunidad de generar ingresos extraordinarios</p>
             </div>
         </body>
         </html>
@@ -491,7 +509,7 @@ def send_sales_recruitment_email(candidate_data):
 
         msg.attach(MIMEText(html_content, 'html'))
 
-        # ADJUNTAR EL PDF DE LA GUÍA
+        # Adjuntar PDF si existe
         try:
             pdf_path = os.path.join('static', 'pdfs', 'GUIAvendedores.pdf')
             if os.path.exists(pdf_path):
@@ -505,12 +523,9 @@ def send_sales_recruitment_email(candidate_data):
                     )
                     msg.attach(attach)
                 logger.info("PDF adjuntado exitosamente")
-            else:
-                logger.warning(f"Archivo PDF no encontrado en: {pdf_path}")
         except Exception as pdf_error:
             logger.error(f"Error adjuntando PDF: {pdf_error}")
 
-        # Enviar email
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         server.starttls()
         server.login(EMAIL_USER, EMAIL_PASSWORD)
@@ -524,7 +539,6 @@ def send_sales_recruitment_email(candidate_data):
         logger.error(f"Error enviando guía de vendedores: {e}")
         return False
 
-
 def send_sales_candidate_notification_to_proedent(candidate_data):
     """Enviar notificación de nuevo candidato a vendedor"""
     try:
@@ -533,8 +547,8 @@ def send_sales_candidate_notification_to_proedent(candidate_data):
 
         msg = MIMEMultipart()
         msg['From'] = EMAIL_USER
-        msg['To'] = "proedentorg@gmail.com"  # Email principal
-        msg['Cc'] = "proedentventasecuador@gmail.com"  # Email secundario
+        msg['To'] = "proedentorg@gmail.com"
+        msg['Cc'] = "proedentventasecuador@gmail.com"
         msg['Subject'] = f"🎯 Nuevo Candidato a Vendedor: {candidate_data['nombre']} - {candidate_data.get('ciudad', 'Ecuador')}"
 
         html_content = f"""
@@ -583,7 +597,7 @@ def send_sales_candidate_notification_to_proedent(candidate_data):
                         <td style="padding: 10px; background: white; border-left: 4px solid #5B21B6; font-weight: bold;">
                             Experiencia:
                         </td>
-                        <td style="padding: 10px; background: white;">
+<td style="padding: 10px; background: white;">
                             {candidate_data.get('experiencia_sector', 'No especificada')}
                         </td>
                     </tr>
@@ -593,15 +607,6 @@ def send_sales_candidate_notification_to_proedent(candidate_data):
                     <p style="margin: 0; color: #1565c0;">
                         <strong>Fecha de postulación:</strong> {datetime.now().strftime('%d/%m/%Y %H:%M')}
                     </p>
-                </div>
-
-                <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                    <h4 style="color: #856404; margin-top: 0;">⚡ Acciones Requeridas:</h4>
-                    <ul style="color: #856404; margin: 0;">
-                        <li>Contactar al candidato para coordinar cuestionario presencial</li>
-                        <li>Verificar si requiere capacitación de $10</li>
-                        <li>Programar evaluación en oficinas de Quito</li>
-                    </ul>
                 </div>
             </div>
         </body>
@@ -622,269 +627,80 @@ def send_sales_candidate_notification_to_proedent(candidate_data):
         logger.error(f"Error enviando notificación de candidato: {e}")
         return False
 
-##############################
+
+# Función para autenticación admin
+def admin_required(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwargs):
+        if not session.get('admin_logged_in'):
+            flash("Acceso restringido. Inicia sesión como administrador.", "warning")
+            return redirect(url_for('patients'))
+        return view_func(*args, **kwargs)
+
+    return wrapper
+
 
 # Datos iniciales del catálogo
 def initialize_catalog():
-    global product_id_counter
-    products = [
-        # Productos originales
-        {
-            "id": 1,
-            "name": "Tomógrafo Dental 3D",
-            "category": "Diagnóstico por Imagen",
-            "brand": "Proedent",
-            "description": "Tecnología avanzada de imagen 3D para diagnósticos precisos y planificación de tratamientos",
-            "price": "Consultar precio",
-            "image": "Picture2.png",
-            "specifications": "Resolución: 150 micras, Campo de visión: 16x13cm, Tiempo de escaneo: 8.9 seg"
-        },
-        {
-            "id": 2,
-            "name": "Sillón Odontológico Premium",
-            "category": "Equipos Principales",
-            "brand": "Proedent",
-            "description": "Equipamiento de última generación para máximo confort del paciente y eficiencia del profesional",
-            "price": "Desde $15,000",
-            "image": "Picture4.png",
-            "specifications": "Motor eléctrico, LED integrado, Sistema de aspiración, Bandeja flotante"
-        },
-        {
-            "id": 3,
-            "name": "Sensor Digital X-Line",
-            "category": "Radiología Digital",
-            "brand": "Proedent",
-            "description": "Radiografía digital instantánea con sensores de alta resolución y mínima radiación",
-            "price": "Desde $3,500",
-            "image": "Picture3.png",
-            "specifications": "Resolución: 20 lp/mm, Conectividad USB, Compatible con todos los software"
-        },
+    if not products_db:  # Solo inicializar si está vacío
+        products = [
+            {
+                "id": 1,
+                "name": "Tomógrafo Dental 3D",
+                "category": "Diagnóstico por Imagen",
+                "brand": "Proedent",
+                "description": "Tecnología avanzada de imagen 3D para diagnósticos precisos",
+                "price": "Consultar precio",
+                "image": "Picture2.png",
+                "specifications": "Resolución: 150 micras, Campo de visión: 16x13cm"
+            },
+            {
+                "id": 2,
+                "name": "Sillón Odontológico Premium",
+                "category": "Equipos Principales",
+                "brand": "Proedent",
+                "description": "Equipamiento de última generación para máximo confort",
+                "price": "Desde $15,000",
+                "image": "Picture4.png",
+                "specifications": "Motor eléctrico, LED integrado, Sistema de aspiración"
+            }
+        ]
 
-        # Productos Vatech
-        {
-            "id": 4,
-            "name": "Vatech A9",
-            "category": "Tomografía 3D",
-            "brand": "VATECH",
-            "description": "A New Dimension Beyond Your Expectations",
-            "price": "Consultar precio",
-            "image": "vatech/v1.png",
-            "specifications": "Tomógrafo CBCT de última generación con tecnología avanzada de imagen 3D"
-        },
-        {
-            "id": 5,
-            "name": "Green X",
-            "category": "Tomografía 3D",
-            "brand": "VATECH",
-            "description": "The Next Green Innovation",
-            "price": "Consultar precio",
-            "image": "vatech/v2.png",
-            "specifications": "Sistema de tomografía con tecnología verde y eficiencia energética"
-        },
-        {
-            "id": 6,
-            "name": "EzRay Air Portable",
-            "category": "Radiología Digital",
-            "brand": "VATECH",
-            "description": "Lightweight, Portable Innovation",
-            "price": "Consultar precio",
-            "image": "vatech/v3.png",
-            "specifications": "Equipo de rayos X portátil con tecnología inalámbrica avanzada"
-        },
-        {
-            "id": 7,
-            "name": "EzRay Air Wall",
-            "category": "Radiología Digital",
-            "brand": "VATECH",
-            "description": "The Smart Essentials For Your Clinic",
-            "price": "Consultar precio",
-            "image": "vatech/v4.png",
-            "specifications": "Sistema de rayos X montado en pared con tecnología inteligente"
-        },
-        {
-            "id": 8,
-            "name": "EzRay Chair",
-            "category": "Radiología Digital",
-            "brand": "VATECH",
-            "description": "Standard Intraoral X-ray",
-            "price": "Consultar precio",
-            "image": "vatech/v5.png",
-            "specifications": "Equipo de rayos X intraoral estándar para sillón dental"
-        },
-        {
-            "id": 9,
-            "name": "EzSensor HD",
-            "category": "Sensores Digitales",
-            "brand": "VATECH",
-            "description": "Make Your Operation Easier, Faster and More Professional",
-            "price": "Consultar precio",
-            "image": "vatech/v6.png",
-            "specifications": "Sensor digital HD de alta resolución para radiografía intraoral"
-        },
-        {
-            "id": 10,
-            "name": "EzSensor Soft",
-            "category": "Sensores Digitales",
-            "brand": "VATECH",
-            "description": "Better Is Not Enough, Be Different",
-            "price": "Consultar precio",
-            "image": "vatech/v7.png",
-            "specifications": "Sensor digital suave y flexible para mayor comodidad del paciente"
-        },
-        {
-            "id": 11,
-            "name": "PaX-i Insight",
-            "category": "Radiología Panorámica",
-            "brand": "VATECH",
-            "description": "Beyond 2D, Depth Added Panorama",
-            "price": "Consultar precio",
-            "image": "vatech/v8.png",
-            "specifications": "Equipo panorámico con capacidades de imagen en profundidad"
-        },
-        {
-            "id": 12,
-            "name": "PaX-i Plus",
-            "category": "Radiología Panorámica",
-            "brand": "VATECH",
-            "description": "Premium Panoramic Image Quality",
-            "price": "Consultar precio",
-            "image": "vatech/v9.png",
-            "specifications": "Sistema panorámico premium con calidad de imagen superior"
-        },
-        {
-            "id": 13,
-            "name": "Green 21",
-            "category": "Tomografía 3D",
-            "brand": "VATECH",
-            "description": "Raising The Bar For Excellence",
-            "price": "Consultar precio",
-            "image": "vatech/v10.png",
-            "specifications": "Tomógrafo CBCT de excelencia con tecnología Green"
-        },
-        {
-            "id": 14,
-            "name": "Green 18",
-            "category": "Tomografía 3D",
-            "brand": "VATECH",
-            "description": "Green Innovation For The Next Generation",
-            "price": "Consultar precio",
-            "image": "vatech/v11.png",
-            "specifications": "Sistema de tomografía de nueva generación con innovación verde"
-        },
-        {
-            "id": 15,
-            "name": "PaX-i3D Green",
-            "category": "Tomografía 3D",
-            "brand": "VATECH",
-            "description": "The New Digital Environment",
-            "price": "Consultar precio",
-            "image": "vatech/v12.png",
-            "specifications": "Entorno digital 3D con tecnología verde avanzada"
-        },
-        {
-            "id": 16,
-            "name": "Green 16",
-            "category": "Tomografía 3D",
-            "brand": "VATECH",
-            "description": "The Next Green Innovation",
-            "price": "Consultar precio",
-            "image": "vatech/v13.png",
-            "specifications": "Innovación verde de próxima generación en tomografía"
-        },
-        {
-            "id": 17,
-            "name": "EzSensor Classic",
-            "category": "Sensores Digitales",
-            "brand": "VATECH",
-            "description": "Your Partner For Digital Clinic",
-            "price": "Consultar precio",
-            "image": "vatech/v14.png",
-            "specifications": "Sensor digital clásico confiable para clínicas digitales"
-        },
-        {
-            "id": 18,
-            "name": "PaX-i",
-            "category": "Radiología Panorámica",
-            "brand": "VATECH",
-            "description": "Your Partner In Digital Success",
-            "price": "Consultar precio",
-            "image": "vatech/v15.png",
-            "specifications": "Sistema panorámico líder para el éxito digital - PRODUCTO DESTACADO"
-        },
-        {
-            "id": 19,
-            "name": "Smart Plus",
-            "category": "Tomografía 3D",
-            "brand": "VATECH",
-            "description": "The innovative FOV of Smart Plus provides an arch-shaped volume",
-            "price": "Consultar precio",
-            "image": "vatech/v16.png",
-            "specifications": "FOV innovador con volumen en forma de arco para diagnósticos precisos"
-        },
-        {
-            "id": 20,
-            "name": "PaX-i3D Smart",
-            "category": "Tomografía 3D",
-            "brand": "VATECH",
-            "description": "No More than what you want, No Less than what you need",
-            "price": "Consultar precio",
-            "image": "vatech/v17.png",
-            "specifications": "Sistema 3D inteligente optimizado para necesidades específicas"
-        },
-        {
-            "id": 21,
-            "name": "PaX-i3D",
-            "category": "Tomografía 3D",
-            "brand": "VATECH",
-            "description": "Your First Partner For 3D Diagnosis",
-            "price": "Consultar precio",
-            "image": "vatech/v18.png",
-            "specifications": "Primer socio confiable para diagnósticos 3D profesionales"
-        }
-    ]
+        for product in products:
+            products_db[str(product["id"])] = product
 
-    for product in products:
-        products_db[product["id"]] = product
-    product_id_counter = 22
+        save_json_data(products_db, PRODUCTS_FILE)
+        logger.info("Catálogo inicializado")
 
 
-# Datos iniciales de cursos
 def initialize_courses():
-    global course_id_counter
-    courses = [
-        {
-            "id": 1,
-            "name": "Introducción a la Radiología Digital",
-            "duration": "8 horas",
-            "instructor": "Dr. Carlos Mendoza",
-            "description": "Curso completo sobre el uso de sensores digitales y software de radiología",
-            "price": "$150",
-            "date": "2025-09-15",
-            "available_spots": 15
-        },
-        {
-            "id": 2,
-            "name": "Mantenimiento de Equipos Dentales",
-            "duration": "12 horas",
-            "instructor": "Ing. Roberto Silva",
-            "description": "Aprenda a mantener y calibrar sus equipos dentales para máximo rendimiento",
-            "price": "$200",
-            "date": "2025-09-22",
-            "available_spots": 10
-        }
-    ]
+    if not courses_db:  # Solo inicializar si está vacío
+        courses = [
+            {
+                "id": 1,
+                "name": "Introducción a la Radiología Digital",
+                "duration": "8 horas",
+                "instructor": "Dr. Carlos Mendoza",
+                "description": "Curso completo sobre el uso de sensores digitales",
+                "price": "$150",
+                "date": "2025-09-15",
+                "available_spots": 15
+            }
+        ]
 
-    for course in courses:
-        courses_db[course["id"]] = course
-    course_id_counter = 3
+        for course in courses:
+            courses_db[str(course["id"])] = course
+
+        save_json_data(courses_db, COURSES_FILE)
+        logger.info("Cursos inicializados")
 
 
-# Inicializar datos
+# Inicializar datos si es necesario
 initialize_catalog()
 initialize_courses()
 
 
-# ----- Rutas principales -----
+# ==================== RUTAS PRINCIPALES ====================
 
 @app.route("/")
 def index():
@@ -916,9 +732,10 @@ def lead_magnet_secretos():
             'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        global lead_id_counter
-        leads_db[lead_id_counter] = lead_data
-        lead_id_counter += 1
+        # Guardar con persistencia
+        current_id = get_next_id('lead_id_counter')
+        leads_db[str(current_id)] = lead_data
+        save_json_data(leads_db, LEADS_FILE)
 
         email_success = send_lead_magnet_email(lead_data, 'secretos', intereses)
         send_lead_notification_to_proedent(lead_data, 'secretos', intereses)
@@ -956,9 +773,9 @@ def lead_magnet_errores():
             'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        global lead_id_counter
-        leads_db[lead_id_counter] = lead_data
-        lead_id_counter += 1
+        current_id = get_next_id('lead_id_counter')
+        leads_db[str(current_id)] = lead_data
+        save_json_data(leads_db, LEADS_FILE)
 
         email_success = send_lead_magnet_email(lead_data, 'errores', intereses)
         send_lead_notification_to_proedent(lead_data, 'errores', intereses)
@@ -996,9 +813,9 @@ def lead_magnet_guia_rx():
             'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        global lead_id_counter
-        leads_db[lead_id_counter] = lead_data
-        lead_id_counter += 1
+        current_id = get_next_id('lead_id_counter')
+        leads_db[str(current_id)] = lead_data
+        save_json_data(leads_db, LEADS_FILE)
 
         email_success = send_lead_magnet_email(lead_data, 'guia_rx', intereses)
         send_lead_notification_to_proedent(lead_data, 'guia_rx', intereses)
@@ -1011,7 +828,6 @@ def lead_magnet_guia_rx():
     except Exception as e:
         logger.error(f"Error en lead_magnet_guia_rx: {e}")
         return jsonify({"success": False, "error": "Error interno"}), 500
-
 
 
 @app.route("/sales_recruitment", methods=["GET", "POST"])
@@ -1039,11 +855,10 @@ def sales_recruitment():
             'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        global sales_recruitment_id_counter
-        sales_recruitment_db[sales_recruitment_id_counter] = candidate_data
-        sales_recruitment_id_counter += 1
+        current_id = get_next_id('sales_recruitment_id_counter')
+        sales_recruitment_db[str(current_id)] = candidate_data
+        save_json_data(sales_recruitment_db, SALES_CANDIDATES_FILE)
 
-        # Enviar emails
         email_success = send_sales_recruitment_email(candidate_data)
         send_sales_candidate_notification_to_proedent(candidate_data)
 
@@ -1059,59 +874,30 @@ def sales_recruitment():
 
 @app.route("/sales-thankyou")
 def sales_thankyou():
-    """Página de agradecimiento para candidatos a vendedores"""
     return render_template("thankyouVendedor.html")
 
 
 @app.route("/thankyou")
 def thankyou():
-    """Página de agradecimiento después de descargar lead magnet"""
     return render_template("thankyou.html")
 
-def admin_required(view_func):
-    @wraps(view_func)
-    def wrapper(*args, **kwargs):
-        if not session.get('admin_logged_in'):
-            flash("Acceso restringido. Inicia sesión como administrador.", "warning")
-            return redirect(url_for('patients'))
-        return view_func(*args, **kwargs)
-    return wrapper
 
-# --- en cualquier lugar después de crear 'app' ---
-@app.route("/lm/secretos")
-@admin_required
-def lm_secretos():
-    return render_template("LM-10Secretos.html")
+# ==================== RUTA PARA AGENDAMIENTO DE DEMOS ====================
 
-@app.route("/lm/errores")
-@admin_required
-def lm_errores():
-    # Si prefieres, puedes reutilizar 'LM-10Errores.html' tal cual
-    return render_template("LM-10Errores.html")
-
-@app.route("/lm/guia")
-@admin_required
-def lm_guia():
-    return render_template("LM-GuiaCompleta.html")
-
-# Endpoint ACTUALIZADO para solicitud de demostración con envío de correo
 @app.route("/agendar_demo", methods=["POST"])
 def agendar_demo():
     try:
-        # Obtener datos del formulario (incluyendo nuevos campos)
         nombre = request.form.get("nombre")
         correo = request.form.get("correo")
-        telefono = request.form.get("telefono", "")  # Nuevo campo
+        telefono = request.form.get("telefono", "")
         fecha = request.form.get("fecha", "")
         representante = request.form.get("representante")
-        mensaje = request.form.get("mensaje", "")  # Nuevo campo
+        mensaje = request.form.get("mensaje", "")
 
-        # Validar campos requeridos
         if not all([nombre, correo, representante]):
             flash("Por favor complete todos los campos requeridos.", "error")
             return redirect(url_for("index"))
 
-        # Preparar datos para el correo
         form_data = {
             'nombre': nombre,
             'correo': correo,
@@ -1121,10 +907,9 @@ def agendar_demo():
             'mensaje': mensaje
         }
 
-        # Guardar en base de datos local
-        global appointment_id_counter
+        current_id = get_next_id('appointment_id_counter')
         appointment_data = {
-            "id": appointment_id_counter,
+            "id": current_id,
             "nombre": nombre,
             "correo": correo,
             "telefono": telefono,
@@ -1134,27 +919,22 @@ def agendar_demo():
             "status": "Pendiente",
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        appointments_db[appointment_id_counter] = appointment_data
-        appointment_id_counter += 1
 
-        # Intentar enviar correo
+        appointments_db[str(current_id)] = appointment_data
+        save_json_data(appointments_db, APPOINTMENTS_FILE)
+
         email_success = send_demo_request_email(form_data)
         confirmation_success = send_confirmation_email(form_data)
 
         if email_success:
-            # Mostrar mensaje de éxito
             success_msg = f"¡Solicitud recibida exitosamente! Nos pondremos en contacto contigo pronto, {nombre}."
             if confirmation_success:
                 success_msg += " También te enviamos un correo de confirmación."
-
             flash(success_msg, "success")
-            logger.info(f"Solicitud procesada para {nombre} - Email enviado: {email_success}")
         else:
-            # Aún así guardar la solicitud, pero advertir sobre el email
             flash(
                 f"Solicitud recibida para {nombre}. Sin embargo, hubo un problema enviando la notificación por correo.",
                 "warning")
-            logger.warning(f"Solicitud guardada pero email falló para {nombre}")
 
         return redirect(url_for("index"))
 
@@ -1164,13 +944,13 @@ def agendar_demo():
         return redirect(url_for("index"))
 
 
-# ==================== RUTA PATIENTS MODIFICADA CON AUTENTICACIÓN ADMIN ====================
+# ==================== RUTA PATIENTS CON AUTENTICACIÓN ====================
+
 @app.route("/patients", methods=["GET", "POST"])
 def patients():
     if request.method == "POST":
         action = request.form.get("action")
 
-        # NUEVO: Manejar login de admin
         if action == "admin_login":
             employee_id = request.form.get("employee_id")
             password = request.form.get("password")
@@ -1183,7 +963,6 @@ def patients():
                 flash("Credenciales incorrectas", "danger")
                 return redirect(url_for("patients"))
 
-        # Resto de acciones existentes para patients
         elif action == "register":
             name = request.form.get("name")
             phone = request.form.get("phone")
@@ -1191,20 +970,21 @@ def patients():
             clinic = request.form.get("clinic")
             specialty = request.form.get("specialty")
 
+            current_id = get_next_id('patient_id_counter')
             data = {
+                "id": current_id,
                 "name": name,
                 "phone": phone,
                 "email": email,
                 "clinic": clinic,
                 "specialty": specialty
             }
-            global patient_id_counter
-            data["id"] = patient_id_counter
-            patients_db[patient_id_counter] = data
-            patient_id_counter += 1
+            patients_db[str(current_id)] = data
+            save_json_data(patients_db, PATIENTS_FILE)
             flash("Cliente registrado correctamente ✅", "success")
+
         elif action == "update":
-            patient_id = int(request.form.get("patient_id"))
+            patient_id = request.form.get("patient_id")
             if patient_id not in patients_db:
                 flash("Error: Cliente no encontrado", "danger")
             else:
@@ -1215,7 +995,7 @@ def patients():
                 specialty = request.form.get("specialty")
 
                 data = {
-                    "id": patient_id,
+                    "id": int(patient_id),
                     "name": name,
                     "phone": phone,
                     "email": email,
@@ -1223,14 +1003,18 @@ def patients():
                     "specialty": specialty
                 }
                 patients_db[patient_id] = data
+                save_json_data(patients_db, PATIENTS_FILE)
                 flash("Cliente actualizado correctamente ✅", "success")
+
         elif action == "delete":
-            patient_id = int(request.form.get("patient_id"))
+            patient_id = request.form.get("patient_id")
             if patient_id not in patients_db:
                 flash("Error: Cliente no encontrado", "danger")
             else:
                 del patients_db[patient_id]
+                save_json_data(patients_db, PATIENTS_FILE)
                 flash("Cliente eliminado correctamente ✅", "success")
+
         return redirect(url_for("patients"))
     else:
         patients_list = list(patients_db.values())
@@ -1243,35 +1027,33 @@ def admin_panel():
         flash("Acceso denegado. Inicie sesión como administrador.", "danger")
         return redirect(url_for("patients"))
 
-    # Estadísticas actualizadas
+    # Estadísticas
     leads_stats = {
         'total_leads': len(leads_db),
         'leads_secretos': len([l for l in leads_db.values() if l.get('magnet_type') == 'secretos']),
         'leads_errores': len([l for l in leads_db.values() if l.get('magnet_type') == 'errores']),
         'leads_guia_rx': len([l for l in leads_db.values() if l.get('magnet_type') == 'guia_rx']),
         'total_appointments': len(appointments_db),
-        'total_sales_candidates': len(sales_recruitment_db)  # NUEVA
+        'total_sales_candidates': len(sales_recruitment_db)
     }
 
-    # Datos existentes
+    # Preparar datos para el template
     all_leads = list(leads_db.values())
     all_leads.sort(key=lambda x: x.get('created_at', ''), reverse=True)
 
     all_appointments = list(appointments_db.values())
     all_appointments.sort(key=lambda x: x.get('created_at', ''), reverse=True)
 
-    # NUEVOS: Candidatos a vendedores
     all_sales_candidates = list(sales_recruitment_db.values())
     all_sales_candidates.sort(key=lambda x: x.get('created_at', ''), reverse=True)
 
     return render_template("admin_panel.html",
                            leads=all_leads,
                            appointments=all_appointments,
-                           sales_candidates=all_sales_candidates,  # NUEVA
+                           sales_candidates=all_sales_candidates,
                            stats=leads_stats)
 
 
-# NUEVA: Ruta para cerrar sesión de admin
 @app.route("/admin_logout")
 def admin_logout():
     session.pop('admin_logged_in', None)
@@ -1279,12 +1061,29 @@ def admin_logout():
     return redirect(url_for("patients"))
 
 
-# Nueva ruta para ver las solicitudes de demostración
+@app.route("/lm/secretos")
+@admin_required
+def lm_secretos():
+    return render_template("LM-10Secretos.html")
+
+
+@app.route("/lm/errores")
+@admin_required
+def lm_errores():
+    return render_template("LM-10Errores.html")
+
+
+@app.route("/lm/guia")
+@admin_required
+def lm_guia():
+    return render_template("LM-GuiaCompleta.html")
+
+
+# ==================== RUTAS ADICIONALES ====================
+
 @app.route("/solicitudes_demo")
 def solicitudes_demo():
-    """Ver todas las solicitudes de demostración recibidas"""
     solicitudes = list(appointments_db.values())
-    # Ordenar por fecha de creación (más recientes primero)
     solicitudes.sort(key=lambda x: x.get('created_at', ''), reverse=True)
     return render_template("solicitudes_demo.html", solicitudes=solicitudes)
 
@@ -1297,11 +1096,9 @@ def catalogo():
     else:
         filtered_products = products_db
 
-    # Obtener todas las categorías para el filtro
     categories = list(set([product['category'] for product in products_db.values()]))
-
-    return render_template("catalogo.html", products=filtered_products.values(), categories=categories,
-                           current_category=category_filter)
+    return render_template("catalogo.html", products=filtered_products.values(),
+                           categories=categories, current_category=category_filter)
 
 
 @app.route("/vatech_catalog")
@@ -1342,16 +1139,17 @@ def nufona_catalog():
 @app.route("/cursos", methods=["GET", "POST"])
 def cursos():
     if request.method == "POST":
-        course_id = int(request.form.get("course_id"))
+        course_id = request.form.get("course_id")
         student_name = request.form.get("student_name")
         student_email = request.form.get("student_email")
 
         if course_id in courses_db:
             if courses_db[course_id]["available_spots"] > 0:
                 courses_db[course_id]["available_spots"] -= 1
-                flash(f"Inscripción exitosa para {student_name} en el curso {courses_db[course_id]['name']}", "success")
+                save_json_data(courses_db, COURSES_FILE)
+                flash(f"Inscripción exitosa para {student_name}", "success")
             else:
-                flash("Lo sentimos, no hay cupos disponibles para este curso", "danger")
+                flash("No hay cupos disponibles para este curso", "danger")
         else:
             flash("Curso no encontrado", "danger")
         return redirect(url_for("cursos"))
@@ -1371,8 +1169,8 @@ def video_conferencia():
         if pin == "0404":
             client_name = request.form.get("client_name")
             meeting_type = request.form.get("meeting_type")
-            return render_template("video_conferencia.html", authorized=True, client_name=client_name,
-                                   meeting_type=meeting_type)
+            return render_template("video_conferencia.html", authorized=True,
+                                   client_name=client_name, meeting_type=meeting_type)
         else:
             flash("PIN incorrecto. Intenta nuevamente.", "danger")
             return redirect(url_for("video_conferencia"))
@@ -1382,7 +1180,6 @@ def video_conferencia():
 
 @app.route('/download_catalog')
 def download_catalog():
-    # Crear un Excel con el catálogo completo
     data = []
     for product in products_db.values():
         data.append({
@@ -1400,10 +1197,8 @@ def download_catalog():
     return send_file(excel_file, download_name="catalogo_proedent.xlsx", as_attachment=True)
 
 
-# Endpoint para probar configuración de email
 @app.route("/test_email")
 def test_email():
-    """Endpoint para probar la configuración de email"""
     test_data = {
         'nombre': 'Test Cliente',
         'correo': 'test@example.com',
@@ -1415,38 +1210,30 @@ def test_email():
 
     success = send_demo_request_email(test_data)
 
-    if success:
-        return jsonify({
-            "status": "success",
-            "message": "Email de prueba enviado correctamente",
-            "smtp_config": {
-                "server": SMTP_SERVER,
-                "port": SMTP_PORT,
-                "user": EMAIL_USER,
-                "password_configured": bool(EMAIL_PASSWORD)
-            }
-        })
-    else:
-        return jsonify({
-            "status": "error",
-            "message": "Error enviando email de prueba",
-            "smtp_config": {
-                "server": SMTP_SERVER,
-                "port": SMTP_PORT,
-                "user": EMAIL_USER,
-                "password_configured": bool(EMAIL_PASSWORD)
-            }
-        }), 500
+    return jsonify({
+        "status": "success" if success else "error",
+        "message": "Email de prueba enviado correctamente" if success else "Error enviando email de prueba",
+        "smtp_config": {
+            "server": SMTP_SERVER,
+            "port": SMTP_PORT,
+            "user": EMAIL_USER,
+            "password_configured": bool(EMAIL_PASSWORD)
+        }
+    })
 
 
 if __name__ == "__main__":
-    print("Iniciando aplicación Proedent en http://127.0.0.1:5000")
-    print(f"Email configurado: {'✅' if EMAIL_USER and EMAIL_PASSWORD else '❌'}")
+    print("🚀 Iniciando aplicación PROEDENT con persistencia JSON")
+    print(f"📧 Email configurado: {'✅' if EMAIL_USER and EMAIL_PASSWORD else '❌'}")
     print(f"🎯 Lead Magnets disponibles:")
     print(f"   - /lead_magnet_secretos")
     print(f"   - /lead_magnet_errores")
     print(f"   - /lead_magnet_guia_rx")
+    print(f"   - /sales_recruitment")
     print(f"📊 Panel Admin: /patients (login: admin/admin)")
+    print(f"💾 Datos persistentes en carpeta: {DATA_DIR}")
+
     if EMAIL_USER:
-        print(f"Email user: {EMAIL_USER}")
+        print(f"📬 Email user: {EMAIL_USER}")
+
     app.run(host="127.0.0.1", debug=True, port=5000)
