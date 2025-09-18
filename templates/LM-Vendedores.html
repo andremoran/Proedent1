@@ -625,23 +625,33 @@
             // Mostrar estado de carga
             form.classList.add('loading');
 
-            // Simular envío (reemplazar con endpoint real)
-            setTimeout(() => {
-                // Redirigir a página de agradecimiento
-                window.location.href = '/sales-thankyou';
-            }, 2000);
-
-            /* Código real para backend:
+            // Envío real al backend
             fetch('/sales_recruitment', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = '/sales-thankyou';
+            .then(response => {
+                if (response.redirected) {
+                    // Si el servidor redirige, seguir la redirección
+                    window.location.href = response.url;
                 } else {
-                    alert('Error: ' + (data.error || 'Hubo un problema. Intente nuevamente.'));
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data && data.success) {
+                    // Mostrar mensaje de éxito
+                    document.getElementById('successMessage').classList.add('show');
+
+                    // Limpiar formulario
+                    form.reset();
+
+                    // Opcional: redirigir después de mostrar éxito
+                    setTimeout(() => {
+                        window.location.href = '/sales-thankyou';
+                    }, 2000);
+                } else if (data && data.error) {
+                    alert('Error: ' + data.error);
                     form.classList.remove('loading');
                 }
             })
@@ -650,7 +660,6 @@
                 alert('Error de conexión. Por favor intente nuevamente.');
                 form.classList.remove('loading');
             });
-            */
         });
     </script>
 </body>

@@ -465,21 +465,20 @@ def send_sales_recruitment_email(candidate_data):
                         <li>Descarga y estudia la guía PDF adjunta</li>
                         <li>Prepárate para el cuestionario presencial en Quito</li>
                         <li>Tienes 2 oportunidades para aprobar</li>
-                        <li>Capacitación opcional disponible por $10</li>
                     </ul>
                 </div>
 
                 <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #5B21B6;">
                     <h3 style="color: #5B21B6; margin-top: 0;">💰 Comisiones:</h3>
-                    <p><strong>10% - 15% por cada venta realizada</strong></p>
+                    <p><strong>Hasta el 15% de comisión por cada venta realizada</strong></p>
                     <p>Ciudad: {candidate_data.get('ciudad', 'No especificada')}</p>
                 </div>
 
                 <div style="text-align: center; margin: 30px 0;">
                     <h3 style="color: #5B21B6;">¿Necesitas capacitación adicional?</h3>
-                    <p style="margin: 5px 0;"><strong>📧 Email:</strong> proedentorg@gmail.com</p>
+                    <p style="margin: 5px 0;"><strong>📧 Email:</strong> proedentorg@gmail.com, proedentventasecuador@gmail.com</p>
                     <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/593998745641" style="color: #5B21B6;">+593 99 874 5641</a></p>
-                    <p style="margin: 5px 0;"><strong>💵 Capacitación:</strong> Solo $10 USD</p>
+                    <p style="margin: 5px 0;"><strong>💵 Capacitación Adicional Opcional:</strong> Solo $10 USD</p>
                 </div>
             </div>
 
