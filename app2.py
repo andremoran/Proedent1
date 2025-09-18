@@ -628,7 +628,6 @@ def send_sales_candidate_notification_to_proedent(candidate_data):
         return False
 
 
-# Función para autenticación admin
 def admin_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
@@ -640,59 +639,79 @@ def admin_required(view_func):
     return wrapper
 
 
-# Datos iniciales del catálogo
+# Datos iniciales del catálogo (solo se ejecuta si no existe)
 def initialize_catalog():
-    if not products_db:  # Solo inicializar si está vacío
+    """Inicializar catálogo solo si está vacío"""
+    if len(products_db) == 0:
         products = [
             {
                 "id": 1,
                 "name": "Tomógrafo Dental 3D",
                 "category": "Diagnóstico por Imagen",
                 "brand": "Proedent",
-                "description": "Tecnología avanzada de imagen 3D para diagnósticos precisos",
+                "description": "Tecnología avanzada de imagen 3D para diagnósticos precisos y planificación de tratamientos",
                 "price": "Consultar precio",
                 "image": "Picture2.png",
-                "specifications": "Resolución: 150 micras, Campo de visión: 16x13cm"
+                "specifications": "Resolución: 150 micras, Campo de visión: 16x13cm, Tiempo de escaneo: 8.9 seg"
             },
             {
                 "id": 2,
                 "name": "Sillón Odontológico Premium",
                 "category": "Equipos Principales",
                 "brand": "Proedent",
-                "description": "Equipamiento de última generación para máximo confort",
+                "description": "Equipamiento de última generación para máximo confort del paciente y eficiencia del profesional",
                 "price": "Desde $15,000",
                 "image": "Picture4.png",
-                "specifications": "Motor eléctrico, LED integrado, Sistema de aspiración"
+                "specifications": "Motor eléctrico, LED integrado, Sistema de aspiración, Bandeja flotante"
+            },
+            {
+                "id": 3,
+                "name": "Sensor Digital X-Line",
+                "category": "Radiología Digital",
+                "brand": "Proedent",
+                "description": "Radiografía digital instantánea con sensores de alta resolución y mínima radiación",
+                "price": "Desde $3,500",
+                "image": "Picture3.png",
+                "specifications": "Resolución: 20 lp/mm, Conectividad USB, Compatible con todos los software"
             }
         ]
 
         for product in products:
             products_db[str(product["id"])] = product
-
         save_json_data(products_db, PRODUCTS_FILE)
-        logger.info("Catálogo inicializado")
+        print("Catálogo inicializado")
 
 
 def initialize_courses():
-    if not courses_db:  # Solo inicializar si está vacío
+    """Inicializar cursos solo si está vacío"""
+    if len(courses_db) == 0:
         courses = [
             {
                 "id": 1,
                 "name": "Introducción a la Radiología Digital",
                 "duration": "8 horas",
                 "instructor": "Dr. Carlos Mendoza",
-                "description": "Curso completo sobre el uso de sensores digitales",
+                "description": "Curso completo sobre el uso de sensores digitales y software de radiología",
                 "price": "$150",
                 "date": "2025-09-15",
                 "available_spots": 15
+            },
+            {
+                "id": 2,
+                "name": "Mantenimiento de Equipos Dentales",
+                "duration": "12 horas",
+                "instructor": "Ing. Roberto Silva",
+                "description": "Aprenda a mantener y calibrar sus equipos dentales para máximo rendimiento",
+                "price": "$200",
+                "date": "2025-09-22",
+                "available_spots": 10
             }
         ]
 
         for course in courses:
             courses_db[str(course["id"])] = course
-
         save_json_data(courses_db, COURSES_FILE)
-        logger.info("Cursos inicializados")
+        print("Cursos inicializados")
 
 
 # Inicializar datos si es necesario
@@ -700,7 +719,7 @@ initialize_catalog()
 initialize_courses()
 
 
-# ==================== RUTAS PRINCIPALES ====================
+# RUTAS DE LA APLICACIÓN
 
 @app.route("/")
 def index():
@@ -732,7 +751,7 @@ def lead_magnet_secretos():
             'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        # Guardar con persistencia
+        # GUARDAR CON PERSISTENCIA
         current_id = get_next_id('lead_id_counter')
         leads_db[str(current_id)] = lead_data
         save_json_data(leads_db, LEADS_FILE)
@@ -882,8 +901,6 @@ def thankyou():
     return render_template("thankyou.html")
 
 
-# ==================== RUTA PARA AGENDAMIENTO DE DEMOS ====================
-
 @app.route("/agendar_demo", methods=["POST"])
 def agendar_demo():
     try:
@@ -919,7 +936,6 @@ def agendar_demo():
             "status": "Pendiente",
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-
         appointments_db[str(current_id)] = appointment_data
         save_json_data(appointments_db, APPOINTMENTS_FILE)
 
@@ -944,7 +960,7 @@ def agendar_demo():
         return redirect(url_for("index"))
 
 
-# ==================== RUTA PATIENTS CON AUTENTICACIÓN ====================
+# ==================== RUTAS DE ADMINISTRACIÓN ====================
 
 @app.route("/patients", methods=["GET", "POST"])
 def patients():
@@ -1027,7 +1043,6 @@ def admin_panel():
         flash("Acceso denegado. Inicie sesión como administrador.", "danger")
         return redirect(url_for("patients"))
 
-    # Estadísticas
     leads_stats = {
         'total_leads': len(leads_db),
         'leads_secretos': len([l for l in leads_db.values() if l.get('magnet_type') == 'secretos']),
@@ -1037,7 +1052,6 @@ def admin_panel():
         'total_sales_candidates': len(sales_recruitment_db)
     }
 
-    # Preparar datos para el template
     all_leads = list(leads_db.values())
     all_leads.sort(key=lambda x: x.get('created_at', ''), reverse=True)
 
@@ -1061,24 +1075,6 @@ def admin_logout():
     return redirect(url_for("patients"))
 
 
-@app.route("/lm/secretos")
-@admin_required
-def lm_secretos():
-    return render_template("LM-10Secretos.html")
-
-
-@app.route("/lm/errores")
-@admin_required
-def lm_errores():
-    return render_template("LM-10Errores.html")
-
-
-@app.route("/lm/guia")
-@admin_required
-def lm_guia():
-    return render_template("LM-GuiaCompleta.html")
-
-
 # ==================== RUTAS ADICIONALES ====================
 
 @app.route("/solicitudes_demo")
@@ -1097,8 +1093,8 @@ def catalogo():
         filtered_products = products_db
 
     categories = list(set([product['category'] for product in products_db.values()]))
-    return render_template("catalogo.html", products=filtered_products.values(),
-                           categories=categories, current_category=category_filter)
+    return render_template("catalogo.html", products=filtered_products.values(), categories=categories,
+                           current_category=category_filter)
 
 
 @app.route("/vatech_catalog")
@@ -1147,9 +1143,9 @@ def cursos():
             if courses_db[course_id]["available_spots"] > 0:
                 courses_db[course_id]["available_spots"] -= 1
                 save_json_data(courses_db, COURSES_FILE)
-                flash(f"Inscripción exitosa para {student_name}", "success")
+                flash(f"Inscripción exitosa para {student_name} en el curso {courses_db[course_id]['name']}", "success")
             else:
-                flash("No hay cupos disponibles para este curso", "danger")
+                flash("Lo sentimos, no hay cupos disponibles para este curso", "danger")
         else:
             flash("Curso no encontrado", "danger")
         return redirect(url_for("cursos"))
@@ -1169,8 +1165,8 @@ def video_conferencia():
         if pin == "0404":
             client_name = request.form.get("client_name")
             meeting_type = request.form.get("meeting_type")
-            return render_template("video_conferencia.html", authorized=True,
-                                   client_name=client_name, meeting_type=meeting_type)
+            return render_template("video_conferencia.html", authorized=True, client_name=client_name,
+                                   meeting_type=meeting_type)
         else:
             flash("PIN incorrecto. Intenta nuevamente.", "danger")
             return redirect(url_for("video_conferencia"))
@@ -1210,30 +1206,67 @@ def test_email():
 
     success = send_demo_request_email(test_data)
 
-    return jsonify({
-        "status": "success" if success else "error",
-        "message": "Email de prueba enviado correctamente" if success else "Error enviando email de prueba",
-        "smtp_config": {
-            "server": SMTP_SERVER,
-            "port": SMTP_PORT,
-            "user": EMAIL_USER,
-            "password_configured": bool(EMAIL_PASSWORD)
-        }
-    })
+    if success:
+        return jsonify({
+            "status": "success",
+            "message": "Email de prueba enviado correctamente",
+            "smtp_config": {
+                "server": SMTP_SERVER,
+                "port": SMTP_PORT,
+                "user": EMAIL_USER,
+                "password_configured": bool(EMAIL_PASSWORD)
+            }
+        })
+    else:
+        return jsonify({
+            "status": "error",
+            "message": "Error enviando email de prueba",
+            "smtp_config": {
+                "server": SMTP_SERVER,
+                "port": SMTP_PORT,
+                "user": EMAIL_USER,
+                "password_configured": bool(EMAIL_PASSWORD)
+            }
+        }), 500
+
+
+# Rutas de administrador requerido
+@app.route("/lm/secretos")
+@admin_required
+def lm_secretos():
+    return render_template("LM-10Secretos.html")
+
+
+@app.route("/lm/errores")
+@admin_required
+def lm_errores():
+    return render_template("LM-10Errores.html")
+
+
+@app.route("/lm/guia")
+@admin_required
+def lm_guia():
+    return render_template("LM-GuiaCompleta.html")
 
 
 if __name__ == "__main__":
-    print("🚀 Iniciando aplicación PROEDENT con persistencia JSON")
+    print("=" * 60)
+    print("🚀 INICIANDO APLICACIÓN PROEDENT CON PERSISTENCIA")
+    print("=" * 60)
+    print(f"📍 URL: http://127.0.0.1:5000")
     print(f"📧 Email configurado: {'✅' if EMAIL_USER and EMAIL_PASSWORD else '❌'}")
+    print(f"📂 Directorio de datos: {DATA_DIR}")
     print(f"🎯 Lead Magnets disponibles:")
     print(f"   - /lead_magnet_secretos")
     print(f"   - /lead_magnet_errores")
     print(f"   - /lead_magnet_guia_rx")
     print(f"   - /sales_recruitment")
-    print(f"📊 Panel Admin: /patients (login: admin/admin)")
-    print(f"💾 Datos persistentes en carpeta: {DATA_DIR}")
-
-    if EMAIL_USER:
-        print(f"📬 Email user: {EMAIL_USER}")
+    print(f"🔐 Panel Admin: /patients (admin/admin)")
+    print(f"📊 Datos actuales:")
+    print(f"   - Leads: {len(leads_db)}")
+    print(f"   - Citas: {len(appointments_db)}")
+    print(f"   - Vendedores: {len(sales_recruitment_db)}")
+    print(f"   - Pacientes: {len(patients_db)}")
+    print("=" * 60)
 
     app.run(host="127.0.0.1", debug=True, port=5000)
