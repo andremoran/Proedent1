@@ -477,7 +477,7 @@ def send_sales_recruitment_email(candidate_data):
                 <div style="text-align: center; margin: 30px 0;">
                     <h3 style="color: #5B21B6;">¿Necesitas capacitación adicional?</h3>
                     <p style="margin: 5px 0;"><strong>📧 Email:</strong> proedentorg@gmail.com, proedentventasecuador@gmail.com</p>
-                    <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/593998745641" style="color: #5B21B6;">+593 99 874 5641</a></p>
+                    <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/593998745641" style="color: #5B21B6;">+593 98 755 3634, +593 99 874 5641</a></p>
                     <p style="margin: 5px 0;"><strong>💵 Capacitación Adicional Opcional:</strong> Solo $10 USD</p>
                 </div>
             </div>
