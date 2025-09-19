@@ -615,6 +615,192 @@ def send_confirmation_email(client_data):
         return False
 
 
+# Función para enviar correo de confirmación del webinar
+def send_webinar_registration_email(lead_data, interests):
+    """Enviar correo con enlace del webinar DMG"""
+    try:
+        if not EMAIL_USER or not EMAIL_PASSWORD:
+            logger.error("Credenciales de email no configuradas")
+            return False
+
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_USER
+        msg['To'] = lead_data['email']
+        msg['Subject'] = "🎯 Confirmación: Webinar DMG - Sinergia Endodoncia y Rehabilitación Oral"
+
+        interests_text = ', '.join(interests) if interests else 'No especificados'
+        webinar_link = "https://www.dmg-dental.com/en/education-and-events/education/detail/endo-restorative-synergy-preparatory-steps-toward-predictable-adhesive-integration"
+
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #1e3a8a, #065f46); padding: 30px; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 2rem;">¡Registro Confirmado!</h1>
+                <p style="color: white; margin: 10px 0 0 0; font-size: 1.1rem;">Webinar DMG - PROEDENT Ecuador</p>
+            </div>
+
+            <div style="padding: 30px; background: #f9f9f9;">
+                <h2 style="color: #1e3a8a;">Hola {lead_data['nombre']},</h2>
+
+                <p style="font-size: 1.1rem; line-height: 1.6;">
+                    ¡Perfecto! Tu registro para el webinar de DMG ha sido confirmado. Te esperamos para esta 
+                    conferencia magistral sobre sinergia en endodoncia y rehabilitación oral.
+                </p>
+
+                <div style="background: white; padding: 25px; border-radius: 15px; margin: 25px 0; border-left: 4px solid #1e3a8a;">
+                    <h3 style="color: #1e3a8a; margin-top: 0;">📅 Detalles del Evento:</h3>
+                    <p><strong>Tema:</strong> "Sinergia Endodoncia y Rehabilitación Oral: Pasos previos para la integración Adhesiva"</p>
+                    <p><strong>Ponente:</strong> Dr. Roberto Carlos Tello Torres</p>
+                    <p><strong>Fecha:</strong> Martes 30 de Septiembre</p>
+                    <p><strong>Hora:</strong> 1:00 PM Lima & Bogotá / 12:00 PM México</p>
+                    <p><strong>Duración:</strong> Aproximadamente 60 minutos</p>
+                    <p><strong>Idioma:</strong> Español</p>
+                </div>
+
+                <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <h3 style="color: #2e7d32; margin-top: 0;">🔗 Enlace de Acceso:</h3>
+                    <p style="margin: 10px 0;">
+                        <a href="{webinar_link}" 
+                           style="background: #1e3a8a; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                            ACCEDER AL WEBINAR
+                        </a>
+                    </p>
+                    <p style="color: #2e7d32; font-size: 0.9rem; margin: 15px 0 0 0;">
+                        <strong>Importante:</strong> Guarda este enlace. Te llegará también un recordatorio 24 horas antes del evento.
+                    </p>
+                </div>
+
+                <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #065f46;">
+                    <h3 style="color: #065f46; margin-top: 0;">Tus intereses seleccionados:</h3>
+                    <p><strong>{interests_text}</strong></p>
+                </div>
+
+                <div style="background: #eff6ff; padding: 20px; border-radius: 10px; margin: 25px 0;">
+                    <h3 style="color: #1d4ed8; margin-top: 0;">🦷 ¿Te interesan nuestros productos DMG?</h3>
+                    <p style="color: #1e40af; margin: 5px 0;">
+                        <strong>Catálogo completo:</strong> 
+                        <a href="https://proedent.org/catalogo" style="color: #1d4ed8;">proedent.org/catalogo</a>
+                    </p>
+                    <p style="color: #1e40af; margin: 5px 0;">
+                        <strong>Microscopios para Endodoncia:</strong> Pregúntanos por nuestros equipos Labomed especializados
+                    </p>
+                </div>
+
+                <div style="text-align: center; margin: 30px 0;">
+                    <h3 style="color: #1e3a8a;">¿Tienes preguntas?</h3>
+                    <p style="margin: 5px 0;"><strong>📧 Email:</strong> proedentventasecuador@gmail.com</p>
+                    <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/593998745641" style="color: #1e3a8a;">+593 99 874 5641</a></p>
+                    <p style="margin: 5px 0;"><strong>🌐 Web:</strong> <a href="https://proedent1.onrender.com" style="color: #1e3a8a;">proedent1.onrender.com</a></p>
+                </div>
+            </div>
+
+            <div style="background: #333; color: white; text-align: center; padding: 20px;">
+                <p style="margin: 0;">PROEDENT Ecuador - Distribuidores Oficiales DMG</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        msg.attach(MIMEText(html_content, 'html'))
+
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+
+        logger.info(f"Confirmación webinar enviada exitosamente a: {lead_data['email']}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Error enviando confirmación webinar: {e}")
+        return False
+
+
+def send_webinar_notification_to_proedent(lead_data, interests):
+    """Enviar notificación de nuevo registro de webinar a PROEDENT"""
+    try:
+        if not EMAIL_USER or not EMAIL_PASSWORD:
+            return False
+
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_USER
+        msg['To'] = "proedentventasecuador@gmail.com"
+        msg['Subject'] = f"🎯 Nuevo Registro Webinar DMG: {lead_data['nombre']}"
+
+        interests_text = ', '.join(interests) if interests else 'No especificados'
+
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #1e3a8a, #065f46); padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">🎯 Nuevo Registro Webinar DMG</h1>
+                <p style="color: white; margin: 10px 0 0 0;">Sinergia Endodoncia y Rehabilitación Oral</p>
+            </div>
+
+            <div style="padding: 30px; background: #f9f9f9;">
+                <table style="width: 100%; margin: 20px 0;">
+                    <tr>
+                        <td style="padding: 10px; background: white; border-left: 4px solid #1e3a8a; font-weight: bold;">
+                            Nombre:
+                        </td>
+                        <td style="padding: 10px; background: white;">
+                            {lead_data['nombre']}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; background: #f0f0f0; border-left: 4px solid #065f46; font-weight: bold;">
+                            Email:
+                        </td>
+                        <td style="padding: 10px; background: #f0f0f0;">
+                            {lead_data['email']}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; background: white; border-left: 4px solid #1e3a8a; font-weight: bold;">
+                            Teléfono:
+                        </td>
+                        <td style="padding: 10px; background: white;">
+                            {lead_data.get('telefono', 'No proporcionado')}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; background: #f0f0f0; border-left: 4px solid #065f46; font-weight: bold;">
+                            Intereses:
+                        </td>
+                        <td style="padding: 10px; background: #f0f0f0;">
+                            {interests_text}
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                    <p style="margin: 0; color: #1565c0;">
+                        <strong>Fecha de registro:</strong> {datetime.now().strftime('%d/%m/%Y %H:%M')}
+                    </p>
+                    <p style="margin: 0; color: #1565c0;">
+                        <strong>Webinar:</strong> 30 de Septiembre, 1:00 PM
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+        msg.attach(MIMEText(html_content, 'html'))
+
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+
+        return True
+
+    except Exception as e:
+        logger.error(f"Error enviando notificación webinar: {e}")
+        return False
+
 def admin_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
@@ -633,6 +819,51 @@ def index():
 
 
 # RUTAS LEAD MAGNETS - ACTUALIZADAS CON SUPABASE
+
+@app.route("/lead_magnet_webinar", methods=["GET", "POST"])
+def lead_magnet_webinar():
+    if request.method == "GET":
+        return render_template("LM-Webinar.html")
+
+    try:
+        nombre = request.form.get("nombre")
+        email = request.form.get("email")
+        telefono = request.form.get("telefono", "")
+        intereses = request.form.getlist("intereses")
+
+        if not all([nombre, email]):
+            return jsonify({"success": False, "error": "Nombre y email son requeridos"}), 400
+
+        lead_data = {
+            'nombre': nombre,
+            'email': email,
+            'telefono': telefono,
+            'magnet_type': 'webinar_dmg',
+            'intereses': intereses,
+            'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        # Guardar en Supabase (usando la misma tabla leads)
+        try:
+            response = supabase.table('leads').insert(lead_data).execute()
+            logger.info(f"Registro webinar guardado en Supabase: {nombre}")
+        except Exception as db_error:
+            logger.error(f"Error guardando en Supabase: {db_error}")
+            return jsonify({"success": False, "error": "Error guardando datos"}), 500
+
+        # Enviar emails
+        email_success = send_webinar_registration_email(lead_data, intereses)
+        send_webinar_notification_to_proedent(lead_data, intereses)
+
+        if email_success:
+            return redirect(url_for('thankyou'))
+        else:
+            return jsonify({"success": False, "error": "Error enviando confirmación"}), 500
+
+    except Exception as e:
+        logger.error(f"Error en lead_magnet_webinar: {e}")
+        return jsonify({"success": False, "error": "Error interno"}), 500
+
 @app.route("/lead_magnet_secretos", methods=["GET", "POST"])
 def lead_magnet_secretos():
     if request.method == "GET":
