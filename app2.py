@@ -666,7 +666,7 @@ def send_webinar_registration_email(lead_data, interests):
                         </a>
                     </p>
                     <p style="color: #2e7d32; font-size: 0.9rem; margin: 15px 0 0 0;">
-                        <strong>Importante:</strong> Guarda este enlace. Te llegará también un recordatorio 24 horas antes del evento.
+                        <strong>Importante:</strong> Registrate en la página oficial de DMG para que te llegue el enlace de Zoom directamente lo antes posible o te llegará el enlace 2 horas antes del evento, junto con un recordatorio por parte de PROEDENT.
                     </p>
                 </div>
 
@@ -856,7 +856,7 @@ def lead_magnet_webinar():
         send_webinar_notification_to_proedent(lead_data, intereses)
 
         if email_success:
-            return redirect(url_for('thankyou'))
+            return jsonify({"success": True, "redirect": url_for('thankyou')})
         else:
             return jsonify({"success": False, "error": "Error enviando confirmación"}), 500
 

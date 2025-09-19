@@ -634,57 +634,35 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('leadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+<script>
+document.getElementById('leadForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+  form.classList.add('loading');
 
-            const form = e.target;
-            const formData = new FormData(form);
+  fetch('/lead_magnet_webinar', {
+    method: 'POST',
+    body: formData,
+    headers: { 'Accept': 'application/json' }
+  })
+  .then(resp => resp.json())
+  .then(data => {
+    if (data.success) {
+      // opcional: mostrar mensaje y breve pausa
+      // document.getElementById('successMessage').classList.add('show');
+      window.location.href = data.redirect;   // 🔁 ahora sí navega a /thankyou
+    } else {
+      alert('Error: ' + (data.error || 'Hubo un problema. Intente nuevamente.'));
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Error de conexión. Por favor intente nuevamente.');
+  })
+  .finally(() => form.classList.remove('loading'));
+});
+</script>
 
-            // Mostrar estado de carga
-            form.classList.add('loading');
-
-            fetch('/lead_magnet_webinar', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Mostrar mensaje de éxito
-                    document.getElementById('successMessage').classList.add('show');
-
-                    // Limpiar formulario
-                    form.reset();
-
-                    // Opcional: redirigir después de mostrar éxito
-                    if (data.webinar_url) {
-                        setTimeout(() => {
-                            window.open(data.webinar_url, '_blank');
-                        }, 2000);
-                    }
-                } else {
-                    alert('Error: ' + (data.error || 'Hubo un problema. Intente nuevamente.'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error de conexión. Por favor intente nuevamente.');
-            })
-            .finally(() => {
-                form.classList.remove('loading');
-            });
-        });
-
-        // Mejorar UX de checkboxes
-        document.querySelectorAll('.interest-option').forEach(option => {
-            option.addEventListener('click', function(e) {
-                if (e.target.tagName !== 'INPUT') {
-                    const checkbox = this.querySelector('input[type="checkbox"]');
-                    checkbox.checked = !checkbox.checked;
-                }
-            });
-        });
-    </script>
 </body>
 </html>

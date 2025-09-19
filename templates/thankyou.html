@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Registro Confirmado! Webinar DMG - PROEDENT</title>
+    <title>¡Gracias! Tu guía está en camino - PROEDENT</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -65,7 +65,7 @@
                 0 25px 50px rgba(0, 0, 0, 0.4),
                 0 0 0 1px rgba(255, 255, 255, 0.1);
             overflow: hidden;
-            max-width: 900px;
+            max-width: 800px;
             width: 100%;
             backdrop-filter: blur(20px);
             position: relative;
@@ -74,7 +74,7 @@
 
         /* Success header */
         .success-header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             padding: 50px 40px;
             position: relative;
@@ -104,9 +104,9 @@
         }
 
         .success-icon {
-            font-size: 4.5rem;
+            font-size: 4rem;
             color: #86efac;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             position: relative;
             z-index: 1;
             animation: pulse 2s ease-in-out infinite;
@@ -118,7 +118,7 @@
         }
 
         .success-header h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 900;
             margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
@@ -127,11 +127,10 @@
         }
 
         .success-header p {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             opacity: 0.95;
             position: relative;
             z-index: 1;
-            margin-bottom: 0;
         }
 
         /* Content section */
@@ -139,231 +138,97 @@
             padding: 50px 40px;
         }
 
-        .webinar-confirmation {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        .email-confirmation {
+            background: #f0fdf4;
             border: 2px solid #bbf7d0;
-            border-radius: 20px;
-            padding: 35px;
+            border-radius: 15px;
+            padding: 30px;
             margin-bottom: 40px;
         }
 
-        .webinar-confirmation h3 {
+        .email-confirmation h3 {
             color: #059669;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-
-        .webinar-confirmation p {
-            color: #047857;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
-
-        .webinar-details {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 1rem;
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .detail-value {
-            color: #1e3a8a;
-            font-weight: 600;
-        }
-
-        .access-link-section {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            border: 3px solid #60a5fa;
-            border-radius: 20px;
-            padding: 35px;
-            margin: 30px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .access-link-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 3px,
-                rgba(255,255,255,0.1) 3px,
-                rgba(255,255,255,0.1) 6px
-            );
-            animation: shimmer 15s linear infinite;
-            pointer-events: none;
-        }
-
-        .access-link-section h3 {
-            color: #1d4ed8;
-            font-size: 2rem;
+            font-size: 1.5rem;
             margin-bottom: 15px;
-            font-weight: 800;
-            position: relative;
-            z-index: 1;
         }
 
-        .access-link-section p {
-            color: #1e40af;
+        .email-confirmation p {
+            color: #047857;
             font-size: 1.1rem;
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 15px;
         }
 
-        .webinar-link-btn {
-            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
-            color: white;
-            padding: 20px 40px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            border-radius: 15px;
-            text-decoration: none;
-            display: inline-block;
-            position: relative;
-            z-index: 1;
-            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.3);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .webinar-link-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .webinar-link-btn:hover::before {
-            left: 100%;
-        }
-
-        .webinar-link-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(30, 58, 138, 0.4);
-            text-decoration: none;
-            color: white;
-        }
-
-        .reminder-note {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #f59e0b;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Email steps */
         .email-steps {
             background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 25px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .step-item {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #374151;
         }
 
         .step-item i {
             color: #059669;
-            font-size: 1.3rem;
-            margin-right: 15px;
-            width: 25px;
+            font-size: 1.2rem;
+            margin-right: 12px;
+            width: 20px;
         }
 
-        /* DMG Products section */
-        .dmg-products {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 20px;
+        /* Next steps section */
+        .next-steps {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 15px;
             padding: 30px;
-            margin: 30px 0;
-            border: 2px solid #cbd5e1;
+            margin-bottom: 30px;
         }
 
-        .dmg-products h4 {
-            color: #374151;
+        .next-steps h3 {
+            color: #1e40af;
             font-size: 1.6rem;
             margin-bottom: 20px;
-            font-weight: 700;
         }
 
-        .products-grid {
+        .next-steps p {
+            color: #1e3a8a;
+            font-size: 1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .catalog-preview {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
             margin: 25px 0;
         }
 
-        .product-item {
+        .preview-item {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
-            text-align: center;
         }
 
-        .product-item:hover {
-            transform: translateY(-5px);
+        .preview-item:hover {
+            transform: translateY(-3px);
         }
 
-        .product-item i {
-            font-size: 2.5rem;
+        .preview-item i {
+            font-size: 2rem;
             color: #3b82f6;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
-        .product-item h5 {
+        .preview-item h5 {
             color: #1e40af;
-            font-size: 1.1rem;
-            margin: 0 0 10px 0;
-            font-weight: 600;
-        }
-
-        .product-item p {
-            color: #6b7280;
             font-size: 0.9rem;
             margin: 0;
         }
@@ -372,8 +237,8 @@
         .action-buttons {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            margin-top: 40px;
+            gap: 15px;
+            margin-top: 30px;
         }
 
         .btn-catalog {
@@ -419,7 +284,7 @@
             border: 2px solid #6b7280;
             color: #374151;
             padding: 15px 30px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             border-radius: 12px;
             cursor: pointer;
@@ -437,38 +302,34 @@
 
         /* Contact info */
         .contact-info {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-radius: 15px;
-            padding: 30px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
             margin-top: 30px;
         }
 
         .contact-info h4 {
-            color: #1e40af;
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            font-weight: 700;
+            color: #374151;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
         }
 
         .contact-item {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
-            color: #1e3a8a;
-            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #6b7280;
         }
 
         .contact-item i {
-            color: #3b82f6;
-            margin-right: 15px;
-            width: 25px;
-            font-size: 1.3rem;
+            color: #5B21B6;
+            margin-right: 10px;
+            width: 20px;
         }
 
         .contact-item a {
-            color: #1d4ed8;
+            color: #5B21B6;
             text-decoration: none;
-            font-weight: 600;
         }
 
         .contact-item a:hover {
@@ -491,28 +352,19 @@
             }
 
             .success-header h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
 
             .thankyou-content {
                 padding: 30px 20px;
             }
 
-            .products-grid {
-                grid-template-columns: 1fr;
+            .catalog-preview {
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .action-buttons {
                 flex-direction: column;
-            }
-
-            .access-link-section h3 {
-                font-size: 1.6rem;
-            }
-
-            .webinar-link-btn {
-                font-size: 1.1rem;
-                padding: 18px 30px;
             }
         }
     </style>
@@ -530,148 +382,71 @@
             <!-- Success Header -->
             <div class="success-header">
                 <div class="success-icon">
-                    <i class="fas fa-video"></i>
+                    <i class="fas fa-check-circle"></i>
                 </div>
-                <h1>¡Registro Confirmado!</h1>
-                <p>Te esperamos en el Webinar DMG sobre Sinergia Endodoncia y Rehabilitación Oral</p>
+                <h1>¡Perfecto! Tu guía está en camino</h1>
+                <p>Hemos enviado tu contenido exclusivo a tu correo electrónico</p>
             </div>
 
             <!-- Content -->
             <div class="thankyou-content">
-                <!-- Webinar Confirmation -->
-                <div class="webinar-confirmation">
-                    <h3><i class="fas fa-calendar-check"></i> Tu Registro está Confirmado</h3>
-                    <p>Hemos enviado todos los detalles del webinar y el enlace de acceso a tu correo electrónico.</p>
+                <!-- Email Confirmation -->
+                <div class="email-confirmation">
+                    <h3><i class="fas fa-envelope-open-text"></i> Revisa tu bandeja de entrada</h3>
+                    <p>En los próximos minutos recibirás tu guía especializada completamente gratis.</p>
 
-                    <div class="webinar-details">
-                        <div class="detail-row">
-                            <div class="detail-label">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                                Tema:
-                            </div>
-                            <div class="detail-value">Sinergia Endodoncia y Rehabilitación Oral</div>
+                    <div class="email-steps">
+                        <div class="step-item">
+                            <i class="fas fa-inbox"></i>
+                            <span>Revisa tu bandeja de entrada principal</span>
                         </div>
-                        <div class="detail-row">
-                            <div class="detail-label">
-                                <i class="fas fa-user-md"></i>
-                                Ponente:
-                            </div>
-                            <div class="detail-value">Dr. Roberto Carlos Tello Torres</div>
+                        <div class="step-item">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Si no lo encuentras, revisa spam o promociones</span>
                         </div>
-                        <div class="detail-row">
-                            <div class="detail-label">
-                                <i class="fas fa-calendar"></i>
-                                Fecha:
-                            </div>
-                            <div class="detail-value">Martes 30 de Septiembre</div>
+                        <div class="step-item">
+                            <i class="fas fa-star"></i>
+                            <span>Marca nuestro email como importante</span>
                         </div>
-                        <div class="detail-row">
-                            <div class="detail-label">
-                                <i class="fas fa-clock"></i>
-                                Hora:
-                            </div>
-                            <div class="detail-value">1:00 PM Lima & Bogotá</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">
-                                <i class="fas fa-language"></i>
-                                Idioma:
-                            </div>
-                            <div class="detail-value">Español</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">
-                                <i class="fas fa-certificate"></i>
-                                Certificado:
-                            </div>
-                            <div class="detail-value">Incluido</div>
+                        <div class="step-item">
+                            <i class="fas fa-download"></i>
+                            <span>Descarga y guarda tu guía para consulta futura</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Access Link Section -->
-                <div class="access-link-section">
-                    <h3><i class="fas fa-link"></i> Enlace de Acceso Directo</h3>
-                    <p>Guarda este enlace para acceder al webinar el día del evento:</p>
-
-                    <a href="https://www.dmg-dental.com/en/education-and-events/education/detail/endo-restorative-synergy-preparatory-steps-toward-predictable-adhesive-integration"
-                       target="_blank" class="webinar-link-btn">
-                        <i class="fas fa-play-circle"></i> ACCEDER AL WEBINAR DMG
-                    </a>
-
-                    <div class="reminder-note">
-                        <i class="fas fa-bell"></i> <strong>Recordatorio:</strong> Te enviaremos un recordatorio 24 horas antes del evento con todos los detalles.
-                    </div>
-                </div>
-
-                <!-- Email Steps -->
-                <div class="email-steps">
-                    <h4 style="color: #059669; margin-bottom: 20px; font-weight: 700;">
-                        <i class="fas fa-envelope-open-text"></i> Revisa tu correo electrónico
-                    </h4>
-                    <div class="step-item">
-                        <i class="fas fa-inbox"></i>
-                        <span>Revisa tu bandeja de entrada principal</span>
-                    </div>
-                    <div class="step-item">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>Si no lo encuentras, revisa spam o promociones</span>
-                    </div>
-                    <div class="step-item">
-                        <i class="fas fa-star"></i>
-                        <span>Marca nuestro email como importante</span>
-                    </div>
-                    <div class="step-item">
-                        <i class="fas fa-calendar-plus"></i>
-                        <span>Agrega el evento a tu calendario</span>
-                    </div>
-                </div>
-
-                <!-- DMG Products Section -->
-                <div class="dmg-products">
-                    <h4><i class="fas fa-tooth"></i> Descubre Nuestros Productos DMG</h4>
-                    <p style="color: #6b7280; margin-bottom: 25px;">
-                        Mientras esperas el webinar, explora nuestra gama completa de productos DMG para endodoncia y rehabilitación oral.
+                <!-- Next Steps -->
+                <div class="next-steps">
+                    <h3>¿Te gustó el contenido? Descubre qué más podemos ofrecerte</h3>
+                    <p>
+                        Mientras esperas tu guía, explora nuestro catálogo completo con más de 200 equipos dentales
+                        de última generación. Encuentra la tecnología perfecta para transformar tu clínica.
                     </p>
 
-                    <div class="products-grid">
-                        <div class="product-item">
-                            <i class="fas fa-fill-drip"></i>
-                            <h5>Cementos Adhesivos</h5>
-                            <p>Tecnología de punta en adhesión</p>
+                    <div class="catalog-preview">
+                        <div class="preview-item">
+                            <i class="fas fa-cube"></i>
+                            <h5>Tomógrafos 3D</h5>
                         </div>
-                        <div class="product-item">
+                        <div class="preview-item">
+                            <i class="fas fa-x-ray"></i>
+                            <h5>Rayos X Digitales</h5>
+                        </div>
+                        <div class="preview-item">
                             <i class="fas fa-tooth"></i>
-                            <h5>Resinas Compuestas</h5>
-                            <p>Estética y durabilidad excepcional</p>
+                            <h5>Unidades Dentales</h5>
                         </div>
-                        <div class="product-item">
+                        <div class="preview-item">
                             <i class="fas fa-microscope"></i>
-                            <h5>Microscopios Endodoncia</h5>
-                            <p>Labomed - Precisión profesional</p>
+                            <h5>Sensores HD</h5>
                         </div>
-                        <div class="product-item">
-                            <i class="fas fa-tools"></i>
-                            <h5>Instrumentos Especializados</h5>
-                            <p>Herramientas de alta calidad</p>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 25px;">
-                        <p style="color: #1e40af; font-size: 1.1rem; margin-bottom: 15px;">
-                            <strong>Catálogo completo:</strong>
-                            <a href="https://proedent.org/catalogo" target="_blank" style="color: #1d4ed8; font-weight: 700;">proedent.org/catalogo</a>
-                        </p>
-                        <p style="color: #6b7280; font-size: 0.9rem;">
-                            <em>Microscopios Labomed disponibles - DMG es nuestra marca principal</em>
-                        </p>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="https://proedent.org/catalogo" target="_blank" class="btn-catalog">
-                        <i class="fas fa-shopping-cart"></i> Ver Catálogo DMG Completo
+                    <a href="/catalogo" class="btn-catalog">
+                        <i class="fas fa-search"></i> Explorar Catálogo Completo
                     </a>
                     <a href="https://proedent1.onrender.com" class="btn-secondary">
                         <i class="fas fa-home"></i> Volver al Inicio
@@ -680,7 +455,7 @@
 
                 <!-- Contact Info -->
                 <div class="contact-info">
-                    <h4>¿Tienes preguntas sobre el webinar o nuestros productos?</h4>
+                    <h4>¿Tienes alguna pregunta específica?</h4>
                     <div class="contact-item">
                         <i class="fas fa-envelope"></i>
                         <span>Email: <a href="mailto:proedentventasecuador@gmail.com">proedentventasecuador@gmail.com</a></span>
@@ -691,19 +466,14 @@
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-user-tie"></i>
-                        <span>Especialista DMG: Byron Velasco | Microscopios: Equipo Técnico</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-globe"></i>
-                        <span>Web: <a href="https://proedent1.onrender.com" target="_blank">proedent1.onrender.com</a></span>
+                        <span>Equipos: Byron Velasco | Insumos: Mery Nieves</span>
                     </div>
                 </div>
 
-                <div style="margin-top: 30px; padding: 25px; background: #f0f9ff; border-radius: 15px; border-left: 5px solid #3b82f6;">
-                    <p style="margin: 0; color: #1e40af; font-weight: 600; font-size: 1.1rem;">
+                <div style="margin-top: 30px; padding: 20px; background: #f0f9ff; border-radius: 10px; border-left: 4px solid #3b82f6;">
+                    <p style="margin: 0; color: #1e40af; font-weight: 600;">
                         <i class="fas fa-lightbulb"></i>
-                        <strong>Tip:</strong> Prepara tus preguntas sobre endodoncia y rehabilitación oral.
-                        Habrá una sesión de Q&A al final del webinar donde podrás interactuar directamente con el Dr. Tello Torres.
+                        Tip: Guarda este enlace para volver cuando necesites más información sobre equipos dentales.
                     </p>
                 </div>
             </div>
