@@ -9,5 +9,6 @@ matplotlib
 numpy
 gunicorn==21.2.0
 python-dotenv
+supabase
 
 
