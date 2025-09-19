@@ -277,6 +277,7 @@ def send_sales_recruitment_email(candidate_data):
             logger.error("Credenciales de email no configuradas")
             return False
 
+        # Crear mensaje de email
         msg = MIMEMultipart()
         msg['From'] = EMAIL_USER
         msg['To'] = candidate_data['email']
@@ -299,22 +300,35 @@ def send_sales_recruitment_email(candidate_data):
                 </p>
 
                 <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #10b981;">
-                    <h3 style="color: #059669; margin-top: 0;">🔎 Archivo Adjunto:</h3>
+                    <h3 style="color: #059669; margin-top: 0;">📎 Archivo Adjunto:</h3>
                     <p style="color: #047857; margin: 0;"><strong>GUIAvendedores.pdf</strong> - Catálogo completo de productos PROEDENT</p>
+                </div>
+
+                <div style="background: #fef3c7; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                    <h3 style="color: #92400e; margin-top: 0;">📋 Próximos Pasos:</h3>
+                    <ul style="color: #92400e;">
+                        <li>Descarga y estudia la guía PDF adjunta</li>
+                        <li>Prepárate para el cuestionario presencial en Quito</li>
+                        <li>Tienes 2 oportunidades para aprobar</li>
+                    </ul>
                 </div>
 
                 <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #5B21B6;">
                     <h3 style="color: #5B21B6; margin-top: 0;">💰 Comisiones:</h3>
-                    <p><strong>10% - 15% por cada venta realizada</strong></p>
+                    <p><strong>Hasta el 15% de comisión por cada venta realizada</strong></p>
                     <p>Ciudad: {candidate_data.get('ciudad', 'No especificada')}</p>
                 </div>
 
                 <div style="text-align: center; margin: 30px 0;">
                     <h3 style="color: #5B21B6;">¿Necesitas capacitación adicional?</h3>
-                    <p style="margin: 5px 0;"><strong>📧 Email:</strong> proedentorg@gmail.com</p>
-                    <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/593998745641" style="color: #5B21B6;">+593 99 874 5641</a></p>
-                    <p style="margin: 5px 0;"><strong>💵 Capacitación:</strong> Solo $10 USD</p>
+                    <p style="margin: 5px 0;"><strong>📧 Email:</strong> proedentorg@gmail.com, proedentventasecuador@gmail.com</p>
+                    <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> <a href="https://wa.me/593998745641" style="color: #5B21B6;">+593 98 755 3634, +593 99 874 5641</a></p>
+                    <p style="margin: 5px 0;"><strong>💵 Capacitación Adicional Opcional:</strong> Solo $10 USD</p>
                 </div>
+            </div>
+
+            <div style="background: #333; color: white; text-align: center; padding: 20px;">
+                <p style="margin: 0;">PROEDENT - Tu oportunidad de generar ingresos extraordinarios</p>
             </div>
         </body>
         </html>
@@ -322,7 +336,7 @@ def send_sales_recruitment_email(candidate_data):
 
         msg.attach(MIMEText(html_content, 'html'))
 
-        # Adjuntar PDF si existe
+        # ADJUNTAR EL PDF DE LA GUÍA
         try:
             pdf_path = os.path.join('static', 'pdfs', 'GUIAvendedores.pdf')
             if os.path.exists(pdf_path):
@@ -336,9 +350,12 @@ def send_sales_recruitment_email(candidate_data):
                     )
                     msg.attach(attach)
                 logger.info("PDF adjuntado exitosamente")
+            else:
+                logger.warning(f"Archivo PDF no encontrado en: {pdf_path}")
         except Exception as pdf_error:
             logger.error(f"Error adjuntando PDF: {pdf_error}")
 
+        # Enviar email
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         server.starttls()
         server.login(EMAIL_USER, EMAIL_PASSWORD)
