@@ -652,7 +652,7 @@ def send_webinar_registration_email(lead_data, interests):
                     <p><strong>Tema:</strong> "Sinergia Endodoncia y Rehabilitación Oral: Pasos previos para la integración Adhesiva"</p>
                     <p><strong>Ponente:</strong> Dr. Roberto Carlos Tello Torres</p>
                     <p><strong>Fecha:</strong> Martes 30 de Septiembre</p>
-                    <p><strong>Hora:</strong> 1:00 PM Lima & Bogotá / 12:00 PM México</p>
+                    <p><strong>Hora:</strong> 1:00 PM Quito & Bogotá / 12:00 PM México</p>
                     <p><strong>Duración:</strong> Aproximadamente 60 minutos</p>
                     <p><strong>Idioma:</strong> Español</p>
                 </div>
