@@ -1349,19 +1349,16 @@ def test_email():
 
 # Rutas de administrador requerido
 @app.route("/lm/secretos")
-@admin_required
 def lm_secretos():
     return render_template("LM-10Secretos.html")
 
 
 @app.route("/lm/errores")
-@admin_required
 def lm_errores():
     return render_template("LM-10Errores.html")
 
 
 @app.route("/lm/guia")
-@admin_required
 def lm_guia():
     return render_template("LM-GuiaCompleta.html")
 
